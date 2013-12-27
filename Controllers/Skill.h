@@ -12,11 +12,12 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
+#include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
 
 namespace EveXin {
 	class SkillGroup;
-	class Skill {
+	class Skill : public SkillItem {
 		public:
 			typedef boost::shared_ptr<Skill> ref;
 			Skill();
@@ -30,6 +31,10 @@ namespace EveXin {
 
 			std::string getID() {return id_;}
 			std::string getGroupID() {return groupID_;}
+			/**
+			 * Return the 'real' group that this skill belongs to.
+			 * This is the main skill tree, not any skill plans.
+			 */
 			boost::weak_ptr<SkillGroup> getGroup() {return groupRef_;}
 			std::string getName() {return name_;}
 			std::string getDescription() {return description_;}

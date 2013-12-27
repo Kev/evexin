@@ -11,16 +11,16 @@
 
 #include <boost/enable_shared_from_this.hpp>
 
-#include <Eve-Xin/Controllers/Skill.h>
+#include <Eve-Xin/Controllers/SkillItem.h>
 
 namespace EveXin {
-	class SkillGroup : public boost::enable_shared_from_this<SkillGroup> {
+	class SkillGroup : public SkillItem {
 		public:
 			typedef boost::shared_ptr<SkillGroup> ref;
+			SkillGroup() {}
 			SkillGroup(const std::string& id, const std::string& name) : id_(id), name_(name) {}
-			void addSkill(Skill::ref skill) {
-				skills_.push_back(skill);
-				skill->setGroupRef(shared_from_this());
+			void addChild(SkillItem::ref skill) {
+				children_.push_back(skill);
 			}
 
 			std::string getID() {
@@ -31,9 +31,13 @@ namespace EveXin {
 				return name_;
 			}
 
+			const std::vector<SkillItem::ref>& getChildren() {
+				return children_;
+			}
+
 		private:
 			std::string id_;
 			std::string name_;
-			std::vector<Skill::ref> skills_;
+			std::vector<SkillItem::ref> children_;
 	};
 }
