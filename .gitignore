@@ -1,13 +1,9 @@
-# Compiled Object files
-*.slo
-*.lo
+eve-xin.sublime-workspace
+eve-xin
+Eve-Xin
+Eve-Xin.app
+.sconsign.dblite
 *.o
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
+ui_*.h
+moc_*.cc
+COPYING
