@@ -21,9 +21,9 @@ and cd in there
 cd swift
 ```
 This is the folder in which you'll run the build system.
-Now get the Eve-Xin source.
+Now get the Eve-Xin source into the Eve-Xin folder (yes, it must be in this folder).
 ```
-git clone https://github.com/Kev/evexin.git
+git clone https://github.com/Kev/evexin.git Eve-Xin
 ```
 Now populate `config.py` with the same rules used by Swift, for example:
 ```
