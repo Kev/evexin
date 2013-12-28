@@ -34,6 +34,14 @@ namespace EveXin {
 				}
 				return skill;
 			}
+
+			boost::shared_ptr<SkillGroup> getGroup(const std::string& id) {
+				boost::shared_ptr<SkillGroup> group = groups_[id];
+				if (!group) {
+					group = boost::make_shared<SkillGroup>();
+				}
+				return group;
+			}
 		private:
 			std::map<std::string, boost::shared_ptr<SkillGroup> > groups_;
 			std::map<std::string, boost::shared_ptr<Skill> > skills_;

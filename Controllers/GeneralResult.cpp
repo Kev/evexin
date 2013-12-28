@@ -94,6 +94,7 @@ bool GeneralResult::isValid() {
 }
 
 bool GeneralResult::needsRefresh() {
+	// http://wiki.eve-id.net/API_Cache_Styles
 	return getCachedUntil() < boost::posix_time::second_clock::universal_time();
 }
 

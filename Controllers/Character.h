@@ -13,6 +13,7 @@
 #include <Swiften/Base/ByteArray.h>
 
 namespace EveXin {
+	class SkillGroup;
 	class Character {
 		public:
 			typedef boost::shared_ptr<Character> ref;
@@ -29,6 +30,8 @@ namespace EveXin {
 			double getISK() {return isk_;}
 			Swift::ByteArray get256Avatar() {return avatar256_;}
 			void set256Avatar(const Swift::ByteArray& avatar) {avatar256_ = avatar;}
+			void setKnownSkills(boost::shared_ptr<SkillGroup> skillRoot) {knownSkillRoot_ = skillRoot;}
+			boost::shared_ptr<SkillGroup> getKnownSkills() {return knownSkillRoot_;}
 		private:
 			std::string id_;
 			std::string name_;
@@ -38,6 +41,7 @@ namespace EveXin {
 			std::string expires_;
 			double isk_;
 			Swift::ByteArray avatar256_;
+			boost::shared_ptr<SkillGroup> knownSkillRoot_;
 
 	};
 }

@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <boost/weak_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 
 #include <Eve-Xin/Controllers/SkillItem.h>
@@ -17,8 +16,11 @@ namespace EveXin {
 		public:
 			typedef boost::shared_ptr<SkillLevel> ref;
 			SkillLevel(boost::weak_ptr<Skill> skill, int level) : skill_(skill), level_(level) {}
+
+			int getLevel() {return level_;}
+			boost::shared_ptr<Skill> getSkill() {return skill_;}
 		private:
-			boost::weak_ptr<Skill> skill_;
+			boost::shared_ptr<Skill> skill_;
 			int level_;
 	};
 }

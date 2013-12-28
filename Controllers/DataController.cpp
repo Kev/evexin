@@ -207,7 +207,33 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 	}
 }
 
+void DataController::putSkillLevelIntoRoot(boost::shared_ptr<SkillGroup> root, boost::shared_ptr<SkillLevel> skillLevel) {
+	const std::vector<SkillItem::ref>& children = root->getChildren();
+	bool found = false;
+	SkillGroup::ref group;
+	std::string groupID = skillLevel->getSkill()->getGroupID();
+	foreach (SkillItem::ref child, children) {
+		group = boost::dynamic_pointer_cast<SkillGroup>(child);
+		if (!group) continue;
+		if (group->getID() == groupID) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		SkillGroup::ref realGroup = skillTree_->getGroup(groupID);
+		group = boost::make_shared<SkillGroup>(realGroup->getID(), realGroup->getName());
+		root->addChild(group);
+	}
+	group->addChild(skillLevel);
+}
+
 void DataController::handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
+	Character::ref character = characters_[characterID];
+	if (!character) {
+		return;
+	}
+	// http://wiki.eve-id.net/APIv2_Char_CharacterSheet_XML
 	std::string race;
 	std::string bloodline;
 	std::string gender;
@@ -224,6 +250,27 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	int perception;
 	int willpower;
 	//skills
+	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
+	foreach (Swift::ParserElement::ref rowset, rowsets) {
+		if (rowset->getAttributes().getAttribute("name") == "skills") {
+			SkillGroup::ref skillRoot = boost::make_shared<SkillGroup>();
+			character->setKnownSkills(skillRoot);
+			const std::vector<Swift::ParserElement::ref>& rows = result->getResult()->getChildren("row", "");
+			foreach (Swift::ParserElement::ref row, rows) {
+				std::string skillID = row->getAttributes().getAttribute("typeID");
+				int level = 0;
+				try {
+					level = boost::lexical_cast<int>(row->getAttributes().getAttribute("level"));
+				}
+				catch(const boost::bad_lexical_cast &) {
+					//Not much to do if they send bad data
+				}
+				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(skillTree_->getSkill(skillID), level);
+				//FIXME: Put in skill points too
+				putSkillLevelIntoRoot(skillRoot, skillLevel);
+			}
+		}
+	}
 	//certificates
 	//corporationRoles
 	//corporationRolesAtHQ
