@@ -15,12 +15,11 @@ namespace EveXin {
 	class SkillLevel : public SkillItem {
 		public:
 			typedef boost::shared_ptr<SkillLevel> ref;
-			SkillLevel(boost::weak_ptr<Skill> skill, int level) : skill_(skill), level_(level) {}
+			SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level);
 
-			int getLevel() {return level_;}
-			boost::shared_ptr<Skill> getSkill() {return skill_;}
+			int getLevel() const;
+
 		private:
-			boost::shared_ptr<Skill> skill_;
 			int level_;
 	};
 }

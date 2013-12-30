@@ -9,7 +9,7 @@
 
 namespace EveXin {
 
-Skill::Skill() {
+Skill::Skill(const std::string& id) : id_(id) {
 
 }
 
@@ -17,19 +17,15 @@ Skill::~Skill() {
 
 }
 
-void Skill::populate(const std::string& id, const std::string& groupID, const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<SkillLevel>& dependencies) {
-	id_ = id;
+void Skill::populate(const std::string& groupID, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies) {
 	groupID_ = groupID;
+	//group_ = group;
 	name_ = name;
 	description_ = description;
 	rank_ = rank;
 	primaryAttribute_ = primaryAttribute;
 	secondaryAttribute_ = secondaryAttribute;
 	dependencies_ = dependencies;
-}
-
-void Skill::setGroupRef(boost::weak_ptr<SkillGroup> groupRef) {
-	groupRef_ = groupRef;
 }
 
 }

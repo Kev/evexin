@@ -12,46 +12,44 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include <Eve-Xin/Controllers/SkillItem.h>
-#include <Eve-Xin/Controllers/SkillLevel.h>
-
 namespace EveXin {
-	class SkillGroup;
-	class Skill : public SkillItem {
+	class SkillLevel;
+	class Skill {
 		public:
 			typedef boost::shared_ptr<Skill> ref;
-			Skill();
+			Skill(const std::string& id);
 			~Skill();
 
 			/**
 			 * Use this rather than a ctor, as it allows keeping smart pointers to not-yet-populated skills in dependencies.
 			 */
-			void populate(const std::string& id, const std::string& groupID_, const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<SkillLevel>& dependencies);
-			void setGroupRef(boost::weak_ptr<SkillGroup>);
+			void populate(const std::string& groupID_, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies);
 
 			std::string getID() {return id_;}
 			std::string getGroupID() {return groupID_;}
-			/**
-			 * Return the 'real' group that this skill belongs to.
-			 * This is the main skill tree, not any skill plans.
-			 */
-			boost::weak_ptr<SkillGroup> getGroup() {return groupRef_;}
+
 			std::string getName() {return name_;}
 			std::string getDescription() {return description_;}
 			int getRank() {return rank_;}
 			std::string getPrimaryAttribute() {return primaryAttribute_;}
 			std::string getSecondaryAttribute() {return secondaryAttribute_;}
-			std::vector<SkillLevel> getDependencies() {return dependencies_;}
+			std::vector<boost::shared_ptr<SkillLevel> > getDependencies() {return dependencies_;}
+
+			/**
+			 * Return the 'real' group that this skill belongs to.
+			 * This is the main skill tree, not any skill plans.
+			 */
+			//boost::shared_ptr<SkillItem> getGroup() {return groupRef_.lock();}
 		private:
 			std::string id_;
 			std::string groupID_;
-			boost::weak_ptr<SkillGroup> groupRef_;
+			//boost::weak_ptr<SkillItem> groupRef_;
 			std::string name_;
 			std::string description_;
 			int rank_;
 			std::string primaryAttribute_;
 			std::string secondaryAttribute_;
-			std::vector<SkillLevel> dependencies_;
+			std::vector<boost::shared_ptr<SkillLevel> > dependencies_;
 	};
 }
 

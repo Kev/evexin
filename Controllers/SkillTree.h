@@ -12,38 +12,48 @@
 #include <boost/shared_ptr.hpp>
 
 #include <Eve-Xin/Controllers/Skill.h>
-#include <Eve-Xin/Controllers/SkillGroup.h>
+#include <Eve-Xin/Controllers/SkillItem.h>
 
 namespace EveXin {
 
-	class SkillTree {
+	class SkillTree : public SkillItem {
 		public:
 			typedef boost::shared_ptr<SkillTree> ref;
-			void addGroup(boost::shared_ptr<SkillGroup> group) {
+
+			SkillTree() : SkillItem(SkillItem::ref(), "root", "root") {}
+			virtual ~SkillTree() {}
+
+			virtual void addChild(SkillItem::ref group) {
+				SkillItem::addChild(group);
 				groups_[group->getID()] = group;
 			}
 
-			void addSkill(boost::shared_ptr<Skill> skill) {
+			void addSkill(Skill::ref skill) {
 				skills_[skill->getID()] = skill;
 			}
 
-			boost::shared_ptr<Skill> getSkill(const std::string& id) {
-				boost::shared_ptr<Skill> skill = skills_[id];
+			Skill::ref getSkill(const std::string& id) {
+				Skill::ref skill = skills_[id];
 				if (!skill) {
-					skill = boost::make_shared<Skill>();
+					/* So that if we get asked for a skill before it's been populated,
+					 * we return the same pointer that'll later contain the data.
+					 *
+					 * This happens if you have a skill with dependencies on skills 
+					 * that come later.
+					 */ 
+					skill = boost::make_shared<Skill>(id);
+					skills_[id] = skill;
 				}
 				return skill;
 			}
 
-			boost::shared_ptr<SkillGroup> getGroup(const std::string& id) {
-				boost::shared_ptr<SkillGroup> group = groups_[id];
-				if (!group) {
-					group = boost::make_shared<SkillGroup>();
-				}
+			SkillItem::ref getGroup(const std::string& id) {
+				SkillItem::ref group = groups_[id];
 				return group;
 			}
 		private:
-			std::map<std::string, boost::shared_ptr<SkillGroup> > groups_;
-			std::map<std::string, boost::shared_ptr<Skill> > skills_;
+			std::map<std::string, SkillItem::ref> groups_;
+			std::map<std::string, Skill::ref> skills_;
+			SkillItem::ref dummyGroup_; // Things get put in this if they're created before being populated
 	};
 }

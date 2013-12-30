@@ -25,7 +25,7 @@
 #include <Eve-Xin/Controllers/HTTPRequest.h>
 #include <Eve-Xin/Controllers/SqliteDataStore.h>
 #include <Eve-Xin/Controllers/Skill.h>
-#include <Eve-Xin/Controllers/SkillGroup.h>
+#include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillTree.h>
 
@@ -163,8 +163,8 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 	foreach (Swift::ParserElement::ref groupElement, groups) {
 		std::string groupID = groupElement->getAttributes().getAttribute("groupID");
 		std::string groupName = groupElement->getAttributes().getAttribute("groupName");
-		SkillGroup::ref group = boost::make_shared<SkillGroup>(groupID, groupName);
-		skillTree_->addGroup(group);
+		SkillItem::ref group = boost::make_shared<SkillItem>(skillTree_, groupID, groupName);
+		skillTree_->addChild(group);
 		const std::vector<Swift::ParserElement::ref>& skills = groupElement->getChild("rowset", "")->getChildren("row", "");
 		foreach (Swift::ParserElement::ref skillElement, skills) {
 			std::string skillID = skillElement->getAttributes().getAttribute("typeID");
@@ -181,7 +181,10 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 			std::string primaryAttribute = attributesElement->getChild("primaryAttribute", "")->getText();
 			std::string secondaryAttribute = attributesElement->getChild("secondaryAttribute", "")->getText();
 			const std::vector<Swift::ParserElement::ref>& rowsets = skillElement->getChildren("rowset", "");
-			std::vector<SkillLevel> dependencies;
+			std::vector<SkillLevel::ref> dependencies;
+			Skill::ref skill = skillTree_->getSkill(skillID);
+			SkillItem::ref skillItem = boost::make_shared<SkillItem>(group, skill);
+			group->addChild(skillItem);
 			foreach (Swift::ParserElement::ref row, rowsets) {
 				if (row->getAttributes().getAttribute("name") == "requiredSkills") {
 					const std::vector<Swift::ParserElement::ref>& dependencyElements = skillElement->getChildren("row", "");
@@ -194,38 +197,18 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 						catch(const boost::bad_lexical_cast &) {
 							//Not much to do if they send bad data
 						}
-						dependencies.push_back(SkillLevel(skillTree_->getSkill(dependencyID), dependencyLevel));
+						SkillLevel::ref dependency = boost::make_shared<SkillLevel>(skillItem,  skillTree_->getSkill(dependencyID), dependencyLevel);
+						skillItem->addChild(dependency);
+						dependencies.push_back(dependency);
 					}
 				}
 			}
 			
-			Skill::ref skill = skillTree_->getSkill(skillID);
-			skill->populate(skillID, groupID, skillName, description, rank, primaryAttribute, secondaryAttribute, dependencies);
-			group->addChild(skill);
-			skill->setGroupRef(group);
+			
+			skill->populate(groupID, skillName, description, rank, primaryAttribute, secondaryAttribute, dependencies);
+			// skill->setGroupRef(group);
 		}
 	}
-}
-
-void DataController::putSkillLevelIntoRoot(boost::shared_ptr<SkillGroup> root, boost::shared_ptr<SkillLevel> skillLevel) {
-	const std::vector<SkillItem::ref>& children = root->getChildren();
-	bool found = false;
-	SkillGroup::ref group;
-	std::string groupID = skillLevel->getSkill()->getGroupID();
-	foreach (SkillItem::ref child, children) {
-		group = boost::dynamic_pointer_cast<SkillGroup>(child);
-		if (!group) continue;
-		if (group->getID() == groupID) {
-			found = true;
-			break;
-		}
-	}
-	if (!found) {
-		SkillGroup::ref realGroup = skillTree_->getGroup(groupID);
-		group = boost::make_shared<SkillGroup>(realGroup->getID(), realGroup->getName());
-		root->addChild(group);
-	}
-	group->addChild(skillLevel);
 }
 
 void DataController::handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
@@ -253,7 +236,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
 	foreach (Swift::ParserElement::ref rowset, rowsets) {
 		if (rowset->getAttributes().getAttribute("name") == "skills") {
-			SkillGroup::ref skillRoot = boost::make_shared<SkillGroup>();
+			SkillItem::ref skillRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "char_root", "char_root");
 			character->setKnownSkills(skillRoot);
 			const std::vector<Swift::ParserElement::ref>& rows = result->getResult()->getChildren("row", "");
 			foreach (Swift::ParserElement::ref row, rows) {
@@ -265,9 +248,16 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 				catch(const boost::bad_lexical_cast &) {
 					//Not much to do if they send bad data
 				}
-				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(skillTree_->getSkill(skillID), level);
-				//FIXME: Put in skill points too
-				putSkillLevelIntoRoot(skillRoot, skillLevel);
+				Skill::ref skill = skillTree_->getSkill(skillID);
+				// There is an unlikely race condition here, where a character sheet might get returned before
+				// the full skill set has been fetched. In that case the skillTree_ won't be fully populated, 
+				// so cope with that and insert dummy groups in the character tree until the next refresh.
+				std::string groupID = skill->getGroupID();
+				SkillItem::ref parent = skillTree_->getGroup(groupID);
+				std::string groupName = parent ? parent->getName() : "Please refresh";
+				SkillItem::ref group = skillRoot->getGroup(groupID, groupName);
+				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level);
+				group->addChild(skillLevel);
 			}
 		}
 	}
