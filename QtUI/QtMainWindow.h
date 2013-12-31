@@ -13,10 +13,12 @@
 #include <Eve-Xin/Controllers/Character.h>
 
 class QComboBox;
+class QTreeView;
 
 namespace EveXin {
 	class DataController;
 	class QtCharacterPane;
+	class QtSkillModel;
 	class QtMainWindow : public QMainWindow {
 		Q_OBJECT
 		public:
@@ -37,7 +39,8 @@ namespace EveXin {
 			QtCharacterPane* characterPane_;
 			boost::shared_ptr<DataController> dataController_;
 			QWidget* apiWindow_;
-
+			QTreeView* skillPane_;
+			boost::shared_ptr<QtSkillModel> skillModel_;
 	};
 
 }

@@ -59,10 +59,10 @@ GeneralResult::GeneralResult(const Swift::ByteArray& source, Swift::XMLParserFac
 	}
 	Swift::ParserElement::ref root = dommifier.getRoot();
 	std::string cachedUntilString = root->getChild("cachedUntil", "")->getText();
-	std::cerr << "Cached until " << cachedUntilString << std::endl;
+	//std::cerr << "Cached until " << cachedUntilString << std::endl;
 	cachedUntil_ = Swift::stringToDateTime(cachedUntilString + "Z");
 	std::string deliveredAtString = root->getChild("currentTime", "")->getText();
-	std::cerr << "Delivered at " << deliveredAtString << std::endl;
+	//std::cerr << "Delivered at " << deliveredAtString << std::endl;
 	date_ = Swift::stringToDateTime(deliveredAtString + "Z");
 
 	//Some things come through with a dodgy cachedUntil of immediate when they should be an hour, so if they're the same, add an hour.

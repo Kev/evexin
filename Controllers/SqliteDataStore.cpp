@@ -63,7 +63,7 @@ Swift::ByteArray SqliteDataStore::getContent(const Swift::URL& url) {
 	sqlite3_stmt* preparedStatement = NULL;
 	sqlite3_prepare_v2(db_, ("SELECT content FROM apiCache WHERE url='" + key + "'").c_str(), -1, &preparedStatement, NULL); // http://www.sqlite.org/c3ref/prepare.html
 	if (sqlite3_step(preparedStatement) != SQLITE_ROW) {
-		std::cerr << "Failed to fetch content" << std::endl;
+		//std::cerr << "Failed to fetch content" << std::endl;
 		sqlite3_finalize(preparedStatement);
 
 		return content;
@@ -80,7 +80,7 @@ void SqliteDataStore::setContent(const Swift::URL& url, const Swift::ByteArray& 
 	const char* charContent = stringContent.c_str();
 	sqlite3_stmt* preparedStatement = NULL;
 	std::string command = "UPDATE apiCache SET content=? WHERE url='" + key + "'";
-	std::cerr << "Trying: " << command << std::endl;
+	//std::cerr << "Trying: " << command << std::endl;
 	sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
 	sqlite3_bind_text(preparedStatement, 1, charContent, -1, NULL);
 	sqlite3_step(preparedStatement);
@@ -88,7 +88,7 @@ void SqliteDataStore::setContent(const Swift::URL& url, const Swift::ByteArray& 
 	if (sqlite3_changes(db_) == 0) {
 		preparedStatement = NULL;
 		command = "INSERT INTO apiCache (content, url) VALUES (?, '" + key + "')";
-		std::cerr << "No update, so trying: " << command << std::endl;
+		//std::cerr << "No update, so trying: " << command << std::endl;
 		sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
 		sqlite3_bind_text(preparedStatement, 1, charContent, -1, NULL);
 		sqlite3_step(preparedStatement);
@@ -107,7 +107,7 @@ std::string SqliteDataStore::urlToKey(const Swift::URL& url) {
 void SqliteDataStore::addAPIKey(const std::string& key, const std::string& ver) {
 	sqlite3_stmt* preparedStatement = NULL;
 	std::string command = "INSERT INTO apiKeys (key, ver) VALUES (?, ?)";
-	std::cerr << "Trying: " << command << std::endl;
+	//std::cerr << "Trying: " << command << std::endl;
 	sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
 	sqlite3_bind_text(preparedStatement, 1, key.c_str(), -1, NULL);
 	sqlite3_bind_text(preparedStatement, 2, ver.c_str(), -1, NULL);
@@ -122,14 +122,14 @@ std::vector<DataStore::APIKey> SqliteDataStore::getAPIKeys() {
 	std::vector<APIKey> keys;
 	sqlite3_stmt* preparedStatement = NULL;
 	std::string command = "SELECT * FROM apiKeys";
-	std::cerr << "Trying: " << command << std::endl;
+	//std::cerr << "Trying: " << command << std::endl;
 	sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
 	int result = sqlite3_step(preparedStatement);
 	while (result == SQLITE_ROW) {
 		APIKey key;
 		key.key = getStringColumn(preparedStatement, 0);
 		key.ver = getStringColumn(preparedStatement, 1);
-		std::cerr << "Found key " << key.key << ", ver " << key.ver << std::endl;
+		//std::cerr << "Found key " << key.key << ", ver " << key.ver << std::endl;
 		result = sqlite3_step(preparedStatement);
 		keys.push_back(key);
 	}

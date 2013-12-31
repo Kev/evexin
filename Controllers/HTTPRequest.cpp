@@ -72,12 +72,12 @@ void HTTPRequest::writeData() {
 			// << "Content-Type: text/xml; charset=utf-8\r\n"
 			// << "Content-Length: " << size << "\r\n"
 			<<"\r\n";
-	std::cerr << ">>> " << header.str() << std::endl;
+	//std::cerr << ">>> " << header.str() << std::endl;
 	connection_->write(Swift::createSafeByteArray(header.str()));
 }
 
 void HTTPRequest::handleDataRead(boost::shared_ptr<Swift::SafeByteArray> data) {
-	std::cerr << "<<< " << Swift::safeByteArrayToString(*data) << std::endl;
+	//std::cerr << "<<< " << Swift::safeByteArrayToString(*data) << std::endl;
 	buffer_ = Swift::concat(buffer_, *data);
 	if (!receivedHeaders_) {
 		std::string response = safeByteArrayToString(buffer_);
@@ -101,7 +101,7 @@ void HTTPRequest::handleDataRead(boost::shared_ptr<Swift::SafeByteArray> data) {
 }
 
 void HTTPRequest::handleDisconnected(const boost::optional<Swift::Connection::Error>& error) {
-	std::cerr << "HTTP Disconnected" << std::endl;
+	//std::cerr << "HTTP Disconnected" << std::endl;
 	cancelConnector();
 	if (receivedHeaders_) {
 		onComplete(Swift::createByteArray(safeByteArrayToString(buffer_))); // Yes, this is getting a little silly with the conversions.

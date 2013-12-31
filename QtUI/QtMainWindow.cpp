@@ -17,6 +17,7 @@
 #include <QMenuBar>
 #include <QPixmap>
 #include <QPushButton>
+#include <QTreeView>
 
 #include <Swiften/Base/foreach.h>
 
@@ -27,6 +28,7 @@
 
 #include <Eve-Xin/QtUI/QtAPIKeyWindow.h>
 #include <Eve-Xin/QtUI/QtCharacterPane.h>
+#include <Eve-Xin/QtUI/QtSkillModel.h>
 
 namespace EveXin {
 
@@ -42,6 +44,13 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	characterPane_ = new QtCharacterPane(this);
 	characterLayout->addWidget(characterPane_);
 	rightLeftLayout->addLayout(characterLayout);
+
+	skillPane_ = new QTreeView(this);
+	skillModel_ = boost::make_shared<QtSkillModel>();
+	skillPane_->setModel(skillModel_.get());
+	skillPane_->setHeaderHidden(true);
+	rightLeftLayout->addWidget(skillPane_);
+
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));
 	handleCharacterListUpdated();
 	dataController_->onCharacterDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataUpdated, this, _1));
@@ -94,6 +103,7 @@ void QtMainWindow::handleCharacterDataUpdated(const std::string& id) {
 		return;
 	}
 	characterPane_->setCharacter(character);
+	skillModel_->setRoot(character->getKnownSkills());
 }
 
 void QtMainWindow::handleCharacterSelected(int index) {

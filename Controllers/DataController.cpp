@@ -105,8 +105,8 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 	untrackURL(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (result->isValid() && result->getResult()) {
-		std::cerr << "Valid result" << std::endl;
-		std::cerr << "Updating cache" << std::endl;
+		//std::cerr << "Valid result" << std::endl;
+		//std::cerr << "Updating cache" << std::endl;
 		store_->setContent(url, content);
 		if (!callback.empty()) {
 			callback(result);
@@ -144,7 +144,7 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 void DataController::handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
 	Swift::ParserElement::ref element = result->getResult()->getChild("rowset", "")->getChild("row", "");
 	std::string balance = element->getAttributes().getAttribute("balance");
-	std::cerr << "Balance for " << characterID << ": " << balance << std::endl;
+	//std::cerr << "Balance for " << characterID << ": " << balance << std::endl;
 	Character::ref character = characters_[characterID];
 	if (!character) {
 		return;
@@ -214,8 +214,10 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 void DataController::handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
 	Character::ref character = characters_[characterID];
 	if (!character) {
+		std::cerr << "Receiving character sheet for unexpected ID" << characterID << std::endl;
 		return;
 	}
+	std::cerr << "Handling character " << characterID << "'s sheet." << std::endl;
 	// http://wiki.eve-id.net/APIv2_Char_CharacterSheet_XML
 	std::string race;
 	std::string bloodline;
@@ -236,9 +238,10 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
 	foreach (Swift::ParserElement::ref rowset, rowsets) {
 		if (rowset->getAttributes().getAttribute("name") == "skills") {
+			std::cerr << "Found the known skills element" << std::endl;
 			SkillItem::ref skillRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "char_root", "char_root");
-			character->setKnownSkills(skillRoot);
-			const std::vector<Swift::ParserElement::ref>& rows = result->getResult()->getChildren("row", "");
+			const std::vector<Swift::ParserElement::ref>& rows = rowset->getChildren("row", "");
+			std::cerr << rows.size() << " skills" << std::endl;
 			foreach (Swift::ParserElement::ref row, rows) {
 				std::string skillID = row->getAttributes().getAttribute("typeID");
 				int level = 0;
@@ -258,7 +261,9 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 				SkillItem::ref group = skillRoot->getGroup(groupID, groupName);
 				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level);
 				group->addChild(skillLevel);
+				std::cerr << "Knows skill " << skillID << " at level " << level << " in " << group->getID() << std::endl;
 			}
+			character->setKnownSkills(skillRoot);
 		}
 	}
 	//certificates

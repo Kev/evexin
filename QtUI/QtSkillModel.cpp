@@ -29,7 +29,7 @@ QtSkillModel::~QtSkillModel() {
 void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {
 	beginResetModel();
 	root_ = root;
-	endResetModel(); 
+	endResetModel();
 }
 
 Qt::ItemFlags QtSkillModel::flags(const QModelIndex& index) const {
@@ -115,6 +115,7 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	SkillItem::ref item = parent.isValid() ? getItem(parent) : root_;
 	Q_ASSERT(item);
 	int count = item->getChildren().size();
+	qDebug() << "Returning " << count << " rows";
 	return count;
 }
 
