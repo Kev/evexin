@@ -18,6 +18,7 @@ namespace EveXin {
 	// };
 
 	class SkillItem;
+	class SkillLevel;
 
 	class QtSkillModel : public QAbstractItemModel {
 		Q_OBJECT
@@ -38,6 +39,8 @@ namespace EveXin {
 		// 	void itemExpanded(const QModelIndex& item, bool expanded);
 		private:
 			boost::shared_ptr<SkillItem> getItem(const QModelIndex& index) const;
+			QVariant itemData(boost::shared_ptr<SkillItem> item, int role) const;
+			QVariant levelData(boost::shared_ptr<SkillLevel> level, int role) const;
 			// void handleDataChanged(RosterItem* item);
 			// void handleChildrenChanged(GroupRosterItem* item);
 			// QColor intToColor(int color) const;

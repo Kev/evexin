@@ -15,8 +15,10 @@
 
 #include <Swift/QtUI/QtSwiftUtil.h>
 
-#include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/Skill.h>
+#include <Eve-Xin/Controllers/SkillItem.h>
+#include <Eve-Xin/Controllers/SkillLevel.h>
+
 
 namespace EveXin {
 
@@ -56,17 +58,35 @@ boost::shared_ptr<SkillItem> QtSkillModel::getItem(const QModelIndex& index) con
 	return result;
 }
 
-QVariant QtSkillModel::data(const QModelIndex& index, int role) const {
-	boost::shared_ptr<SkillItem> item = getItem(index);
-	if (!item) return QVariant();
+QVariant QtSkillModel::levelData(SkillLevel::ref level, int role) const {
+	switch (role) {
+		case Qt::DisplayRole: {
+			std::string name = level->getName() + " Level " + boost::lexical_cast<std::string>(level->getLevel());
+			return P2QSTRING(name);
+		}
+		default: return itemData(level, role);
+	}
+}
 
+QVariant QtSkillModel::itemData(SkillItem::ref item, int role) const {
+	Skill::ref skill = item->getSkill();
 	switch (role) {
 		case Qt::DisplayRole: return P2QSTRING(item->getName());
 		//case Qt::TextColorRole: return "not implemented :/";
 		//case Qt::BackgroundColorRole: return "not implemented :/";
-		case Qt::ToolTipRole: return "not implemented :/";
+		case Qt::ToolTipRole: return skill ? QVariant(P2QSTRING(skill->getDescription())) : QVariant();
 		default: return QVariant();
 	}
+}
+
+QVariant QtSkillModel::data(const QModelIndex& index, int role) const {
+	if (!index.isValid()) return QVariant();
+	boost::shared_ptr<SkillItem> item = getItem(index);
+	if (!item) return QVariant();
+
+	SkillLevel::ref skillLevel = boost::dynamic_pointer_cast<SkillLevel>(item);
+	return skillLevel ? levelData(skillLevel, role) : itemData(item, role);
+	
 }
 
 QModelIndex QtSkillModel::index(int row, int column, const QModelIndex& parent) const {
@@ -115,7 +135,7 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	SkillItem::ref item = parent.isValid() ? getItem(parent) : root_;
 	Q_ASSERT(item);
 	int count = item->getChildren().size();
-	qDebug() << "Returning " << count << " rows";
+	//qDebug() << "Returning " << count << " rows";
 	return count;
 }
 

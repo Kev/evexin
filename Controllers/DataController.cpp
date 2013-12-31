@@ -88,7 +88,7 @@ void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback call
 	Swift::ByteArray content = store_->getContent(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (!result->isValid() || result->needsRefresh()) {
-		std::cerr << "Requesting update, isValid(" << result->isValid() << ") needsRefresh(" << result->needsRefresh() << ") cachedUntil(" << (result->isValid() ? Swift::dateTimeToLocalString(result->getCachedUntil()) : std::string("None")) << ")" << std::endl;
+		//std::cerr << "Requesting update, isValid(" << result->isValid() << ") needsRefresh(" << result->needsRefresh() << ") cachedUntil(" << (result->isValid() ? Swift::dateTimeToLocalString(result->getCachedUntil()) : std::string("None")) << ")" << std::endl;
 		if (canRequestURL(url)) {
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
 			//request->onError //FIXME: Do something with this
@@ -118,7 +118,7 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 }
 
 void DataController::handleCharactersResult(const std::string& accountKey, boost::shared_ptr<GeneralResult> result) {
-	std::cerr << "DataController<<handleCharactersResult:" << std::endl;
+	//std::cerr << "DataController<<handleCharactersResult:" << std::endl;
 	Swift::ParserElement::ref keyElement = result->getResult()->getChild("key", "");
 	const std::vector<Swift::ParserElement::ref>& characters = keyElement->getChild("rowset", "")->getChildren("row", "");
 	std::string expires = keyElement->getAttributes().getAttribute("expires");
@@ -217,7 +217,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 		std::cerr << "Receiving character sheet for unexpected ID" << characterID << std::endl;
 		return;
 	}
-	std::cerr << "Handling character " << characterID << "'s sheet." << std::endl;
+	//std::cerr << "Handling character " << characterID << "'s sheet." << std::endl;
 	// http://wiki.eve-id.net/APIv2_Char_CharacterSheet_XML
 	std::string race;
 	std::string bloodline;
@@ -238,10 +238,10 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
 	foreach (Swift::ParserElement::ref rowset, rowsets) {
 		if (rowset->getAttributes().getAttribute("name") == "skills") {
-			std::cerr << "Found the known skills element" << std::endl;
+			//std::cerr << "Found the known skills element" << std::endl;
 			SkillItem::ref skillRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "char_root", "char_root");
 			const std::vector<Swift::ParserElement::ref>& rows = rowset->getChildren("row", "");
-			std::cerr << rows.size() << " skills" << std::endl;
+			//std::cerr << rows.size() << " skills" << std::endl;
 			foreach (Swift::ParserElement::ref row, rows) {
 				std::string skillID = row->getAttributes().getAttribute("typeID");
 				int level = 0;
@@ -261,7 +261,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 				SkillItem::ref group = skillRoot->getGroup(groupID, groupName);
 				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level);
 				group->addChild(skillLevel);
-				std::cerr << "Knows skill " << skillID << " at level " << level << " in " << group->getID() << std::endl;
+				//std::cerr << "Knows skill " << skillID << " at level " << level << " in " << group->getID() << std::endl;
 			}
 			character->setKnownSkills(skillRoot);
 		}
