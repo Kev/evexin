@@ -88,6 +88,7 @@ if env["SCONS_STAGE"] == "build":
       "QtUI/QtCharacterPane.cpp",
       "QtUI/QtEveXin.cpp",
       "QtUI/QtMainWindow.cpp",
+      "QtUI/QtSkillDelegate.cpp",
       "QtUI/QtSkillModel.cpp",
       "QtUI/QtUtilities.cpp",
     ]

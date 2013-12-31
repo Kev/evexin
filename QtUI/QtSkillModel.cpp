@@ -58,23 +58,26 @@ boost::shared_ptr<SkillItem> QtSkillModel::getItem(const QModelIndex& index) con
 	return result;
 }
 
-QVariant QtSkillModel::levelData(SkillLevel::ref level, int role) const {
+QVariant QtSkillModel::getLevelData(SkillLevel::ref level, int role) const {
 	switch (role) {
 		case Qt::DisplayRole: {
-			std::string name = level->getName() + " Level " + boost::lexical_cast<std::string>(level->getLevel());
+			std::string name = level->getName();
 			return P2QSTRING(name);
 		}
-		default: return itemData(level, role);
+		case SkillLevelRole: return level->getLevel();
+		default: return getItemData(level, role);
 	}
 }
 
-QVariant QtSkillModel::itemData(SkillItem::ref item, int role) const {
+QVariant QtSkillModel::getItemData(SkillItem::ref item, int role) const {
 	Skill::ref skill = item->getSkill();
 	switch (role) {
 		case Qt::DisplayRole: return P2QSTRING(item->getName());
 		//case Qt::TextColorRole: return "not implemented :/";
 		//case Qt::BackgroundColorRole: return "not implemented :/";
 		case Qt::ToolTipRole: return skill ? QVariant(P2QSTRING(skill->getDescription())) : QVariant();
+		case IsSkillRole: return !!skill;
+		case SkillMultiplierRole: return QVariant(skill->getRank());
 		default: return QVariant();
 	}
 }
@@ -85,7 +88,7 @@ QVariant QtSkillModel::data(const QModelIndex& index, int role) const {
 	if (!item) return QVariant();
 
 	SkillLevel::ref skillLevel = boost::dynamic_pointer_cast<SkillLevel>(item);
-	return skillLevel ? levelData(skillLevel, role) : itemData(item, role);
+	return skillLevel ? getLevelData(skillLevel, role) : getItemData(item, role);
 	
 }
 
@@ -147,8 +150,8 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 // 		return data;
 // 	}
 
-// 	QByteArray itemData;
-// 	QDataStream dataStream(&itemData, QIODevice::WriteOnly);
+// 	QByteArray getItemData;
+// 	QDataStream dataStream(&getItemData, QIODevice::WriteOnly);
 
 // 	// jid, chatName, activity, statusType, avatarPath
 // 	dataStream << P2QSTRING(item->getJID().toString());
@@ -156,7 +159,7 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 // 	dataStream << P2QSTRING(item->getStatusText());
 // 	dataStream << item->getSimplifiedStatusShow();
 // 	dataStream << P2QSTRING(item->getAvatarPath().string());
-// 	data->setData("application/vnd.swift.contact-jid", itemData);
+// 	data->setData("application/vnd.swift.contact-jid", getItemData);
 // 	return data;
 // }
 

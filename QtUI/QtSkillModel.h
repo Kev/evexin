@@ -13,9 +13,6 @@
 
 
 namespace EveXin {
-	// enum RosterRoles {
-	// 	StatusTextRole = Qt::UserRole,
-	// };
 
 	class SkillItem;
 	class SkillLevel;
@@ -23,6 +20,11 @@ namespace EveXin {
 	class QtSkillModel : public QAbstractItemModel {
 		Q_OBJECT
 		public:
+			enum SkillRoles {
+				IsSkillRole = Qt::UserRole,
+				SkillMultiplierRole = Qt::UserRole + 1,
+				SkillLevelRole = Qt::UserRole + 2,
+			};
 			QtSkillModel();
 			~QtSkillModel();
 			void setRoot(boost::shared_ptr<SkillItem> root);
@@ -39,8 +41,8 @@ namespace EveXin {
 		// 	void itemExpanded(const QModelIndex& item, bool expanded);
 		private:
 			boost::shared_ptr<SkillItem> getItem(const QModelIndex& index) const;
-			QVariant itemData(boost::shared_ptr<SkillItem> item, int role) const;
-			QVariant levelData(boost::shared_ptr<SkillLevel> level, int role) const;
+			QVariant getItemData(boost::shared_ptr<SkillItem> item, int role) const;
+			QVariant getLevelData(boost::shared_ptr<SkillLevel> level, int role) const;
 			// void handleDataChanged(RosterItem* item);
 			// void handleChildrenChanged(GroupRosterItem* item);
 			// QColor intToColor(int color) const;

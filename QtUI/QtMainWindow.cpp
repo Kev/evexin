@@ -28,6 +28,7 @@
 
 #include <Eve-Xin/QtUI/QtAPIKeyWindow.h>
 #include <Eve-Xin/QtUI/QtCharacterPane.h>
+#include <Eve-Xin/QtUI/QtSkillDelegate.h>
 #include <Eve-Xin/QtUI/QtSkillModel.h>
 
 namespace EveXin {
@@ -48,7 +49,10 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPane_ = new QTreeView(this);
 	skillModel_ = boost::make_shared<QtSkillModel>();
 	skillPane_->setModel(skillModel_.get());
+	skillPane_->setUniformRowHeights(false);
 	skillPane_->setHeaderHidden(true);
+	QtSkillDelegate* delegate = new QtSkillDelegate(this);
+	skillPane_->setItemDelegate(delegate);
 	rightLeftLayout->addWidget(skillPane_);
 
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));
