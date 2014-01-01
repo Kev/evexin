@@ -65,6 +65,11 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPane_->setItemDelegate(delegate);
 	characterLayout->addWidget(skillPane_);
 
+	QWidget* skillPlanWidget = new QWidget(this);
+	QBoxLayout* skillPlanLayout = new QBoxLayout(QBoxLayout::LeftToRight);	
+	skillPlanWidget->setLayout(skillPlanLayout);
+	tabs->addTab(skillPlanWidget, "Skill Plan");
+
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));
 	handleCharacterListUpdated();
 	dataController_->onCharacterDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataUpdated, this, _1));
