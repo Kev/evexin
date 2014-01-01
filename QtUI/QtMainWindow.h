@@ -19,6 +19,7 @@ namespace EveXin {
 	class DataController;
 	class QtCharacterPane;
 	class QtSkillModel;
+	class QtSkillPlannerWidget;
 	class QtMainWindow : public QMainWindow {
 		Q_OBJECT
 		public:
@@ -41,6 +42,7 @@ namespace EveXin {
 			QWidget* apiWindow_;
 			QTreeView* skillPane_;
 			boost::shared_ptr<QtSkillModel> skillModel_;
+			QtSkillPlannerWidget* skillPlannerWidget_;
 	};
 
 }

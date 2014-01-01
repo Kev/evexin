@@ -31,6 +31,7 @@
 #include <Eve-Xin/QtUI/QtCharacterPane.h>
 #include <Eve-Xin/QtUI/QtSkillDelegate.h>
 #include <Eve-Xin/QtUI/QtSkillModel.h>
+#include <Eve-Xin/QtUI/QtSkillPlannerWidget.h>
 
 namespace EveXin {
 
@@ -65,10 +66,10 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPane_->setItemDelegate(delegate);
 	characterLayout->addWidget(skillPane_);
 
-	QWidget* skillPlanWidget = new QWidget(this);
+	skillPlannerWidget_ = new QtSkillPlannerWidget(dataController, this);
 	QBoxLayout* skillPlanLayout = new QBoxLayout(QBoxLayout::LeftToRight);	
-	skillPlanWidget->setLayout(skillPlanLayout);
-	tabs->addTab(skillPlanWidget, "Skill Plan");
+	skillPlannerWidget_->setLayout(skillPlanLayout);
+	tabs->addTab(skillPlannerWidget_, "Skill Plan");
 
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));
 	handleCharacterListUpdated();
@@ -131,6 +132,7 @@ void QtMainWindow::handleCharacterSelected(int index) {
 		return;
 	}
 	handleCharacterDataUpdated(character->getID());
+	skillPlannerWidget_->setCharacter(character);
 }
 
 }

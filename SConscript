@@ -90,6 +90,7 @@ if env["SCONS_STAGE"] == "build":
       "QtUI/QtMainWindow.cpp",
       "QtUI/QtSkillDelegate.cpp",
       "QtUI/QtSkillModel.cpp",
+      "QtUI/QtSkillPlannerWidget.cpp",
       "QtUI/QtUtilities.cpp",
     ]
 
