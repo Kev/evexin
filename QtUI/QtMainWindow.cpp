@@ -17,6 +17,7 @@
 #include <QMenuBar>
 #include <QPixmap>
 #include <QPushButton>
+#include <QTabWidget>
 #include <QTreeView>
 
 #include <Swiften/Base/foreach.h>
@@ -39,9 +40,18 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	QWidget* mainWidget = new QWidget();
 	setCentralWidget(mainWidget); // Takes ownership
 	QBoxLayout* rightLeftLayout = new QBoxLayout(QBoxLayout::LeftToRight, mainWidget);
-	QBoxLayout* characterLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+
 	characterComboBox_ = new QComboBox(this);
-	characterLayout->addWidget(characterComboBox_);
+	rightLeftLayout->addWidget(characterComboBox_);
+
+	QTabWidget* tabs = new QTabWidget(this);
+	rightLeftLayout->addWidget(tabs);
+
+	QWidget* characterTab = new QWidget(this);
+	tabs->addTab(characterTab, "Character Sheet");
+	QBoxLayout* characterLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	characterTab->setLayout(characterLayout);
+	
 	characterPane_ = new QtCharacterPane(this);
 	characterLayout->addWidget(characterPane_);
 	rightLeftLayout->addLayout(characterLayout);
@@ -53,7 +63,7 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPane_->setHeaderHidden(true);
 	QtSkillDelegate* delegate = new QtSkillDelegate(this);
 	skillPane_->setItemDelegate(delegate);
-	rightLeftLayout->addWidget(skillPane_);
+	characterLayout->addWidget(skillPane_);
 
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));
 	handleCharacterListUpdated();
