@@ -39,6 +39,7 @@ namespace EveXin {
 			std::vector<std::string /*id*/> getCharacters();
 			Character::ref getCharacter(const std::string& id);
 			Swift::ByteArray get256CharacterAvatar(const std::string& id);
+			boost::shared_ptr<SkillTree> getSkillTree();
 		public:
 			boost::signal<void(const std::string&)> onCharacterDataChanged;
 		private:

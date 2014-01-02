@@ -83,6 +83,7 @@ if env["SCONS_STAGE"] == "build":
       "Controllers/MainController.cpp",
       "Controllers/Skill.cpp",
       "Controllers/SkillLevel.cpp",
+      "Controllers/SkillTree.cpp",
       "Controllers/SqliteDataStore.cpp",
       "QtUI/QtAPIKeyWindow.cpp",
       "QtUI/QtCharacterPane.cpp",

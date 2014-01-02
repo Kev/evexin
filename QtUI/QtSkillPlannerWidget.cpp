@@ -23,7 +23,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 }
 
 void QtSkillPlannerWidget::setCharacter(Character::ref character) {
-
+	allSkillsModel_->setRoot(dataController_->getSkillModel()->mergeWithCharacterSkills(character->getKnownSkills()));
 }
 
 }

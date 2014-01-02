@@ -320,4 +320,8 @@ void DataController::untrackURL(const Swift::URL& url) {
 	requestsInFlight_.erase(url.toString());
 }
 
+boost::shared_ptr<SkillTree> DataController::getSkillTree() {
+	return skillTree_;
+}
+
 }

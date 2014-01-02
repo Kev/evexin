@@ -15,42 +15,23 @@
 #include <Eve-Xin/Controllers/SkillItem.h>
 
 namespace EveXin {
-
+	class Character;
 	class SkillTree : public SkillItem {
 		public:
 			typedef boost::shared_ptr<SkillTree> ref;
 
-			SkillTree() : SkillItem(SkillItem::ref(), "root", "root") {}
-			virtual ~SkillTree() {}
+			SkillTree();
+			virtual ~SkillTree();
 
-			virtual void addChild(SkillItem::ref group) {
-				SkillItem::addChild(group);
-				groups_[group->getID()] = group;
-			}
+			virtual void addChild(SkillItem::ref group);
 
-			void addSkill(Skill::ref skill) {
-				skills_[skill->getID()] = skill;
-			}
+			void addSkill(Skill::ref skill);
 
-			Skill::ref getSkill(const std::string& id) {
-				Skill::ref skill = skills_[id];
-				if (!skill) {
-					/* So that if we get asked for a skill before it's been populated,
-					 * we return the same pointer that'll later contain the data.
-					 *
-					 * This happens if you have a skill with dependencies on skills 
-					 * that come later.
-					 */ 
-					skill = boost::make_shared<Skill>(id);
-					skills_[id] = skill;
-				}
-				return skill;
-			}
+			Skill::ref getSkill(const std::string& id);
 
-			SkillItem::ref getGroup(const std::string& id) {
-				SkillItem::ref group = groups_[id];
-				return group;
-			}
+			SkillItem::ref getGroup(const std::string& id);
+
+			SkillItem::ref mergeWithCharacterSkills(boost::shared_ptr<Character> character);
 		private:
 			std::map<std::string, SkillItem::ref> groups_;
 			std::map<std::string, Skill::ref> skills_;
