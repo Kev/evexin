@@ -52,12 +52,18 @@ SkillItem::ref SkillTree::getGroup(const std::string& id) {
 SkillItem::ref SkillTree::mergeWithCharacterSkills(boost::shared_ptr<Character> character) {
 	SkillItem::ref merged = boost::make_shared<SkillItem>(SkillItem::ref(), "merged_root", "merged_root");
 	foreach (auto groupPair, groups_) {
+		if (!groupPair.second) {
+			//FIXME: Find what's inserting a "" null group in the tree
+			continue;
+		}
 		std::vector<SkillItem::ref> children = groupPair.second->getChildren();
 		SkillItem::ref groupItem = boost::make_shared<SkillItem>(merged, groupPair.second->getID(), groupPair.second->getName());
 		merged->addChild(groupItem);
+		SkillItem::ref characterGroup = character->getKnownSkills()->getChild(groupItem->getID());
 		foreach (SkillItem::ref skillItem, children) {
+			//std::cerr << "Char:" << character->getID() << ": Source item " << groupItem->getName() << "::" << skillItem->getName() << std::endl;
 			SkillItem::ref newSkill;
-			SkillLevel::ref level = get from character;
+			SkillLevel::ref level = characterGroup ? boost::dynamic_pointer_cast<SkillLevel>(characterGroup->getChild(skillItem->getID())) : SkillLevel::ref();
 			if (level) {
 				newSkill = boost::make_shared<SkillLevel>(groupItem, level->getSkill(), level->getLevel());
 			}
@@ -72,6 +78,7 @@ SkillItem::ref SkillTree::mergeWithCharacterSkills(boost::shared_ptr<Character> 
 			groupItem->addChild(newSkill);
 		}
 	}
+	return merged;
 }
 
 }
