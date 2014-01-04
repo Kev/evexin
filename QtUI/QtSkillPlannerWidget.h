@@ -23,8 +23,7 @@ namespace EveXin {
 			void setCharacter(boost::shared_ptr<Character> character);
 		private:
 			boost::shared_ptr<DataController> dataController_;
-			QTreeView* allSkillsWidget_;
-			QTreeView* planWidget_;
 			QtSkillModel* allSkillsModel_;
+			QtSkillModel* planModel_;
 	};
 }

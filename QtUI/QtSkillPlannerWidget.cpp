@@ -20,25 +20,33 @@ namespace EveXin {
 
 QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dataController, QWidget* parent) : QWidget(parent), dataController_(dataController) {
 	QBoxLayout* mainLayout = new QBoxLayout(QBoxLayout::LeftToRight, this);
-	QTreeView* allSkillsWidget_ = new QTreeView(this);
-	mainLayout->addWidget(allSkillsWidget_);
+	QTreeView* allSkillsWidget = new QTreeView(this);
+	mainLayout->addWidget(allSkillsWidget);
 	allSkillsModel_ = new QtSkillModel();
 	QtSkillDelegate* allSkillsDelegate = new QtSkillDelegate(this);
-	allSkillsWidget_->setItemDelegate(allSkillsDelegate);
-	allSkillsWidget_->setModel(allSkillsModel_);
-	allSkillsWidget_->setUniformRowHeights(false);
-	allSkillsWidget_->setHeaderHidden(true);
-	QTreeView* plainWidget_ = new QTreeView(this);
-	mainLayout->addWidget(plainWidget_);
+	allSkillsWidget->setItemDelegate(allSkillsDelegate);
+	allSkillsWidget->setModel(allSkillsModel_);
+	allSkillsWidget->setUniformRowHeights(false);
+	allSkillsWidget->setHeaderHidden(true);
+	QTreeView* planWidget = new QTreeView(this);
+	planModel_ = new QtSkillModel();
+	QtSkillDelegate* planDelegate = new QtSkillDelegate(this);
+	planWidget->setItemDelegate(planDelegate);
+	planWidget->setModel(planModel_);
+	planWidget->setUniformRowHeights(false);
+	planWidget->setHeaderHidden(true);
+	mainLayout->addWidget(planWidget);
 
 }
 
 QtSkillPlannerWidget::~QtSkillPlannerWidget() {
+	delete planModel_;
 	delete allSkillsModel_;
 }
 
 void QtSkillPlannerWidget::setCharacter(Character::ref character) {
 	allSkillsModel_->setRoot(dataController_->getSkillTree()->mergeWithCharacterSkills(character));
+	planModel_->setRoot(character->getSkillPlanRoot());
 }
 
 }

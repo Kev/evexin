@@ -61,6 +61,7 @@ namespace EveXin {
 			bool canRequestURL(const Swift::URL& url);
 			void untrackURL(const Swift::URL& url);
 			void putSkillLevelIntoRoot(boost::shared_ptr<SkillItem> root, boost::shared_ptr<SkillLevel> skillLevel);
+			void loadSkillPlans(Character::ref character);
 		private:
 			Swift::NetworkFactories* factories_;
 			boost::shared_ptr<DataStore> store_;

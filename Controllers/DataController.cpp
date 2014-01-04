@@ -27,6 +27,7 @@
 #include <Eve-Xin/Controllers/Skill.h>
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
+#include <Eve-Xin/Controllers/SkillPlan.h>
 #include <Eve-Xin/Controllers/SkillTree.h>
 
 namespace EveXin {
@@ -190,7 +191,7 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 			group->addChild(skillItem);
 			foreach (Swift::ParserElement::ref row, rowsets) {
 				if (row->getAttributes().getAttribute("name") == "requiredSkills") {
-					const std::vector<Swift::ParserElement::ref>& dependencyElements = skillElement->getChildren("row", "");
+					const std::vector<Swift::ParserElement::ref>& dependencyElements = row->getChildren("row", "");
 					foreach (Swift::ParserElement::ref dependencyElement, dependencyElements) {
 						std::string dependencyID = dependencyElement->getAttributes().getAttribute("typeID");
 						int dependencyLevel = 0;
@@ -201,6 +202,7 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 							//Not much to do if they send bad data
 						}
 						SkillLevel::ref dependency = boost::make_shared<SkillLevel>(skillItem,  skillTree_->getSkill(dependencyID), dependencyLevel);
+						//std::cerr << "Parsed dependency " << dependency->getSkill()->getID() << " for skill " << skillName << std::endl;
 						skillItem->addChild(dependency);
 						dependencies.push_back(dependency);
 					}
@@ -273,8 +275,24 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	//corporationRoles
 	//corporationRolesAtHQ
 	//corporationTitles
+	//
+	loadSkillPlans(character);
 
 	//onCharacterDataChanged(characterID); // online if it changed
+}
+
+void DataController::loadSkillPlans(Character::ref character) {
+	SkillItem::ref planRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "planroot", "planroot");
+	SkillPlan::ref plan1 = boost::make_shared<SkillPlan>(planRoot, "001", "BattleShip");
+	planRoot->addChild(plan1);
+	SkillPlan::ref plan2 = boost::make_shared<SkillPlan>(planRoot, "002", "Misc");
+	planRoot->addChild(plan2);
+	plan1->addSkill(skillTree_->getSkill("3337"), 5);
+	plan2->addSkill(skillTree_->getSkill("3361"), 1);
+	plan2->addSkill(skillTree_->getSkill("21803"), 5);
+	plan1->setKnownSkills(character->getKnownSkills());
+	plan2->setKnownSkills(character->getKnownSkills());
+	character->setSkillPlanRoot(planRoot);
 }
 
 Character::ref DataController::getCharacter(const std::string& id) {

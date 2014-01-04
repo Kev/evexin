@@ -45,7 +45,11 @@ namespace EveXin {
 			 * Iterates down the tree from the provided root.
 			 */
 			void setKnownSkills(SkillItem::ref knownSkillRoot);
+
+			virtual std::vector<SkillItem::ref> getChildren() const;
 		private:
 			std::map<std::string, SkillLevel::ref> knownSkills_; // Flat mapping of known skill levels
+			std::map<std::string, SkillLevel::ref> plannedSkills_; // Flat mapping of known skill levels
+			std::vector<SkillItem::ref> plan_;
 	};
 }
