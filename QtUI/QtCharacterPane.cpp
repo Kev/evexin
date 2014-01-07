@@ -21,6 +21,7 @@ namespace EveXin {
 QtCharacterPane::QtCharacterPane(QWidget* parent) : QWidget(parent) {
 	QBoxLayout* layout = new QBoxLayout(QBoxLayout::TopToBottom, this);
 	avatarLabel_ = new QLabel(this);
+	avatarLabel_->setMinimumSize(256, 256);
 	layout->addWidget(avatarLabel_);
 	nameLabel_ = new QLabel(this);
 	//nameLabel_->setBold();
