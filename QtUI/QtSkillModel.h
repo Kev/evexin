@@ -35,6 +35,7 @@ namespace EveXin {
 			QModelIndex index(boost::shared_ptr<SkillItem> item) const;
 			QModelIndex parent(const QModelIndex& index) const;
 			int rowCount(const QModelIndex& parent = QModelIndex()) const;
+			Qt::DropActions supportedDropActions() const;
 			//QMimeData* mimeData(const QModelIndexList& indexes) const;
 
 		// signals:

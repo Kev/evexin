@@ -36,7 +36,9 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	planWidget->setUniformRowHeights(false);
 	planWidget->setHeaderHidden(true);
 	mainLayout->addWidget(planWidget);
-
+	allSkillsWidget->setDragEnabled(true);
+	planWidget->setAcceptDrops(true);
+	planWidget->setDropIndicatorShown(true);
 }
 
 QtSkillPlannerWidget::~QtSkillPlannerWidget() {

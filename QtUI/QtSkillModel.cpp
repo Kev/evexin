@@ -34,11 +34,16 @@ void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {
 	endResetModel();
 }
 
+Qt::DropActions QtSkillModel::supportedDropActions() const {
+	return Qt::CopyAction;
+}
+
 Qt::ItemFlags QtSkillModel::flags(const QModelIndex& index) const {
 	Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-	// if (dynamic_cast<GroupRosterItem*>(getItem(index)) == NULL) {
-	// 	flags |= Qt::ItemIsDragEnabled;
-	// }
+	SkillItem::ref skillItem = boost::dynamic_pointer_cast<SkillItem>(getItem(index)));
+	if (skillItem && skillItem->getSkill()) {
+		flags |= Qt::ItemIsDragEnabled;
+	}
 	return flags;
 }
 
