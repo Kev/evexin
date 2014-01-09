@@ -18,6 +18,10 @@ SkillPlan::~SkillPlan() {
 
 }
 
+SkillPlan::SkillPlan(const SkillPlan& other) : SkillItem(other.getParent(), other.getID(), other.getName()), knownSkills_(other.knownSkills_), plannedSkills_(other.plannedSkills_), plan_(other.plan_), allSkills_(other.allSkills_) {
+
+}
+
 bool SkillPlan::addSkill(Skill::ref skill) {
 	int level = 5;
 	return addSkill(skill, level);

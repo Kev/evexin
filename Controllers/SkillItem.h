@@ -106,7 +106,7 @@ namespace EveXin {
 			 * 
 			 * This is not the group (or may not be the group) in which it lives.
 			 */
-			boost::shared_ptr<SkillItem> getParent() {
+			boost::shared_ptr<SkillItem> getParent() const {
 				return parent_.lock();
 			}
 		private:

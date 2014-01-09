@@ -23,6 +23,7 @@ namespace EveXin {
 			typedef boost::shared_ptr<SkillPlan> ref;
 
 			SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, boost::shared_ptr<SkillTree> allSkills_);
+			SkillPlan(const SkillPlan& other);
 			virtual ~SkillPlan();
 
 			/**

@@ -152,7 +152,6 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	if (!root_) return 0;
 	SkillItem::ref item = parent.isValid() ? getItem(parent) : root_;
 	if (item == filtered_) {
-		qDebug() << "Asked for row count on a filtered item";
 		//We're in the middle of resetting this item's children, say it has none.
 		return 0;
 	}
@@ -217,13 +216,9 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	stream >> level;
 	std::string skillID = Q2PSTRING(id);
 	size_t rowT = row >= 0 ? static_cast<size_t>(row) : plan->getChildren().size();
-	// qDebug() << "Want to add in at row " << row << ":" << rowT;
-	beginResetModel(); // FIXME: We shouldn't need to reset the model here. Doing the below with removerows/insert rows seems like it should work, but results in crashes. Needs more investigation.
-	// qDebug() << "removerows";
-	// beginRemoveRows(adjustedParent, 0, rowCount(parent) - 1);
-	// filtered_ = plan;
-	// endRemoveRows();
-	qDebug() << "Skillify";
+	beginRemoveRows(adjustedParent, 0, plan->getChildren().size() - 1);
+	filtered_ = plan;
+	endRemoveRows();
 	if (level > 0) {
 		plan->addSkill(skillID, level, rowT);
 	}
@@ -235,14 +230,9 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 			}
 		}
 	}
-	// qDebug() << "Insert rows";
-	// beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
-	// qDebug() << "Begun";
-	// filtered_.reset();
-	// qDebug() << "Reset";
-	// endInsertRows();
-	// qDebug() << "done";
-	endResetModel();
+	beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
+	filtered_.reset();
+	endInsertRows();
 	return true;
 }
 
