@@ -159,7 +159,7 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	assert(item.get() != filtered_.get());
 	Q_ASSERT(item);
 	int count = item->getChildren().size();
-	qDebug() << "Returning " << count << " rows";
+	// qDebug() << "Returning " << count << " rows";
 	return count;
 }
 
@@ -187,26 +187,28 @@ QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
 }
 
 bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
-	//qDebug() << "dropMimeData";
 	if (action == Qt::IgnoreAction || !data->hasFormat("application/vnd.evexin.skilllevel") || !root_) {
 		return false;
 	}
-	//qDebug() << " Need plan";
-	SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(getItem(parent));
-	//qDebug() << " ?";
+	QModelIndex adjustedParent(parent);
+	SkillItem::ref parentItem(getItem(parent));
+	SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(parentItem);
+	if (parentItem && !plan) {
+		//We're being dropped in an item, but it's not a plan. Maybe it's a child of a plan
+		SkillItem::ref grandParent = parentItem->getParent();
+		plan = boost::dynamic_pointer_cast<SkillPlan>(grandParent);
+		row =  parent.row();
+	}
 	if (!plan) {
-		//qDebug() << " try harder";
 		// If they drop it off the end of the list, use the last plan
 		SkillItem::ref lastItem = root_->getChildren().empty() ? SkillItem::ref() : root_->getChildren().back();
 		plan = boost::dynamic_pointer_cast<SkillPlan>(lastItem);
 		if (!plan) {
-			//qDebug() << " no";
 			//OK, we're not a skill plan tree
 			return false;
 		}
-		//qDebug() << " yes";
 	}
-	//qDebug() << " passed that hurdle";
+	adjustedParent = index(plan);
 	QByteArray encodedData = data->data("application/vnd.evexin.skilllevel");
 	QDataStream stream(&encodedData, QIODevice::ReadOnly);
 	QString id;
@@ -214,14 +216,11 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	int level;
 	stream >> level;
 	std::string skillID = Q2PSTRING(id);
-	size_t rowT = static_cast<size_t>(row);
-	if (row < 0) {
-		rowT = plan->getChildren().size();
-	}
-	//qDebug() << "Guess we'd better do something useful";
+	size_t rowT = row >= 0 ? static_cast<size_t>(row) : plan->getChildren().size();
+	// qDebug() << "Want to add in at row " << row << ":" << rowT;
 	beginResetModel(); // FIXME: We shouldn't need to reset the model here. Doing the below with removerows/insert rows seems like it should work, but results in crashes. Needs more investigation.
 	// qDebug() << "removerows";
-	// beginRemoveRows(parent, 0, rowCount(parent) - 1);
+	// beginRemoveRows(adjustedParent, 0, rowCount(parent) - 1);
 	// filtered_ = plan;
 	// endRemoveRows();
 	qDebug() << "Skillify";
@@ -237,7 +236,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 		}
 	}
 	// qDebug() << "Insert rows";
-	// beginInsertRows(parent, 0, plan->getChildren().size() - 1);
+	// beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
 	// qDebug() << "Begun";
 	// filtered_.reset();
 	// qDebug() << "Reset";
