@@ -40,6 +40,7 @@ QSize QtSkillDelegate::sizeHint(const QStyleOptionViewItem& option, const QModel
 }
 
 void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+	painter->save();
 	if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
 		QStyledItemDelegate::paint(painter, option, index);
 		return;
@@ -49,7 +50,6 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 		painter->fillRect(fullRegion, option.palette.highlight());
 		painter->setPen(option.palette.highlightedText().color());
 	}
-	painter->save();
 	int margin = 2;
 	QString name = index.data(Qt::DisplayRole).toString() + QString(" (%1x)").arg(index.data(QtSkillModel::SkillMultiplierRole).toInt());
 	QString infoText = "Untrained";
