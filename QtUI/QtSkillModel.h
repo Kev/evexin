@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -36,7 +36,8 @@ namespace EveXin {
 			QModelIndex parent(const QModelIndex& index) const;
 			int rowCount(const QModelIndex& parent = QModelIndex()) const;
 			Qt::DropActions supportedDropActions() const;
-			//QMimeData* mimeData(const QModelIndexList& indexes) const;
+			QMimeData* mimeData(const QModelIndexList& indexes) const;
+			bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 
 		// signals:
 		// 	void itemExpanded(const QModelIndex& item, bool expanded);
@@ -58,5 +59,6 @@ namespace EveXin {
 			// void reLayout();
 		private:
 			boost::shared_ptr<SkillItem> root_;
+			boost::shared_ptr<SkillItem> filtered_;
 	};
 }

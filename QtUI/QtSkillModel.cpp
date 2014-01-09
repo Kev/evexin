@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -18,7 +18,7 @@
 #include <Eve-Xin/Controllers/Skill.h>
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
-
+#include <Eve-Xin/Controllers/SkillPlan.h>
 
 namespace EveXin {
 
@@ -40,9 +40,16 @@ Qt::DropActions QtSkillModel::supportedDropActions() const {
 
 Qt::ItemFlags QtSkillModel::flags(const QModelIndex& index) const {
 	Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-	SkillItem::ref skillItem = boost::dynamic_pointer_cast<SkillItem>(getItem(index)));
-	if (skillItem && skillItem->getSkill()) {
-		flags |= Qt::ItemIsDragEnabled;
+	if (index.model() != this) {
+		// We can't get the pointer out, so just say it can be dropped
+		flags |= Qt::ItemIsDropEnabled;
+	}
+	else {
+		SkillItem::ref item = getItem(index);
+		if (item && item->getSkill()) {
+			flags |= Qt::ItemIsDragEnabled;
+			flags |= Qt::ItemIsDropEnabled;	
+		}
 	}
 	return flags;
 }
@@ -144,31 +151,101 @@ QModelIndex QtSkillModel::parent(const QModelIndex& child) const {
 int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	if (!root_) return 0;
 	SkillItem::ref item = parent.isValid() ? getItem(parent) : root_;
+	if (item == filtered_) {
+		qDebug() << "Asked for row count on a filtered item";
+		//We're in the middle of resetting this item's children, say it has none.
+		return 0;
+	}
+	assert(item.get() != filtered_.get());
 	Q_ASSERT(item);
 	int count = item->getChildren().size();
-	//qDebug() << "Returning " << count << " rows";
+	qDebug() << "Returning " << count << " rows";
 	return count;
 }
 
-// QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
-// 	QMimeData* data = QAbstractItemModel::mimeData(indexes);
+QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
+	QMimeData* data = QAbstractItemModel::mimeData(indexes);
 
-// 	ContactRosterItem *item = dynamic_cast<ContactRosterItem*>(getItem(indexes.first()));
-// 	if (item == NULL) {
-// 		return data;
-// 	}
+	if (indexes.size() < 1) {
+		return data;
+	}
 
-// 	QByteArray getItemData;
-// 	QDataStream dataStream(&getItemData, QIODevice::WriteOnly);
+	SkillItem::ref item = getItem(indexes[0]);
+	SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
 
-// 	// jid, chatName, activity, statusType, avatarPath
-// 	dataStream << P2QSTRING(item->getJID().toString());
-// 	dataStream << P2QSTRING(item->getDisplayName());
-// 	dataStream << P2QSTRING(item->getStatusText());
-// 	dataStream << item->getSimplifiedStatusShow();
-// 	dataStream << P2QSTRING(item->getAvatarPath().string());
-// 	data->setData("application/vnd.swift.contact-jid", getItemData);
-// 	return data;
-// }
+	if (!item || !item->getSkill()) {
+		return data;
+	}
+
+	QByteArray getItemData;
+	QDataStream dataStream(&getItemData, QIODevice::WriteOnly);
+
+	dataStream << P2QSTRING(item->getSkill()->getID());
+	dataStream << (level ? level->getLevel() : -1);
+	data->setData("application/vnd.evexin.skilllevel", getItemData);
+	return data;
+}
+
+bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
+	//qDebug() << "dropMimeData";
+	if (action == Qt::IgnoreAction || !data->hasFormat("application/vnd.evexin.skilllevel") || !root_) {
+		return false;
+	}
+	//qDebug() << " Need plan";
+	SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(getItem(parent));
+	//qDebug() << " ?";
+	if (!plan) {
+		//qDebug() << " try harder";
+		// If they drop it off the end of the list, use the last plan
+		SkillItem::ref lastItem = root_->getChildren().empty() ? SkillItem::ref() : root_->getChildren().back();
+		plan = boost::dynamic_pointer_cast<SkillPlan>(lastItem);
+		if (!plan) {
+			//qDebug() << " no";
+			//OK, we're not a skill plan tree
+			return false;
+		}
+		//qDebug() << " yes";
+	}
+	//qDebug() << " passed that hurdle";
+	QByteArray encodedData = data->data("application/vnd.evexin.skilllevel");
+	QDataStream stream(&encodedData, QIODevice::ReadOnly);
+	QString id;
+	stream >> id;
+	int level;
+	stream >> level;
+	std::string skillID = Q2PSTRING(id);
+	size_t rowT = static_cast<size_t>(row);
+	if (row < 0) {
+		rowT = plan->getChildren().size();
+	}
+	//qDebug() << "Guess we'd better do something useful";
+	beginResetModel(); // FIXME: We shouldn't need to reset the model here. Doing the below with removerows/insert rows seems like it should work, but results in crashes. Needs more investigation.
+	// qDebug() << "removerows";
+	// beginRemoveRows(parent, 0, rowCount(parent) - 1);
+	// filtered_ = plan;
+	// endRemoveRows();
+	qDebug() << "Skillify";
+	if (level > 0) {
+		plan->addSkill(skillID, level, rowT);
+	}
+	else {
+		for (int i = 1; i <=5; i++) {
+			// Loop through the levels until we find one we can insert
+			if (plan->addSkill(skillID, i, rowT)) {
+				break;
+			}
+		}
+	}
+	// qDebug() << "Insert rows";
+	// beginInsertRows(parent, 0, plan->getChildren().size() - 1);
+	// qDebug() << "Begun";
+	// filtered_.reset();
+	// qDebug() << "Reset";
+	// endInsertRows();
+	// qDebug() << "done";
+	endResetModel();
+	return true;
+}
 
 }
+

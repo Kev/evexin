@@ -1,14 +1,16 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
 
 #include <Eve-Xin/Controllers/SkillPlan.h>
 
+#include <Eve-Xin/Controllers/SkillTree.h>
+
 namespace EveXin {
 
-SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name) : SkillItem(parent, id, name) {
+SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, SkillTree::ref allSkills) : SkillItem(parent, id, name), allSkills_(allSkills) {
 
 }
 
@@ -23,12 +25,12 @@ bool SkillPlan::addSkill(Skill::ref skill) {
 
 bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	SkillLevel::ref found = plannedSkills_[skill->getID()];
-	//std::cerr << "Adding " << skill->getName() << ":" << level << " to plan" << std::endl;
+	// std::cerr << "Adding " << skill->getName() << ":" << level << " to plan" << std::endl;
 	if (!found) {
 		found = knownSkills_[skill->getID()];
 	}
 	if (found && found->getLevel() >= level) {
-		//std::cerr << "Already known, skipping" << std::endl;
+		// std::cerr << "Already known, skipping" << std::endl;
 		return false;
 	}
 	if (level > 1) {
@@ -38,16 +40,49 @@ bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	plannedSkills_[skillLevel->getID()] = skillLevel;
 	std::vector<boost::shared_ptr<SkillLevel> > dependencies = skill->getDependencies();
 	foreach (SkillLevel::ref dependency, dependencies) {
-		//std::cerr << "Found dependency on " << dependency->getSkill()->getName() << ":" << dependency->getLevel() << std::endl;
+		// std::cerr << "Found dependency on " << dependency->getSkill()->getName() << ":" << dependency->getLevel() << std::endl;
 		addSkill(dependency->getSkill(), dependency->getLevel());
 	}
-	//std::cerr << "Finished dependencies" << std::endl;
+	// std::cerr << "Finished dependencies" << std::endl;
 	
 	plan_.push_back(skillLevel);
 	
 	return true;
 }
 
+bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position) {
+	SkillLevel::ref known = plannedSkills_[skillID];
+	if (known && known->getLevel() >= level) {
+		return false;
+	}
+	std::vector<SkillItem::ref> oldPlan = plan_;
+	clear();
+	for (size_t i = 0; i < oldPlan.size() && i < position; i++) {
+		SkillLevel::ref skillLevel = boost::dynamic_pointer_cast<SkillLevel>(oldPlan[i]);
+		if (!skillLevel) continue;
+		if (skillLevel->getSkill()->getID() == skillID && skillLevel->getLevel() >= level) {
+			// So if we're trying to move a skill later in the list, we need to not
+			// repopulate the requested level, or any higher level
+			continue;
+		}
+		addSkill(skillLevel->getSkill(), skillLevel->getLevel());
+	}
+	addSkill(allSkills_->getSkill(skillID), level);
+	for (size_t i = 0; i < oldPlan.size(); i++) {
+		// Start from the top again, because we might have e.g. delayed adding requestedSkill:4
+		// because they asked to move requestedSkill:3 later in the list
+		SkillLevel::ref skillLevel = boost::dynamic_pointer_cast<SkillLevel>(oldPlan[i]);
+		if (!skillLevel) continue;
+		addSkill(skillLevel->getSkill(), skillLevel->getLevel());
+	}
+	return true;
+}
+
+void SkillPlan::clear() {
+	plan_.clear();
+	plannedSkills_.clear();	
+}
+	
 void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
 	knownSkills_.clear();
 	std::vector<SkillItem::ref> groups = knownSkillRoot->getChildren();
@@ -63,8 +98,7 @@ void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
 
 	// Now recalculate the queue
 	std::vector<SkillItem::ref> oldPlan = getChildren();
-	plan_.clear();
-	plannedSkills_.clear();
+	clear();
 	foreach (SkillItem::ref item, oldPlan) {
 		SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
 		addSkill(level->getSkill(), level->getLevel());

@@ -28,6 +28,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	allSkillsWidget->setModel(allSkillsModel_);
 	allSkillsWidget->setUniformRowHeights(false);
 	allSkillsWidget->setHeaderHidden(true);
+	allSkillsWidget->setDragEnabled(true);
 	QTreeView* planWidget = new QTreeView(this);
 	planModel_ = new QtSkillModel();
 	QtSkillDelegate* planDelegate = new QtSkillDelegate(this);
@@ -35,6 +36,8 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	planWidget->setModel(planModel_);
 	planWidget->setUniformRowHeights(false);
 	planWidget->setHeaderHidden(true);
+	planWidget->setDragEnabled(true);
+	planWidget->setAcceptDrops(true);
 	mainLayout->addWidget(planWidget);
 	allSkillsWidget->setDragEnabled(true);
 	planWidget->setAcceptDrops(true);

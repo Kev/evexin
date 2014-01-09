@@ -283,9 +283,9 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 
 void DataController::loadSkillPlans(Character::ref character) {
 	SkillItem::ref planRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "planroot", "planroot");
-	SkillPlan::ref plan1 = boost::make_shared<SkillPlan>(planRoot, "001", "BattleShip");
+	SkillPlan::ref plan1 = boost::make_shared<SkillPlan>(planRoot, "001", "BattleShip", skillTree_);
 	planRoot->addChild(plan1);
-	SkillPlan::ref plan2 = boost::make_shared<SkillPlan>(planRoot, "002", "Misc");
+	SkillPlan::ref plan2 = boost::make_shared<SkillPlan>(planRoot, "002", "Misc", skillTree_);
 	planRoot->addChild(plan2);
 	plan1->addSkill(skillTree_->getSkill("3337"), 5);
 	plan2->addSkill(skillTree_->getSkill("3361"), 1);
