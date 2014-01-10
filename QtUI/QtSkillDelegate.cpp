@@ -43,6 +43,7 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	painter->save();
 	if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
 		QStyledItemDelegate::paint(painter, option, index);
+		painter->restore();
 		return;
 	}
 	QRect fullRegion(option.rect);
