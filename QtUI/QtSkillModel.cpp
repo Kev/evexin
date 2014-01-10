@@ -180,7 +180,15 @@ QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
 	QDataStream dataStream(&getItemData, QIODevice::WriteOnly);
 
 	dataStream << P2QSTRING(item->getSkill()->getID());
-	dataStream << (level ? level->getLevel() : -1);
+	int draggedLevel = -1;
+	if (level) {
+		if (boost::dynamic_pointer_cast<SkillPlan>(level->getParent())) {
+			// If we're dragging inside a plan list, we just want to move the skill the plan
+			// Otherwise leave it as 'next level'
+			draggedLevel = level->getLevel();
+		}
+	}
+	dataStream << draggedLevel;
 	data->setData("application/vnd.evexin.skilllevel", getItemData);
 	return data;
 }
@@ -219,17 +227,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	beginRemoveRows(adjustedParent, 0, plan->getChildren().size() - 1);
 	filtered_ = plan;
 	endRemoveRows();
-	if (level > 0) {
-		plan->addSkill(skillID, level, rowT);
-	}
-	else {
-		for (int i = 1; i <=5; i++) {
-			// Loop through the levels until we find one we can insert
-			if (plan->addSkill(skillID, i, rowT)) {
-				break;
-			}
-		}
-	}
+	plan->addSkill(skillID, level, rowT);
 	beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
 	filtered_.reset();
 	endInsertRows();

@@ -55,9 +55,25 @@ bool SkillPlan::addSkill(Skill::ref skill, int level) {
 }
 
 bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position) {
-	SkillLevel::ref known = plannedSkills_[skillID];
-	if (known && known->getLevel() >= level) {
+	SkillLevel::ref known = knownSkills_[skillID];
+	int knownLevel = known ? known->getLevel() : -1;
+	if (knownLevel >= level) {
 		return false;
+	}
+	SkillLevel::ref planned = plannedSkills_[skillID];
+	int plannedLevel = planned ? planned->getLevel() : -1;
+	if (level == -1) {
+		// They're asking us to insert the next level
+		level = 1;
+		if (knownLevel > 0) {
+			level = knownLevel + 1;
+		}
+		if (plannedLevel > 0) {
+			level = plannedLevel + 1;
+		}
+	}
+	if (level > 5) {
+		level = 5;
 	}
 	std::vector<SkillItem::ref> oldPlan = plan_;
 	clear();

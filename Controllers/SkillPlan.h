@@ -38,7 +38,11 @@ namespace EveXin {
 			 * This may cause significant jiggery-pokery as the dependencies get
 			 * re-ordered, and the final index may well not be the provided
 			 * position, if more dependencies had to be injected beforehand.
-			 * Will clean up any later dependencies
+			 * Will clean up any later dependencies.
+			 *
+			 * For this one, passing -1 as level will try to add the next level.
+			 * Passing a non -1 level will try to move the existing skill elsewhere
+			 * in the list, if it matches an existing item.
 			 */
 			bool addSkill(const std::string& skillID, int level, size_t position);
 			
