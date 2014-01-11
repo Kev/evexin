@@ -128,9 +128,5 @@ void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
 std::vector<SkillItem::ref> SkillPlan::getChildren() const {
 	return plan_;
 }
-
-boost::shared_ptr<SkillTre> SkillPlan::getAllSkills() const {
-	return allSkills_;
-}
 	
 }

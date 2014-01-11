@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -28,6 +28,7 @@
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
+#include <Eve-Xin/Controllers/SkillPlanList.h>
 #include <Eve-Xin/Controllers/SkillTree.h>
 
 namespace EveXin {
@@ -201,7 +202,7 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 						catch(const boost::bad_lexical_cast &) {
 							//Not much to do if they send bad data
 						}
-						SkillLevel::ref dependency = boost::make_shared<SkillLevel>(skillItem,  skillTree_->getSkill(dependencyID), dependencyLevel);
+						SkillLevel::ref dependency = boost::make_shared<SkillLevel>(skillItem, skillTree_->getSkill(dependencyID), dependencyLevel);
 						//std::cerr << "Parsed dependency " << dependency->getSkill()->getID() << " for skill " << skillName << std::endl;
 						skillItem->addChild(dependency);
 						dependencies.push_back(dependency);
@@ -282,7 +283,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 }
 
 void DataController::loadSkillPlans(Character::ref character) {
-	SkillItem::ref planRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "planroot", "planroot");
+	SkillPlanList::ref planRoot = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree_);
 	SkillPlan::ref plan1 = boost::make_shared<SkillPlan>(planRoot, "001", "BattleShip", skillTree_);
 	planRoot->addChild(plan1);
 	SkillPlan::ref plan2 = boost::make_shared<SkillPlan>(planRoot, "002", "Misc", skillTree_);
