@@ -109,11 +109,13 @@ namespace EveXin {
 			boost::shared_ptr<SkillItem> getParent() const {
 				return parent_.lock();
 			}
+
+		protected:
+			std::map<std::string/*id*/, ref> children_;			
 		private:
 			boost::weak_ptr<SkillItem> parent_;
 			boost::shared_ptr<Skill> skill_;
 			std::string id_;
 			std::string name_;
-			std::map<std::string/*id*/, ref> children_;
 	};
 }

@@ -19,6 +19,7 @@
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
+#include <Eve-Xin/Controllers/SkillPlanList.h>
 
 namespace EveXin {
 
@@ -194,7 +195,8 @@ QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
 }
 
 bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
-	if (action == Qt::IgnoreAction || !data->hasFormat("application/vnd.evexin.skilllevel") || !root_) {
+	SkillPlanList::ref plans = boost::dynamic_pointer_cast<SkillPlanList>(root_);
+	if (action == Qt::IgnoreAction || !data->hasFormat("application/vnd.evexin.skilllevel") || !plans) {
 		qDebug() << "Reject drop";
 		return false;
 	}
@@ -210,13 +212,12 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	}
 	if (!plan) {
 		// If they drop it off the end of the list, use the last plan
+		if (plans->getChildren().empty()) {
+			//We're empty
+			plans->createPlan("Default");
+		}
 		SkillItem::ref lastItem = root_->getChildren().empty() ? SkillItem::ref() : root_->getChildren().back();
 		plan = boost::dynamic_pointer_cast<SkillPlan>(lastItem);
-		if (!plan) {
-			//OK, we're not a skill plan tree
-			qDebug() << "Received a drop, but we're not a plan";
-			return false;
-		}
 		row = plan->getChildren().size();
 	}
 	adjustedParent = index(plan);

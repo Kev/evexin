@@ -284,15 +284,11 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 
 void DataController::loadSkillPlans(Character::ref character) {
 	SkillPlanList::ref planRoot = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree_);
-	SkillPlan::ref plan1 = boost::make_shared<SkillPlan>(planRoot, "001", "BattleShip", skillTree_);
-	planRoot->addChild(plan1);
-	SkillPlan::ref plan2 = boost::make_shared<SkillPlan>(planRoot, "002", "Misc", skillTree_);
-	planRoot->addChild(plan2);
-	plan1->addSkill(skillTree_->getSkill("3337"), 5);
-	plan2->addSkill(skillTree_->getSkill("3361"), 1);
-	plan2->addSkill(skillTree_->getSkill("21803"), 5);
-	plan1->setKnownSkills(character->getKnownSkills());
-	plan2->setKnownSkills(character->getKnownSkills());
+	//TODO: Load here
+
+	if (planRoot->getChildren().empty()) {
+		SkillPlan::ref plan1 = planRoot->createPlan("Default Plan");		
+	}
 	character->setSkillPlanRoot(planRoot);
 }
 

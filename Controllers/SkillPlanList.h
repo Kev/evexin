@@ -24,7 +24,10 @@ namespace EveXin {
 			SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills);
 			virtual ~SkillPlanList();
 
+			SkillPlan::ref createPlan(const std::string& name);
+			void deletePlan(SkillPlan::ref plan);
 		private:
 			boost::shared_ptr<SkillTree> allSkills_;
+			int nextID_;
 	};
 }
