@@ -67,6 +67,8 @@ namespace EveXin {
 			 * Clear the plan out.
 			 */
 			void clear();
+
+			boost::shared_ptr<SkillTre> getAllSkills() const;
 		private:
 			std::map<std::string, SkillLevel::ref> knownSkills_; // Flat mapping of known skill levels
 			std::map<std::string, SkillLevel::ref> plannedSkills_; // Flat mapping of known skill levels

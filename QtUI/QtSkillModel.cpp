@@ -206,6 +206,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 		SkillItem::ref grandParent = parentItem->getParent();
 		plan = boost::dynamic_pointer_cast<SkillPlan>(grandParent);
 		row =  parent.row();
+		qDebug() << "Going up to look for plan";
 	}
 	if (!plan) {
 		// If they drop it off the end of the list, use the last plan
@@ -216,6 +217,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 			qDebug() << "Received a drop, but we're not a plan";
 			return false;
 		}
+		row = plan->getChildren().size();
 	}
 	adjustedParent = index(plan);
 	QByteArray encodedData = data->data("application/vnd.evexin.skilllevel");
