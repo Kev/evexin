@@ -53,7 +53,8 @@ void QtCharacterPane::setCharacter(Character::ref character) {
 	avatarLabel_->setPixmap(QPixmap::fromImage(avatarImage));
 	corpLabel_->setText(character ? P2QSTRING(character->getCorpName()) : "No Corp");
 	//expiresLabel_->setText(P2QSTRING(character->getExpires()));
-	iskLabel_->setText(character ? P2QSTRING(boost::lexical_cast<std::string>(character->getISK())) : "0.00");
+	float isk = character ? character->getISK() : 0;
+	iskLabel_->setText(QString("%L1").arg(isk, 0, 'f', 2));
 }
 
 }
