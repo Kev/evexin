@@ -8,9 +8,12 @@
 
 #include <string>
 #include <map>
+#include <deque>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+
+#include <Swiften/Base/boost_bsignals.h>
 
 #include <Eve-Xin/Controllers/Skill.h>
 #include <Eve-Xin/Controllers/SkillItem.h>
@@ -68,10 +71,29 @@ namespace EveXin {
 			 */
 			void clear();
 
+			/**
+			 * Undoes a change
+			 */
+			void undo();
+
+
+			void disableSaving();
+			void enableSaving();
+		public:
+			boost::signal<void()> onWantsToSave;
+		private:
+			void pushUndoState();
+			void aboutToAdd();
+			void addFinished();
+			void save();
+
 		private:
 			std::map<std::string, SkillLevel::ref> knownSkills_; // Flat mapping of known skill levels
 			std::map<std::string, SkillLevel::ref> plannedSkills_; // Flat mapping of known skill levels
 			std::vector<SkillItem::ref> plan_;
 			boost::shared_ptr<SkillTree> allSkills_;
+			std::deque<std::vector<SkillItem::ref> > undoStates_;
+			int addDepth_;
+			bool savingDisabled_;
 	};
 }

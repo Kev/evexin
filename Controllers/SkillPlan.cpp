@@ -10,7 +10,7 @@
 
 namespace EveXin {
 
-SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, SkillTree::ref allSkills) : SkillItem(parent, id, name), allSkills_(allSkills) {
+	SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, SkillTree::ref allSkills) : SkillItem(parent, id, name), allSkills_(allSkills), addDepth_(0), savingDisabled_(false) {
 
 }
 
@@ -25,6 +25,20 @@ SkillPlan::SkillPlan(const SkillPlan& other) : SkillItem(other.getParent(), othe
 bool SkillPlan::addSkill(Skill::ref skill) {
 	int level = 5;
 	return addSkill(skill, level);
+}
+
+void SkillPlan::aboutToAdd() {
+	if (addDepth_ == 0 && !savingDisabled_) {
+		pushUndoState();
+	}
+	addDepth_++;
+}
+
+void SkillPlan::addFinished() {
+	addDepth_--;
+	if (addDepth_ == 0 && !savingDisabled_) {
+		save();
+	}
 }
 
 bool SkillPlan::addSkill(Skill::ref skill, int level) {
@@ -50,7 +64,6 @@ bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	// std::cerr << "Finished dependencies" << std::endl;
 	
 	plan_.push_back(skillLevel);
-	
 	return true;
 }
 
@@ -75,6 +88,7 @@ bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position)
 	if (level > 5) {
 		return false;
 	}
+	aboutToAdd();
 	std::vector<SkillItem::ref> oldPlan = plan_;
 	clear();
 	for (size_t i = 0; i < oldPlan.size() && i < position; i++) {
@@ -95,6 +109,7 @@ bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position)
 		if (!skillLevel) continue;
 		addSkill(skillLevel->getSkill(), skillLevel->getLevel());
 	}
+	addFinished();
 	return true;
 }
 
@@ -128,5 +143,32 @@ void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
 std::vector<SkillItem::ref> SkillPlan::getChildren() const {
 	return plan_;
 }
-	
+
+void SkillPlan::pushUndoState() {
+	while (undoStates_.size() > 30) {
+		undoStates_.pop_front();
+	}
+	undoStates_.push_back(plan_);
+}
+
+void SkillPlan::undo() {
+	if (undoStates_.empty()) {
+		return;
+	}
+	plan_ = undoStates_.back();
+	undoStates_.pop_back();
+}
+
+void SkillPlan::save() {
+	onWantsToSave();
+}
+
+void SkillPlan::disableSaving() {
+	savingDisabled_ = true;
+}
+
+void SkillPlan::enableSaving() {
+	savingDisabled_ = false;
+}
+
 }
