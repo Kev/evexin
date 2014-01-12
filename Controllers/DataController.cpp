@@ -284,10 +284,13 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 
 void DataController::loadSkillPlans(Character::ref character) {
 	SkillPlanList::ref planRoot = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree_);
+	planRoot->onWantsToSave.connect(boost::bind(&DataController::handleSkillPlanWantsToSave, this, _1));
 	//TODO: Load here
 
 	if (planRoot->getChildren().empty()) {
-		SkillPlan::ref plan1 = planRoot->createPlan("Default Plan");		
+		SkillPlan::ref plan1 = planRoot->createPlan("Default Plan");
+		plan1->disableSaving();
+		plan1->enableSaving();
 	}
 	character->setSkillPlanRoot(planRoot);
 }
@@ -340,6 +343,10 @@ void DataController::untrackURL(const Swift::URL& url) {
 
 boost::shared_ptr<SkillTree> DataController::getSkillTree() {
 	return skillTree_;
+}
+
+void DataController::handleSkillPlanWantsToSave(SkillPlan::ref plan) {
+
 }
 
 }
