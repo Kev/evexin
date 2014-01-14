@@ -8,14 +8,14 @@
 
 #include <vector>
 
-#include <boost/make_shared.hpp>
 #include <boost/bind.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/make_shared.hpp>
 
-#include <Swiften/Base/URL.h>
-#include <Swiften/Base/foreach.h>
 #include <Swiften/Base/DateTime.h>
+#include <Swiften/Base/foreach.h>
+#include <Swiften/Base/URL.h>
 #include <Swiften/Network/NetworkFactories.h>
 
 #include <SwifTools/Application/PlatformApplicationPathProvider.h>
@@ -29,6 +29,7 @@
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
 #include <Eve-Xin/Controllers/SkillPlanList.h>
+#include <Eve-Xin/Controllers/SkillPlanSerialization.h>
 #include <Eve-Xin/Controllers/SkillTree.h>
 
 namespace EveXin {
