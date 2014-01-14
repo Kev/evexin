@@ -16,6 +16,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <Swiften/Base/ByteArray.h>
+#include <Swiften/Base/foreach.h>
 
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
@@ -35,10 +36,10 @@ namespace EveXin {
 						ar & id_;
 						ar & level_;
 					}
-				private:
+					friend class boost::serialization::access;
+				public:
 					std::string id_;
 					int level_;
-					friend class boost::serialization::access;
 			};
 
 
@@ -49,10 +50,10 @@ namespace EveXin {
 						ar & name_;
 						ar & skills_;
 					}
-				private:
+					friend class boost::serialization::access;
+				public:
 					std::string name_;
 					std::vector<boost::shared_ptr<SimpleSkill> > skills_;
-					friend class boost::serialization::access;
 			};
 
 			class SimpleSkillPlanList {
@@ -61,29 +62,62 @@ namespace EveXin {
 					void serialize(Archive & ar, const unsigned int /*version*/) {
 						ar & plans_;
 					}
-				private:
-					std::vector<boost::shared_ptr<SimpleSkillPlan> > plans_;
 					friend class boost::serialization::access;
+				public:
+					std::vector<boost::shared_ptr<SimpleSkillPlan> > plans_;
 			};
 
 		public:
-			static SkillPlanList::ref parseSkills(const Swift::ByteArray& skillBytes, SkillTree::ref skillTree) {
-				std::stringstream inputStream;
-				boost::archive::text_iarchive inputArchive(inputStream);
-				inputStream << Swift::byteArrayToString(skillBytes);
+			static SkillPlanList::ref parseSkills(const Swift::ByteArray& skillBytes, SkillTree::ref skillTree, SkillItem::ref knownSkillRoot) {
 				SimpleSkillPlanList simpleList;
-				inputArchive >> simpleList;
+				std::string string = Swift::byteArrayToString(skillBytes);
+				std::cerr << "Parsing " << string << std::endl;
+				try {
+					std::stringstream inputStream;
+					inputStream << string;
+					boost::archive::text_iarchive inputArchive(inputStream);
+					inputArchive >> simpleList;
+				} catch(const boost::archive::archive_exception& ex) {
+					std::cerr << "Error parsing saved skills: " << ex.what() << std::endl;
+				} catch(...) {
+					std::cerr << "Error parsing saved skills" << std::endl;
+				}
 
-				SkillPlanList::ref result;
+				SkillPlanList::ref result = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree);
+				foreach (auto simplePlan, simpleList.plans_) {
+					SkillPlan::ref plan = result->createPlan(simplePlan->name_);
+					plan->setKnownSkills(knownSkillRoot);
+					foreach (auto simpleSkill, simplePlan->skills_) {
+						plan->addSkill(skillTree->getSkill(simpleSkill->id_), simpleSkill->level_);
+					}
+				}
 				return result;
 			}
 
 			static Swift::ByteArray serializeSkills(SkillPlanList::ref skills) {
 				SimpleSkillPlanList simpleList;
+
+				auto lists = skills->getChildren();
+				foreach (SkillItem::ref list, lists) {
+					boost::shared_ptr<SimpleSkillPlan> simplePlan = boost::make_shared<SimpleSkillPlan>();
+					simplePlan->name_ = list->getName();
+					auto items = list->getChildren();
+					foreach (SkillItem::ref item, items) {
+						SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
+						boost::shared_ptr<SimpleSkill> simpleSkill = boost::make_shared<SimpleSkill>();
+						simpleSkill->level_ = level->getLevel();
+						simpleSkill->id_ = level->getID();
+						simplePlan->skills_.push_back(simpleSkill);
+					}
+					simpleList.plans_.push_back(simplePlan);
+				}
+
 				std::stringstream outputStream;
 				boost::archive::text_oarchive outputArchive(outputStream);
 				outputArchive << simpleList;
-				return Swift::createByteArray(outputStream.str());
+				std::string result = outputStream.str();
+				std::cerr << "Serialized " << result << std::endl;
+				return Swift::createByteArray(result);
 			}
 		
 	};

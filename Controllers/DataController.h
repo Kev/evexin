@@ -31,6 +31,7 @@ namespace EveXin {
 	class Skill;
 	class SkillItem;
 	class SkillPlan;
+	class SkillPlanList;
 	class DataController {
 		public:
 			DataController(Swift::NetworkFactories* factories);
@@ -63,7 +64,7 @@ namespace EveXin {
 			void untrackURL(const Swift::URL& url);
 			void putSkillLevelIntoRoot(boost::shared_ptr<SkillItem> root, boost::shared_ptr<SkillLevel> skillLevel);
 			void loadSkillPlans(Character::ref character);
-			void handleSkillPlanWantsToSave(boost::shared_ptr<SkillPlan> plan);
+			void handleSkillPlanWantsToSave(const Swift::URL& characterURL, boost::shared_ptr<SkillPlanList> plans);
 		private:
 			Swift::NetworkFactories* factories_;
 			boost::shared_ptr<DataStore> store_;

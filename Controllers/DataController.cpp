@@ -284,9 +284,12 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 }
 
 void DataController::loadSkillPlans(Character::ref character) {
-	SkillPlanList::ref planRoot = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree_);
-	planRoot->onWantsToSave.connect(boost::bind(&DataController::handleSkillPlanWantsToSave, this, _1));
-	//TODO: Load here
+	SkillPlanList::ref planRoot;
+	Swift::URL url = Swift::URL::fromString("http://characters/" + character->getID());
+	std::cerr << "Want to load skills for " << url.toString() << std::endl;
+	planRoot = SkillPlanSerialization::parseSkills(store_->getContent(url), skillTree_, character->getKnownSkills());
+
+	planRoot->onWantsToSave.connect(boost::bind(&DataController::handleSkillPlanWantsToSave, this, url, planRoot));
 
 	if (planRoot->getChildren().empty()) {
 		SkillPlan::ref plan1 = planRoot->createPlan("Default Plan");
@@ -346,8 +349,9 @@ boost::shared_ptr<SkillTree> DataController::getSkillTree() {
 	return skillTree_;
 }
 
-void DataController::handleSkillPlanWantsToSave(SkillPlan::ref plan) {
-
+void DataController::handleSkillPlanWantsToSave(const Swift::URL& characterURL, SkillPlanList::ref planList) {
+	std::cerr << "Want to save " << characterURL.toString() << std::endl;
+	store_->setContent(characterURL, SkillPlanSerialization::serializeSkills(planList));
 }
 
 }
