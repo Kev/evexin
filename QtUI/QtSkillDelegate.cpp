@@ -63,7 +63,7 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	if (level.isValid()) {
 		infoText = QString("Level %1").arg(level.toInt());
 	}
-	else if (children.isValid()) {
+	else if (!isSkillRole && children.isValid()) {
 		infoText = QString("%1 Skills").arg(children.toInt());
 	}
 	QVariant minutesVariant = index.data(QtSkillModel::SkillTrainingTimeRole);
