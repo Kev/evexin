@@ -73,6 +73,7 @@ void QtSkillPlannerWidget::setCharacter(Character::ref character) {
 	character_ = character;
 	allSkillsModel_->setRoot(dataController_->getSkillTree()->mergeWithCharacterSkills(character));
 	planModel_->setRoot(character->getSkillPlanRoot());
+	planModel_->setCharacter(character);
 }
 
 void QtSkillPlannerWidget::handleCreatePlanClicked() {

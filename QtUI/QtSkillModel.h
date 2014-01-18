@@ -16,6 +16,7 @@ namespace EveXin {
 
 	class SkillItem;
 	class SkillLevel;
+	class Character;
 
 	class QtSkillModel : public QAbstractItemModel {
 		Q_OBJECT
@@ -24,10 +25,12 @@ namespace EveXin {
 				IsSkillRole = Qt::UserRole,
 				SkillMultiplierRole = Qt::UserRole + 1,
 				SkillLevelRole = Qt::UserRole + 2,
+				SkillTrainingTimeRole = Qt::UserRole + 3,
 			};
 			QtSkillModel();
 			~QtSkillModel();
 			void setRoot(boost::shared_ptr<SkillItem> root);
+			void setCharacter(boost::shared_ptr<Character> character);
 			Qt::ItemFlags flags(const QModelIndex& index) const;
 			int columnCount(const QModelIndex& parent = QModelIndex()) const;
 			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
@@ -60,5 +63,6 @@ namespace EveXin {
 		private:
 			boost::shared_ptr<SkillItem> root_;
 			boost::shared_ptr<SkillItem> filtered_;
+			boost::shared_ptr<Character> character_;
 	};
 }

@@ -56,7 +56,33 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	QString infoText = "Untrained";
 	QVariant level = index.data(QtSkillModel::SkillLevelRole);
 	if (level.isValid()) {
-		infoText = QString("Level %1").arg(level.toInt());
+		float minutes = index.data(QtSkillModel::SkillTrainingTimeRole).toFloat();
+		QString time = "";
+		int days = minutes / 1440;
+		int remainingMinutes = minutes - (days * 1440);
+		int hours = remainingMinutes / 60;
+		remainingMinutes = remainingMinutes - (hours * 60);
+		if (days) {
+			time = QString("%1 day%2").arg(days).arg(days > 1 ? "s" : "");
+		}
+		if (hours) {
+			if (!time.isEmpty()) {
+				time += " ";
+			}
+			time += QString("%1 hour%2").arg(hours).arg(hours > 1 ? "s" : "");
+		}
+		if (remainingMinutes) {
+			if (!time.isEmpty()) {
+				time += " ";
+			}
+			time += QString("%1 minute%2").arg(remainingMinutes).arg(remainingMinutes > 1 ? "s" : "");
+		}
+
+		if (!time.isEmpty()) {
+			time = QString(" (%1)").arg(time);
+		}
+
+		infoText = QString("Level %1%2").arg(level.toInt()).arg(time);
 	}
 	QFontMetrics nameMetrics(nameFont_);
 	painter->setFont(nameFont_);

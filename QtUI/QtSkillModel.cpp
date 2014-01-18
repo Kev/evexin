@@ -20,6 +20,7 @@
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
 #include <Eve-Xin/Controllers/SkillPlanList.h>
+#include <Eve-Xin/Controllers/SkillTime.h>
 
 namespace EveXin {
 
@@ -27,6 +28,10 @@ QtSkillModel::QtSkillModel() {
 }
 
 QtSkillModel::~QtSkillModel() {
+}
+
+void QtSkillModel::setCharacter(boost::shared_ptr<Character> character) {
+	character_ = character;
 }
 
 void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {
@@ -78,6 +83,7 @@ QVariant QtSkillModel::getLevelData(SkillLevel::ref level, int role) const {
 			return P2QSTRING(name);
 		}
 		case SkillLevelRole: return level->getLevel();
+		case SkillTrainingTimeRole: return character_ ? SkillTime::minutesToTrain(character_, level) : 0;
 		default: return getItemData(level, role);
 	}
 }
