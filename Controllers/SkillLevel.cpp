@@ -21,4 +21,33 @@ int SkillLevel::getLevel() const {
 	return level_;
 }
 
+int SkillLevel::getSkillPoints() const {
+	int multiplier = getSkill()->getRank();
+	int points = 0;
+	switch (level_) {
+		case 1: points = 250; break;
+		case 2: points = 1414; break;
+		case 3: points = 8000; break;
+		case 4: points = 45255; break;
+		case 5: points = 256000; break;
+	}
+	points *= multiplier;
+	return points;
+}
+
+int SkillLevel::getSkillPointsSinceLastLevel() const {
+	int multiplier = getSkill()->getRank();
+	int points = 0;
+	switch (level_) {
+		case 1: points = 250; break;
+		case 2: points = 1414 - 250; break;
+		case 3: points = 8000 - 1414; break;
+		case 4: points = 45255 - 8000; break;
+		case 5: points = 256000 - 45255; break;
+	}
+	points *= multiplier;
+	return points;
+}
+
+
 }

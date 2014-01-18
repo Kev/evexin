@@ -18,6 +18,8 @@ namespace EveXin {
 			SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level);
 
 			int getLevel() const;
+			int getSkillPoints() const;
+			int getSkillPointsSinceLastLevel() const;
 
 		private:
 			int level_;
