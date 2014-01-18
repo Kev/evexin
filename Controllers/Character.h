@@ -7,10 +7,13 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 #include <boost/shared_ptr.hpp>
 
 #include <Swiften/Base/ByteArray.h>
+
+#include <Eve-Xin/Controllers/SkillAttribute.h>
 
 namespace EveXin {
 	class SkillItem;
@@ -35,6 +38,8 @@ namespace EveXin {
 			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {skillPlanRoot_ = skillPlanRoot;}
 			boost::shared_ptr<SkillItem> getKnownSkills() {return knownSkillRoot_;}
 			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
+			int getAttribute(SkillAttribute::Attribute attribute) {return baseAttributes_[attribute];}
+			void setAttribute(SkillAttribute::Attribute attribute, int value) {baseAttributes_[attribute] = value;}
 		private:
 			std::string id_;
 			std::string name_;
@@ -46,8 +51,8 @@ namespace EveXin {
 			Swift::ByteArray avatar256_;
 			boost::shared_ptr<SkillItem> knownSkillRoot_;
 			boost::shared_ptr<SkillPlanList> skillPlanRoot_;
+			std::map<SkillAttribute::Attribute, int> baseAttributes_;
 
 	};
 }
-
 

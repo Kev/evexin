@@ -17,7 +17,7 @@ Skill::~Skill() {
 
 }
 
-void Skill::populate(const std::string& groupID, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies) {
+void Skill::populate(const std::string& groupID, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, SkillAttribute::Attribute primaryAttribute, SkillAttribute::Attribute secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies) {
 	groupID_ = groupID;
 	//group_ = group;
 	name_ = name;

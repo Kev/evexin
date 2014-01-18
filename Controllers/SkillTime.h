@@ -14,11 +14,12 @@
 namespace EveXin {
 	class SkillTime {
 		public:
-			static float minutesToTrain(Character::ref /*character*/, SkillLevel::ref skillLevel) {
+			static float minutesToTrain(Character::ref character, SkillLevel::ref skillLevel) {
 				int pointsNeeded = skillLevel->getSkillPointsSinceLastLevel();
 				//If already training, instead getSkillPointsNeeded() - those in the character;
-				int primaryAttribute = 20; //FIXME
-				int secondaryAttribute = 20; //FIXME
+				int primaryAttribute = character->getAttribute(skillLevel->getSkill()->getPrimaryAttribute());
+				int secondaryAttribute = character->getAttribute(skillLevel->getSkill()->getSecondaryAttribute());
+				std::cerr << "Using attributes " << primaryAttribute << ", " << secondaryAttribute << std::endl;
 				float minutes = pointsNeeded / (primaryAttribute + secondaryAttribute / 2);
 				return minutes;
 			}

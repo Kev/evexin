@@ -25,6 +25,7 @@
 #include <Eve-Xin/Controllers/HTTPRequest.h>
 #include <Eve-Xin/Controllers/SqliteDataStore.h>
 #include <Eve-Xin/Controllers/Skill.h>
+#include <Eve-Xin/Controllers/SkillAttribute.h>
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
@@ -184,8 +185,8 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 				//Not much to do if they send bad data
 			}
 			Swift::ParserElement::ref attributesElement = skillElement->getChild("requiredAttributes", "");
-			std::string primaryAttribute = attributesElement->getChild("primaryAttribute", "")->getText();
-			std::string secondaryAttribute = attributesElement->getChild("secondaryAttribute", "")->getText();
+			SkillAttribute::Attribute primaryAttribute = SkillAttribute::stringToAttribute( attributesElement->getChild("primaryAttribute", "")->getText());
+			SkillAttribute::Attribute secondaryAttribute = SkillAttribute::stringToAttribute( attributesElement->getChild("secondaryAttribute", "")->getText());
 			const std::vector<Swift::ParserElement::ref>& rowsets = skillElement->getChildren("rowset", "");
 			std::vector<SkillLevel::ref> dependencies;
 			Skill::ref skill = skillTree_->getSkill(skillID);
@@ -236,11 +237,14 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	std::string balance; // Only use this if not yet populated, as the account request will pretty much always be newer
 	std::string memoryBonusName;
 	int memoryBonusValue;
-	int intelligence;
-	int memory;
-	int charisma;
-	int perception;
-	int willpower;
+	try {
+		character->setAttribute(SkillAttribute::Intelligence, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("intelligence", "")->getText()));
+		character->setAttribute(SkillAttribute::Memory, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("memory", "")->getText()));
+		character->setAttribute(SkillAttribute::Charisma, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("charisma", "")->getText()));
+		character->setAttribute(SkillAttribute::Perception, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("perception", "")->getText()));
+		character->setAttribute(SkillAttribute::Willpower, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("willpower", "")->getText()));
+	} catch (const boost::bad_lexical_cast&) {	
+	}
 	//skills
 	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
 	foreach (Swift::ParserElement::ref rowset, rowsets) {

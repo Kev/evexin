@@ -12,6 +12,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
+#include <Eve-Xin/Controllers/SkillAttribute.h>
+
 namespace EveXin {
 	class SkillLevel;
 	class Skill {
@@ -23,7 +25,7 @@ namespace EveXin {
 			/**
 			 * Use this rather than a ctor, as it allows keeping smart pointers to not-yet-populated skills in dependencies.
 			 */
-			void populate(const std::string& groupID_, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, const std::string& primaryAttribute, const std::string& secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies);
+			void populate(const std::string& groupID_, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, SkillAttribute::Attribute primaryAttribute, SkillAttribute::Attribute secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies);
 
 			std::string getID() {return id_;}
 			std::string getGroupID() {return groupID_;}
@@ -31,8 +33,8 @@ namespace EveXin {
 			std::string getName() {return name_;}
 			std::string getDescription() {return description_;}
 			int getRank() {return rank_;}
-			std::string getPrimaryAttribute() {return primaryAttribute_;}
-			std::string getSecondaryAttribute() {return secondaryAttribute_;}
+			SkillAttribute::Attribute getPrimaryAttribute() {return primaryAttribute_;}
+			SkillAttribute::Attribute getSecondaryAttribute() {return secondaryAttribute_;}
 			std::vector<boost::shared_ptr<SkillLevel> > getDependencies() {return dependencies_;}
 
 			/**
@@ -47,8 +49,8 @@ namespace EveXin {
 			std::string name_;
 			std::string description_;
 			int rank_;
-			std::string primaryAttribute_;
-			std::string secondaryAttribute_;
+			SkillAttribute::Attribute primaryAttribute_;
+			SkillAttribute::Attribute secondaryAttribute_;
 			std::vector<boost::shared_ptr<SkillLevel> > dependencies_;
 	};
 }
