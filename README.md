@@ -5,7 +5,7 @@ Skill planner for Eve Online
 
 Status
 ======
-This is very much in the early stages, and it doesn't do anything useful yet. You almost certainly don't want to be here.
+This is very much in the early stages. It is possible to create skill plans, but they're not terribly useful. Still, give it a go if you want.
 
 Getting the source
 ==================

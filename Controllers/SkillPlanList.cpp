@@ -32,12 +32,14 @@ SkillPlan::ref SkillPlanList::createPlan(const std::string& name) {
 	SkillPlan::ref plan = boost::make_shared<SkillPlan>(shared_from_this(), getID() + "_plan_" + boost::lexical_cast<std::string>(nextID_++), name, allSkills_);
 	plan->onWantsToSave.connect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	addChild(plan);
+	onWantsToSave(plan);
 	return plan;
 }
 
 void SkillPlanList::deletePlan(SkillPlan::ref plan) {
 	plan->onWantsToSave.disconnect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	children_.erase(plan->getID());
+	onWantsToSave(SkillPlan::ref());
 }
 
 void SkillPlanList::handleSkillPlanWantsToSave(SkillPlan::ref plan) {

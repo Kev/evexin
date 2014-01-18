@@ -29,6 +29,9 @@ namespace EveXin {
 			SkillPlan::ref createPlan(const std::string& name);
 			void deletePlan(SkillPlan::ref plan);
 		public:
+			/**
+			 * The plan is null when deleting.
+			 */
 			boost::signal<void(SkillPlan::ref)> onWantsToSave;
 		private:
 			void handleSkillPlanWantsToSave(SkillPlan::ref plan);

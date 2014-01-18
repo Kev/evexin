@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -14,6 +14,7 @@
 
 namespace EveXin {
 	class SkillItem;
+	class SkillPlanList;
 	class Character {
 		public:
 			typedef boost::shared_ptr<Character> ref;
@@ -31,9 +32,9 @@ namespace EveXin {
 			Swift::ByteArray get256Avatar() {return avatar256_;}
 			void set256Avatar(const Swift::ByteArray& avatar) {avatar256_ = avatar;}
 			void setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {knownSkillRoot_ = skillRoot;}
-			void setSkillPlanRoot(boost::shared_ptr<SkillItem> skillPlanRoot) {skillPlanRoot_ = skillPlanRoot;}
+			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {skillPlanRoot_ = skillPlanRoot;}
 			boost::shared_ptr<SkillItem> getKnownSkills() {return knownSkillRoot_;}
-			boost::shared_ptr<SkillItem> getSkillPlanRoot() {return skillPlanRoot_;}
+			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
 		private:
 			std::string id_;
 			std::string name_;
@@ -44,7 +45,7 @@ namespace EveXin {
 			double isk_;
 			Swift::ByteArray avatar256_;
 			boost::shared_ptr<SkillItem> knownSkillRoot_;
-			boost::shared_ptr<SkillItem> skillPlanRoot_;
+			boost::shared_ptr<SkillPlanList> skillPlanRoot_;
 
 	};
 }
