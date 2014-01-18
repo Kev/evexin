@@ -29,9 +29,9 @@ QtSkillDelegate::QtSkillDelegate(QObject* parent) : QStyledItemDelegate(parent),
 }
 
 QSize QtSkillDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
-	if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
-		QStyledItemDelegate::sizeHint(option, index);
-	}
+	// if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
+	// 	QStyledItemDelegate::sizeHint(option, index);
+	// }
 	int verticalMargin = 2;
 	QFontMetrics nameMetrics(nameFont_);
 	QFontMetrics infoMetrics(infoFont_);
@@ -41,48 +41,51 @@ QSize QtSkillDelegate::sizeHint(const QStyleOptionViewItem& option, const QModel
 
 void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const {
 	painter->save();
-	if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
-		QStyledItemDelegate::paint(painter, option, index);
-		painter->restore();
-		return;
-	}
+	bool isSkillRole = index.data(QtSkillModel::IsSkillRole).toBool();
+	// if (!isSkillRole) {
+	// 	QStyledItemDelegate::paint(painter, option, index);
+	// 	painter->restore();
+	// 	return;
+	// }
 	QRect fullRegion(option.rect);
 	if (option.state & QStyle::State_Selected) {
 		painter->fillRect(fullRegion, option.palette.highlight());
 		painter->setPen(option.palette.highlightedText().color());
 	}
 	int margin = 2;
-	QString name = index.data(Qt::DisplayRole).toString() + QString(" (%1x)").arg(index.data(QtSkillModel::SkillMultiplierRole).toInt());
+	QString name = index.data(Qt::DisplayRole).toString();
+	if (isSkillRole) {
+		name += QString(" (%1x)").arg(index.data(QtSkillModel::SkillMultiplierRole).toInt());
+	}
 	QString infoText = "Untrained";
-	QVariant level = index.data(QtSkillModel::SkillLevelRole);
+	QVariant level = isSkillRole ? index.data(QtSkillModel::SkillLevelRole) : QVariant();
+	QVariant children = index.data(QtSkillModel::ChildCountRole);
 	if (level.isValid()) {
-		float minutes = index.data(QtSkillModel::SkillTrainingTimeRole).toFloat();
+		infoText = QString("Level %1").arg(level.toInt());
+	}
+	else if (children.isValid()) {
+		infoText = QString("%1 Skills").arg(children.toInt());
+	}
+	QVariant minutesVariant = index.data(QtSkillModel::SkillTrainingTimeRole);
+	if (minutesVariant.isValid()) {
+		float minutes = minutesVariant.toFloat();
 		QString time = "";
 		int days = minutes / 1440;
 		int remainingMinutes = minutes - (days * 1440);
 		int hours = remainingMinutes / 60;
 		remainingMinutes = remainingMinutes - (hours * 60);
 		if (days) {
-			time = QString("%1 day%2").arg(days).arg(days > 1 ? "s" : "");
+			time = QString("%1D ").arg(days);
 		}
 		if (hours) {
-			if (!time.isEmpty()) {
-				time += " ";
-			}
-			time += QString("%1 hour%2").arg(hours).arg(hours > 1 ? "s" : "");
+			time += QString("%1H ").arg(hours);
 		}
 		if (remainingMinutes) {
-			if (!time.isEmpty()) {
-				time += " ";
-			}
-			time += QString("%1 minute%2").arg(remainingMinutes).arg(remainingMinutes > 1 ? "s" : "");
+			time += QString("%1M ").arg(remainingMinutes);
 		}
-
-		if (!time.isEmpty()) {
-			time = QString(" (%1)").arg(time);
+		if (minutes) {
+			infoText = QString("%1 (%2)").arg(infoText).arg(time.remove(time.size() - 1, 1));
 		}
-
-		infoText = QString("Level %1%2").arg(level.toInt()).arg(time);
 	}
 	QFontMetrics nameMetrics(nameFont_);
 	painter->setFont(nameFont_);

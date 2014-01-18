@@ -19,7 +19,6 @@ namespace EveXin {
 				//If already training, instead getSkillPointsNeeded() - those in the character;
 				int primaryAttribute = character->getAttribute(skillLevel->getSkill()->getPrimaryAttribute());
 				int secondaryAttribute = character->getAttribute(skillLevel->getSkill()->getSecondaryAttribute());
-				std::cerr << "Using attributes " << primaryAttribute << ", " << secondaryAttribute << std::endl;
 				float minutes = pointsNeeded / (primaryAttribute + secondaryAttribute / 2);
 				return minutes;
 			}
@@ -27,6 +26,19 @@ namespace EveXin {
 			static boost::posix_time::ptime timeToTrain(Character::ref character, SkillLevel::ref skillLevel) {
 				boost::posix_time::ptime startTime = boost::posix_time::second_clock::local_time();
 				return startTime + boost::posix_time::minutes(minutesToTrain(character, skillLevel));
+			}
+
+			static float minutesToTrainAll(Character::ref character, SkillItem::ref item) {
+				SkillLevel::ref level;
+				if ((level = boost::dynamic_pointer_cast<SkillLevel>(item))) {
+					return minutesToTrain(character, level);
+				}
+				float total = 0;
+				std::vector<SkillItem::ref> children = item->getChildren();
+				foreach (SkillItem::ref child, children) {
+					total += minutesToTrainAll(character, child);
+				}
+				return total;
 			}
 	};
 };

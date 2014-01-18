@@ -100,6 +100,8 @@ QVariant QtSkillModel::getItemData(SkillItem::ref item, int role) const {
 		}
 		case IsSkillRole: return !!skill;
 		case SkillMultiplierRole: return QVariant(skill->getRank());
+		case SkillTrainingTimeRole: return character_ ? QVariant(SkillTime::minutesToTrainAll(character_, item)) : QVariant();
+		case ChildCountRole: return QVariant(static_cast<int>(item->getChildren().size()));
 		default: return QVariant();
 	}
 }

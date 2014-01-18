@@ -26,6 +26,7 @@ namespace EveXin {
 				SkillMultiplierRole = Qt::UserRole + 1,
 				SkillLevelRole = Qt::UserRole + 2,
 				SkillTrainingTimeRole = Qt::UserRole + 3,
+				ChildCountRole = Qt::UserRole + 4,
 			};
 			QtSkillModel();
 			~QtSkillModel();
