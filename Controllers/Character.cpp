@@ -16,6 +16,21 @@ Character::~Character() {
 
 }
 
+void Character::setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues) {
+	enhancerNames_ = enhancerNames;
+	enhancerValues_ = enhancerValues;
+}
+
+std::string Character::getImplantName(SkillAttribute::Attribute attribute) {
+	return enhancerNames_[attribute];
+}
+
+int Character::getImplantValue(SkillAttribute::Attribute attribute) {
+	auto it = enhancerValues_.find(attribute);
+	return (it != enhancerValues_.end()) ? (*it).second : 0;
+}
+
+
 }
 
 

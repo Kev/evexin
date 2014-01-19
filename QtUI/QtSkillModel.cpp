@@ -202,7 +202,7 @@ QMimeData* QtSkillModel::mimeData(const QModelIndexList& indexes) const {
 	return data;
 }
 
-bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
+bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int /*column*/, const QModelIndex& parent) {
 	SkillPlanList::ref plans = boost::dynamic_pointer_cast<SkillPlanList>(root_);
 	if (action == Qt::IgnoreAction || !data->hasFormat("application/vnd.evexin.skilllevel") || !plans) {
 		qDebug() << "Reject drop";

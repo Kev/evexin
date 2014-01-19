@@ -17,9 +17,14 @@ namespace EveXin {
 			static float minutesToTrain(Character::ref character, SkillLevel::ref skillLevel) {
 				int pointsNeeded = skillLevel->getSkillPointsSinceLastLevel();
 				//If already training, instead getSkillPointsNeeded() - those in the character;
-				int primaryAttribute = character->getAttribute(skillLevel->getSkill()->getPrimaryAttribute());
-				int secondaryAttribute = character->getAttribute(skillLevel->getSkill()->getSecondaryAttribute());
-				float minutes = pointsNeeded / (primaryAttribute + secondaryAttribute / 2);
+				SkillAttribute::Attribute primaryAttribute = skillLevel->getSkill()->getPrimaryAttribute();
+				int primaryAttributeValue = character->getAttribute(primaryAttribute);
+				SkillAttribute::Attribute secondaryAttribute = skillLevel->getSkill()->getSecondaryAttribute();
+				int secondaryAttributeValue = character->getAttribute(secondaryAttribute);
+				int primaryAttributeImplant = character->getImplantValue(primaryAttribute);
+				int secondaryAttributeImplant = character->getImplantValue(secondaryAttribute);
+				float minutes = pointsNeeded / (primaryAttributeValue + primaryAttributeImplant + (secondaryAttributeValue + secondaryAttributeImplant) / 2);
+				//std::cerr << "Skill time " << minutes << " based on " << primaryAttributeValue << "+" << primaryAttributeImplant << ", " << secondaryAttributeValue << "+" << secondaryAttributeImplant << std::endl;
 				return minutes;
 			}
 

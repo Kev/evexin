@@ -117,7 +117,7 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 		}
 	}
 	else {
-		std::cerr << "Invalid result" << std::endl;
+		// std::cerr << "Invalid result" << std::endl;
 	}
 }
 
@@ -126,7 +126,7 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 	Swift::ParserElement::ref keyElement = result->getResult()->getChild("key", "");
 	const std::vector<Swift::ParserElement::ref>& characters = keyElement->getChild("rowset", "")->getChildren("row", "");
 	std::string expires = keyElement->getAttributes().getAttribute("expires");
-	std::cerr << "Account " << accountKey << " with " << characters.size() << " characters expires at " << expires << std::endl;
+	// std::cerr << "Account " << accountKey << " with " << characters.size() << " characters expires at " << expires << std::endl;
 	foreach (auto element, characters) {
 		std::string id = element->getAttributes().getAttribute("characterID");
 		std::string name = element->getAttributes().getAttribute("characterName");
@@ -235,8 +235,29 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	std::string cloneName;
 	std::string cloneSkillPoints;
 	std::string balance; // Only use this if not yet populated, as the account request will pretty much always be newer
-	std::string memoryBonusName;
-	int memoryBonusValue;
+	Swift::ParserElement::ref attributeEnhancers = result->getResult()->getChild("attributeEnhancers", "");
+	try {
+		std::map<std::string, SkillAttribute::Attribute> tags;
+		tags["intelligenceBonus"] = SkillAttribute::Intelligence;
+		tags["memoryBonus"] = SkillAttribute::Memory;
+		tags["charismaBonus"] = SkillAttribute::Charisma;
+		tags["perceptionBonus"] = SkillAttribute::Perception;
+		tags["willpowerBonus"] = SkillAttribute::Willpower;
+		std::map<SkillAttribute::Attribute, int> enhancerValues;
+		std::map<SkillAttribute::Attribute, std::string> enhancerNames;
+		foreach (auto pair, tags) {
+			Swift::ParserElement::ref attributeEnhancer = attributeEnhancers->getChild(pair.first, "");
+			std::string name = attributeEnhancer->getChild("augmentatorName", "")->getText();
+			std::string value = attributeEnhancer->getChild("augmentatorValue", "")->getText();
+			if (!value.empty()) {
+				enhancerValues[pair.second] = boost::lexical_cast<int>(value);
+				enhancerNames[pair.second] = name;
+			}
+		}
+		character->setImplants(enhancerNames, enhancerValues);
+	} catch (const boost::bad_lexical_cast&) {
+		std::cerr << "cast failed" << std::endl;
+	}
 	try {
 		character->setAttribute(SkillAttribute::Intelligence, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("intelligence", "")->getText()));
 		character->setAttribute(SkillAttribute::Memory, boost::lexical_cast<int>(result->getResult()->getChild("attributes", "")->getChild("memory", "")->getText()));
@@ -290,7 +311,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 void DataController::loadSkillPlans(Character::ref character) {
 	SkillPlanList::ref planRoot;
 	Swift::URL url = Swift::URL::fromString("http://characters/" + character->getID());
-	std::cerr << "Want to load skills for " << url.toString() << std::endl;
+	// std::cerr << "Want to load skills for " << url.toString() << std::endl;
 	planRoot = SkillPlanSerialization::parseSkills(store_->getContent(url), skillTree_, character->getKnownSkills());
 
 	planRoot->onWantsToSave.connect(boost::bind(&DataController::handleSkillPlanWantsToSave, this, url, planRoot));
@@ -354,7 +375,7 @@ boost::shared_ptr<SkillTree> DataController::getSkillTree() {
 }
 
 void DataController::handleSkillPlanWantsToSave(const Swift::URL& characterURL, SkillPlanList::ref planList) {
-	std::cerr << "Want to save " << characterURL.toString() << std::endl;
+	// std::cerr << "Want to save " << characterURL.toString() << std::endl;
 	store_->setContent(characterURL, SkillPlanSerialization::serializeSkills(planList));
 }
 

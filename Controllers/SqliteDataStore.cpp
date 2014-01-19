@@ -134,7 +134,7 @@ std::vector<DataStore::APIKey> SqliteDataStore::getAPIKeys() {
 		keys.push_back(key);
 	}
 	sqlite3_finalize(preparedStatement);
-	std::cerr << "Found " << keys.size() << " API Keys" << std::endl;
+	//std::cerr << "Found " << keys.size() << " API Keys" << std::endl;
 	return keys;
 }
 

@@ -28,7 +28,7 @@ QtSkillDelegate::QtSkillDelegate(QObject* parent) : QStyledItemDelegate(parent),
 	infoFont_.setPointSize(nameFont_.pointSize() - infoFontSizeDrop);
 }
 
-QSize QtSkillDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const {
+QSize QtSkillDelegate::sizeHint(const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
 	// if (!index.data(QtSkillModel::IsSkillRole).toBool()) {
 	// 	QStyledItemDelegate::sizeHint(option, index);
 	// }

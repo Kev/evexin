@@ -71,7 +71,7 @@ namespace EveXin {
 			static SkillPlanList::ref parseSkills(const Swift::ByteArray& skillBytes, SkillTree::ref skillTree, SkillItem::ref knownSkillRoot) {
 				SimpleSkillPlanList simpleList;
 				std::string string = Swift::byteArrayToString(skillBytes);
-				std::cerr << "Parsing " << string << std::endl;
+				// std::cerr << "Parsing " << string << std::endl;
 				try {
 					std::stringstream inputStream;
 					inputStream << string;
@@ -116,7 +116,7 @@ namespace EveXin {
 				boost::archive::text_oarchive outputArchive(outputStream);
 				outputArchive << simpleList;
 				std::string result = outputStream.str();
-				std::cerr << "Serialized " << result << std::endl;
+				// std::cerr << "Serialized " << result << std::endl;
 				return Swift::createByteArray(result);
 			}
 		

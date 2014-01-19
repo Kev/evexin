@@ -40,6 +40,9 @@ namespace EveXin {
 			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
 			int getAttribute(SkillAttribute::Attribute attribute) {return baseAttributes_[attribute];}
 			void setAttribute(SkillAttribute::Attribute attribute, int value) {baseAttributes_[attribute] = value;}
+			void setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues);
+			int getImplantValue(SkillAttribute::Attribute attribute);
+			std::string getImplantName(SkillAttribute::Attribute attribute);
 		private:
 			std::string id_;
 			std::string name_;
@@ -52,6 +55,8 @@ namespace EveXin {
 			boost::shared_ptr<SkillItem> knownSkillRoot_;
 			boost::shared_ptr<SkillPlanList> skillPlanRoot_;
 			std::map<SkillAttribute::Attribute, int> baseAttributes_;
+			std::map<SkillAttribute::Attribute, int> enhancerValues_;
+			std::map<SkillAttribute::Attribute, std::string> enhancerNames_;
 
 	};
 }

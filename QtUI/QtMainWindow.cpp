@@ -117,7 +117,7 @@ Character::ref QtMainWindow::selectedCharacter() {
 	return dataController_->getCharacter(id);
 }
 
-void QtMainWindow::handleCharacterDataUpdated(const std::string& id) {
+void QtMainWindow::handleCharacterDataUpdated(const std::string& /*id*/) {
 	Character::ref character = selectedCharacter();
 	if (!character) {
 		return;
@@ -126,7 +126,7 @@ void QtMainWindow::handleCharacterDataUpdated(const std::string& id) {
 	skillModel_->setRoot(character->getKnownSkills());
 }
 
-void QtMainWindow::handleCharacterSelected(int index) {
+void QtMainWindow::handleCharacterSelected(int /*index*/) {
 	Character::ref character = selectedCharacter();
 	if (!character) {
 		return;
