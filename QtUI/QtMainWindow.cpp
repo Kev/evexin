@@ -55,7 +55,6 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	
 	characterPane_ = new QtCharacterPane(this);
 	characterLayout->addWidget(characterPane_);
-	rightLeftLayout->addLayout(characterLayout);
 
 	skillPane_ = new QTreeView(this);
 	skillModel_ = boost::make_shared<QtSkillModel>();
@@ -67,8 +66,6 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	characterLayout->addWidget(skillPane_);
 
 	skillPlannerWidget_ = new QtSkillPlannerWidget(dataController, this);
-	QBoxLayout* skillPlanLayout = new QBoxLayout(QBoxLayout::LeftToRight);	
-	skillPlannerWidget_->setLayout(skillPlanLayout);
 	tabs->addTab(skillPlannerWidget_, "Skill Plan");
 
 	connect(characterComboBox_, SIGNAL(currentIndexChanged(int)), this, SLOT(handleCharacterSelected(int)));

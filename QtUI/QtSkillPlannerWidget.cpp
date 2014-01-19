@@ -50,12 +50,11 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	
 	createPlanButton_ = new QPushButton("+", this);
 	deletePlanButton_ = new QPushButton("-", this);
-	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight, this);
+	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	buttonLayout->addWidget(createPlanButton_);
 	buttonLayout->addWidget(deletePlanButton_);
 
-
-	QBoxLayout* planLayout = new QBoxLayout(QBoxLayout::TopToBottom, this);
+	QBoxLayout* planLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	planLayout->addWidget(planWidget);
 	planLayout->addLayout(buttonLayout);
 	mainLayout->addLayout(planLayout);
