@@ -64,6 +64,10 @@ void DataController::addAPIKey(const std::string& keyID, const std::string& vCod
 
 Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback callback) {
 	Swift::ByteArray content = store_->getContent(url);
+	// We're expecting a file here, not a normal HTTP response. So if it's not a file, assume it's wrong
+	if (Swift::byteArrayToString(content).substr(0, 4) == "HTTP") {
+		content.clear();
+	}
 	if (content.empty()) {
 		if (canRequestURL(url)) {
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
