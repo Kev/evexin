@@ -11,16 +11,10 @@
 #include <QRect>
 #include <QString>
 
+#include <Eve-Xin/QtUI/ElidedPainter.h>
 #include <Eve-Xin/QtUI/QtSkillModel.h>
 
 namespace EveXin {
-
-void drawElidedText(QPainter* painter, const QRect& region, const QString& text, int flags = Qt::AlignTop) {
-	QString adjustedText(painter->fontMetrics().elidedText(text, Qt::ElideRight, region.width(), Qt::TextShowMnemonic));
-	painter->setClipRect(region);
-	painter->drawText(region, flags, adjustedText.simplified());
-	painter->setClipping(false);
-}
 
 QtSkillDelegate::QtSkillDelegate(QObject* parent) : QStyledItemDelegate(parent), nameFont_(QApplication::font()), infoFont_(QApplication::font()) {
 	int infoFontSizeDrop = nameFont_.pointSize() >= 10 ? 2 : 0;
@@ -93,13 +87,13 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	int nameHeight = nameMetrics.height() + margin;
 	QRect nameRegion(textRegion.adjusted(0, margin, 0, 0));
 
-	drawElidedText(painter, nameRegion, name);
+	ElidedPainter::drawElidedText(painter, nameRegion, name);
 
 	painter->setFont(infoFont_);
 	painter->setPen(QPen(QColor(160,160,160)));
 
 	QRect infoTextRegion(textRegion.adjusted(0, nameHeight, 0, 0));
-	drawElidedText(painter, infoTextRegion, infoText);
+	ElidedPainter::drawElidedText(painter, infoTextRegion, infoText);
 
 	painter->restore();
 }

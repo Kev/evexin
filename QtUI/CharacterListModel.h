@@ -16,6 +16,10 @@ namespace EveXin {
 	class CharacterListModel : public QAbstractListModel {
 		Q_OBJECT
 		public:
+			enum CharacterRoles {
+				AvatarRole = Qt::UserRole,
+				DetailTextRole = Qt::UserRole + 1,
+			};
 			CharacterListModel(QObject* parent);
 			virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
 			virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;

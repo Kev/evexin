@@ -9,12 +9,15 @@
 #include <limits>
 
 #include <Eve-Xin/QtUI/CharacterListModel.h>
+#include <Eve-Xin/QtUI/CharacterListDelegate.h>
 
 namespace EveXin {
 
 QtCharacterList::QtCharacterList(QWidget* parent) : QListView(parent), selectedRow_(std::numeric_limits<size_t>::max()) {
 	model_ = new CharacterListModel(this);
 	setModel(model_);
+	delegate_ = new CharacterListDelegate(this);
+	setItemDelegate(delegate_);
 	connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(handleItemActivated(const QModelIndex&)));
 	connect(this, SIGNAL(activated(const QModelIndex&)), this, SLOT(handleItemActivated(const QModelIndex&)));
 }

@@ -13,6 +13,7 @@
 #include <Eve-Xin/Controllers/Character.h>
 
 namespace EveXin {
+	class CharacterListDelegate;
 	class CharacterListModel;
 	class QtCharacterList : public QListView {
 		Q_OBJECT
@@ -31,6 +32,7 @@ namespace EveXin {
 		private:
 			std::vector<Character::ref> characters_;
 			CharacterListModel* model_;
+			CharacterListDelegate* delegate_;
 			size_t selectedRow_;
 	};
 }
