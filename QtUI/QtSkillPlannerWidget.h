@@ -17,6 +17,7 @@ namespace EveXin {
 	class DataController;
 	class Character;
 	class QtSkillModel;
+	class QtTreeView;
 	class QtSkillPlannerWidget : public QWidget {
 		Q_OBJECT
 		public:
@@ -33,5 +34,6 @@ namespace EveXin {
 			QtSkillModel* planModel_;
 			QPushButton* createPlanButton_;
 			QPushButton* deletePlanButton_;
+			QtTreeView* planWidget_;
 	};
 }

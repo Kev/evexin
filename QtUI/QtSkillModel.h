@@ -42,11 +42,10 @@ namespace EveXin {
 			Qt::DropActions supportedDropActions() const;
 			QMimeData* mimeData(const QModelIndexList& indexes) const;
 			bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
-
+			boost::shared_ptr<SkillItem> getItem(const QModelIndex& index) const;
 		// signals:
 		// 	void itemExpanded(const QModelIndex& item, bool expanded);
 		private:
-			boost::shared_ptr<SkillItem> getItem(const QModelIndex& index) const;
 			QVariant getItemData(boost::shared_ptr<SkillItem> item, int role) const;
 			QVariant getLevelData(boost::shared_ptr<SkillLevel> level, int role) const;
 			// void handleDataChanged(RosterItem* item);

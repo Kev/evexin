@@ -8,6 +8,7 @@
 
 #include <QBoxLayout>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QTreeView>
 
@@ -20,6 +21,7 @@
 
 #include <Eve-Xin/QtUI/QtSkillModel.h>
 #include <Eve-Xin/QtUI/QtSkillDelegate.h>
+#include <Eve-Xin/QtUI/QtTreeView.h>
 
 namespace EveXin {
 
@@ -35,18 +37,18 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	allSkillsWidget->setHeaderHidden(true);
 	allSkillsWidget->setDragEnabled(true);
 
-	QTreeView* planWidget = new QTreeView(this);
+	planWidget_ = new QtTreeView(this);
 	planModel_ = new QtSkillModel();
 	QtSkillDelegate* planDelegate = new QtSkillDelegate(this);
-	planWidget->setItemDelegate(planDelegate);
-	planWidget->setModel(planModel_);
-	planWidget->setUniformRowHeights(false);
-	planWidget->setHeaderHidden(true);
-	planWidget->setDragEnabled(true);
-	planWidget->setAcceptDrops(true);
+	planWidget_->setItemDelegate(planDelegate);
+	planWidget_->setModel(planModel_);
+	planWidget_->setUniformRowHeights(false);
+	planWidget_->setHeaderHidden(true);
+	planWidget_->setDragEnabled(true);
+	planWidget_->setAcceptDrops(true);
 	allSkillsWidget->setDragEnabled(true);
-	planWidget->setAcceptDrops(true);
-	planWidget->setDropIndicatorShown(true);
+	planWidget_->setAcceptDrops(true);
+	planWidget_->setDropIndicatorShown(true);
 	
 	createPlanButton_ = new QPushButton("+", this);
 	deletePlanButton_ = new QPushButton("-", this);
@@ -55,7 +57,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	buttonLayout->addWidget(deletePlanButton_);
 
 	QBoxLayout* planLayout = new QBoxLayout(QBoxLayout::TopToBottom);
-	planLayout->addWidget(planWidget);
+	planLayout->addWidget(planWidget_);
 	planLayout->addLayout(buttonLayout);
 	mainLayout->addLayout(planLayout);
 
@@ -87,7 +89,23 @@ void QtSkillPlannerWidget::handleCreatePlanClicked() {
 }
 
 void QtSkillPlannerWidget::handleDeletePlanClicked() {
-	
+	QModelIndexList indices = planWidget_->selectedIndexes();
+	if (indices.size() > 0) {
+		SkillItem::ref item = planModel_->getItem(indices[0]);
+		SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(item);
+		SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
+		if (plan) {
+			QMessageBox messageBox;
+			messageBox.setWindowTitle("Delete plan");
+			messageBox.setText("Are you sure you want to delete the skill plan?");
+			messageBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+			messageBox.setDefaultButton(QMessageBox::Yes);
+			if (messageBox.exec() == QMessageBox::Yes) {
+				character_->getSkillPlanRoot()->deletePlan(plan);
+			}
+		}
+	}
+
 }
 
 
