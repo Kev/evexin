@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include <boost/shared_ptr.hpp>
 
 #include <QAbstractItemModel>
@@ -48,6 +50,8 @@ namespace EveXin {
 		private:
 			QVariant getItemData(boost::shared_ptr<SkillItem> item, int role) const;
 			QVariant getLevelData(boost::shared_ptr<SkillLevel> level, int role) const;
+			void handleAvailablePlansChanged();
+			void cacheRootChildren();
 			// void handleDataChanged(RosterItem* item);
 			// void handleChildrenChanged(GroupRosterItem* item);
 			// QColor intToColor(int color) const;
@@ -64,5 +68,6 @@ namespace EveXin {
 			boost::shared_ptr<SkillItem> root_;
 			boost::shared_ptr<SkillItem> filtered_;
 			boost::shared_ptr<Character> character_;
+			std::vector<boost::shared_ptr<SkillItem> > childrenCache_;
 	};
 }

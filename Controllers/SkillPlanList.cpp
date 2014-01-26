@@ -33,6 +33,7 @@ SkillPlan::ref SkillPlanList::createPlan(const std::string& name) {
 	plan->onWantsToSave.connect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	addChild(plan);
 	onWantsToSave(plan);
+	onAvailablePlansChanged();
 	return plan;
 }
 
@@ -40,6 +41,7 @@ void SkillPlanList::deletePlan(SkillPlan::ref plan) {
 	plan->onWantsToSave.disconnect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	children_.erase(plan->getID());
 	onWantsToSave(SkillPlan::ref());
+	onAvailablePlansChanged();
 }
 
 void SkillPlanList::handleSkillPlanWantsToSave(SkillPlan::ref plan) {

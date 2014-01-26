@@ -34,10 +34,45 @@ void QtSkillModel::setCharacter(boost::shared_ptr<Character> character) {
 	character_ = character;
 }
 
+void QtSkillModel::cacheRootChildren() {
+	childrenCache_ = root_->getChildren();
+}
+
 void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {
+	SkillPlanList::ref list = boost::dynamic_pointer_cast<SkillPlanList>(root_);
+	if (list) {
+		list->onAvailablePlansChanged.disconnect(boost::bind(&QtSkillModel::handleAvailablePlansChanged, this));
+	}
 	beginResetModel();
 	root_ = root;
+	list = boost::dynamic_pointer_cast<SkillPlanList>(root_);
+	if (list) {
+		list->onAvailablePlansChanged.connect(boost::bind(&QtSkillModel::handleAvailablePlansChanged, this));
+	}
+	cacheRootChildren();
 	endResetModel();
+}
+
+void QtSkillModel::handleAvailablePlansChanged() {
+	std::vector<SkillItem::ref> newChildren = root_->getChildren();
+	if (newChildren.size() > childrenCache_.size()) {
+		for (size_t i = 0; i < newChildren.size(); i++) {
+			if (i >= childrenCache_.size() || newChildren[i] != childrenCache_[i]) {
+				beginInsertRows(QModelIndex(), i, i);
+				cacheRootChildren();
+				endInsertRows();
+			}
+		}
+	}
+	else {
+		for (size_t i = 0; i < childrenCache_.size(); i++) {
+			if (i >= newChildren.size() || newChildren[i] != childrenCache_[i]) {
+				beginRemoveRows(QModelIndex(), i, i);
+				cacheRootChildren();
+				endRemoveRows();
+			}
+		}
+	}
 }
 
 Qt::DropActions QtSkillModel::supportedDropActions() const {
@@ -142,8 +177,9 @@ QModelIndex QtSkillModel::index(boost::shared_ptr<SkillItem> item) const {
 	if (!parent || !root_ || (parent != root_ && !index(parent).isValid())) {
 		return QModelIndex();
 	}
-	for (size_t i = 0; i < parent->getChildren().size(); i++) {
-		if (parent->getChildren()[i] == item) {
+	std::vector<SkillItem::ref> children = (parent == root_) ? childrenCache_ : parent->getChildren();
+	for (size_t i = 0; i < children.size(); i++) {
+		if (children[i] == item) {
 			return createIndex(i, 0, item.get());
 		}
 	}
@@ -168,7 +204,7 @@ int QtSkillModel::rowCount(const QModelIndex& parent) const {
 	}
 	assert(item.get() != filtered_.get());
 	Q_ASSERT(item);
-	int count = item->getChildren().size();
+	int count = (item == root_) ? childrenCache_.size() : item->getChildren().size();
 	// qDebug() << "Returning " << count << " rows";
 	return count;
 }
@@ -245,6 +281,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	plan->addSkill(skillID, level, rowT);
 	beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
 	filtered_.reset();
+	cacheRootChildren();
 	endInsertRows();
 	return true;
 }

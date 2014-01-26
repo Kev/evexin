@@ -60,7 +60,7 @@ void HTTPRequest::cancelConnector() {
 }
 
 void HTTPRequest::writeData() {
-	size_t size = 0;
+//	size_t size = 0;
 	std::stringstream header;
 	header	<< "GET " << url_.getPath() << " HTTP/1.0\r\n"
 			<< "Host: " << url_.getHost();
@@ -100,7 +100,7 @@ void HTTPRequest::handleDataRead(boost::shared_ptr<Swift::SafeByteArray> data) {
 	}
 }
 
-void HTTPRequest::handleDisconnected(const boost::optional<Swift::Connection::Error>& error) {
+void HTTPRequest::handleDisconnected(const boost::optional<Swift::Connection::Error>& /*error*/) {
 	//std::cerr << "HTTP Disconnected" << std::endl;
 	cancelConnector();
 	if (receivedHeaders_) {

@@ -1,7 +1,7 @@
 Eve-Xin
 =======
 
-Skill planner for Eve Online
+Skill planner for Eve Online. It has a small website at http://kev.github.io/evexin/
 
 Status
 ======

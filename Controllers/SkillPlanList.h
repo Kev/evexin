@@ -33,6 +33,10 @@ namespace EveXin {
 			 * The plan is null when deleting.
 			 */
 			boost::signal<void(SkillPlan::ref)> onWantsToSave;
+			/**
+			 * Only called for a single change - either one add or one delete.
+			 */
+			boost::signal<void()> onAvailablePlansChanged;
 		private:
 			void handleSkillPlanWantsToSave(SkillPlan::ref plan);
 		private:
