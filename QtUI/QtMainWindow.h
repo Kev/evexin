@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -17,6 +17,7 @@ class QTreeView;
 
 namespace EveXin {
 	class DataController;
+	class QtCharacterList;
 	class QtCharacterPane;
 	class QtSkillModel;
 	class QtSkillPlannerWidget;
@@ -28,15 +29,15 @@ namespace EveXin {
 
 		private slots:
 			void handleEditAPIKeys();
-			void handleCharacterSelected(int index);
-			private:
+			void handleCharacterSelected(Character::ref);
+		private:
 			void handleCharacterListUpdated();
 			void handleCharacterDataUpdated(const std::string& id);
 			Character::ref selectedCharacter();
 		private:
 			void createMenus();
 		private:
-			QComboBox* characterComboBox_;
+			QtCharacterList* characterList_;
 			QtCharacterPane* characterPane_;
 			boost::shared_ptr<DataController> dataController_;
 			QWidget* apiWindow_;
