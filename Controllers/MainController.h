@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <boost/filesystem.hpp>
 #include <boost/shared_ptr.hpp>
 
 namespace Swift {
@@ -17,7 +18,7 @@ namespace EveXin {
 
 	class MainController {
 		public:
-			MainController(Swift::NetworkFactories* factories_);
+			MainController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir);
 			~MainController();
 
 			boost::shared_ptr<DataController> getDataController();

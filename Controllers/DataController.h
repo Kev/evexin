@@ -11,6 +11,7 @@
 #include <set>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/function.hpp>
 
 #include <Swiften/Base/boost_bsignals.h>
@@ -34,7 +35,7 @@ namespace EveXin {
 	class SkillPlanList;
 	class DataController {
 		public:
-			DataController(Swift::NetworkFactories* factories);
+			DataController(Swift::NetworkFactories* factories, const boost::filesystem::path&);
 			~DataController();
 
 			void addAPIKey(const std::string& keyID, const std::string& vCode, bool isFromCache = false);

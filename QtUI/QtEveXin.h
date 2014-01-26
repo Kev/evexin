@@ -6,7 +6,9 @@
 
 #pragma once
 
+#include <boost/program_options/options_description.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/program_options/variables_map.hpp>
 
 #include <QObject>
 
@@ -21,7 +23,7 @@ namespace EveXin {
 	class QtEveXin : public QObject {
 		Q_OBJECT
 		public:
-			QtEveXin(Swift::NetworkFactories*);
+			QtEveXin(Swift::NetworkFactories*, const boost::program_options::variables_map&);
 			~QtEveXin();
 		private:
 			boost::shared_ptr<MainController> mainController_;

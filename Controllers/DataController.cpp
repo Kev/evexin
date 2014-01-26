@@ -18,8 +18,6 @@
 #include <Swiften/Base/URL.h>
 #include <Swiften/Network/NetworkFactories.h>
 
-#include <SwifTools/Application/PlatformApplicationPathProvider.h>
-
 #include <Eve-Xin/Controllers/DataStore.h>
 #include <Eve-Xin/Controllers/GeneralResult.h>
 #include <Eve-Xin/Controllers/HTTPRequest.h>
@@ -37,9 +35,8 @@ namespace EveXin {
 
 Swift::URL SKILL_URL("https","api.eveonline.com","/eve/SkillTree.xml.aspx");
 
-DataController::DataController(Swift::NetworkFactories* factories) : factories_(factories) {
-	Swift::PlatformApplicationPathProvider paths("Eve-Xin");
-	store_ = boost::make_shared<SqliteDataStore>(paths.getDataDir());
+DataController::DataController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir) : factories_(factories) {
+	store_ = boost::make_shared<SqliteDataStore>(dataDir);
 	skillTree_ = boost::make_shared<SkillTree>();
 	std::vector<DataStore::APIKey> keys = store_->getAPIKeys();
 	foreach (const DataStore::APIKey& key, keys) {

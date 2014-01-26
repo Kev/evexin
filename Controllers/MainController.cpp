@@ -12,8 +12,8 @@
 
 namespace EveXin {
 
-MainController::MainController(Swift::NetworkFactories* factories) : factories_(factories) {
-	dataController_ = boost::make_shared<DataController>(factories_);
+MainController::MainController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir) : factories_(factories) {
+	dataController_ = boost::make_shared<DataController>(factories_, dataDir);
 }
 
 MainController::~MainController() {

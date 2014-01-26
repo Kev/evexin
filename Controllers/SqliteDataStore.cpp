@@ -16,7 +16,7 @@
 
 namespace EveXin {
 
-SqliteDataStore::SqliteDataStore(boost::filesystem::path dataDir) : dataDir_(dataDir) {
+SqliteDataStore::SqliteDataStore(const boost::filesystem::path& dataDir) : dataDir_(dataDir) {
 	boost::filesystem::path boostPath = dataDir / "db.sqlite3";
 	std::string stringPath = Swift::pathToString(boostPath);
 	const char * sqlitePath = stringPath.c_str(); // Just to play with for the moment

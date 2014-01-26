@@ -22,7 +22,7 @@ namespace Swift {
 namespace EveXin {
 	class SqliteDataStore : public DataStore {
 		public:
-			SqliteDataStore(boost::filesystem::path dataDir);
+			SqliteDataStore(const boost::filesystem::path& dataDir);
 			virtual ~SqliteDataStore();
 
 			virtual Swift::ByteArray getContent(const Swift::URL& url);
