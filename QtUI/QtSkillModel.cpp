@@ -52,8 +52,10 @@ Qt::ItemFlags QtSkillModel::flags(const QModelIndex& index) const {
 	}
 	else {
 		SkillItem::ref item = getItem(index);
-		if (item && item->getSkill()) {
-			flags |= Qt::ItemIsDragEnabled;
+		if (item) {
+			if (item->getSkill()) {
+				flags |= Qt::ItemIsDragEnabled;
+			}
 			flags |= Qt::ItemIsDropEnabled;	
 		}
 	}
