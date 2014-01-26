@@ -30,6 +30,13 @@ int Character::getImplantValue(SkillAttribute::Attribute attribute) {
 	return (it != enhancerValues_.end()) ? (*it).second : 0;
 }
 
+void Character::setAvatar(size_t size, const Swift::ByteArray& avatar) {
+	avatars_[size] = avatar;
+}
+
+Swift::ByteArray Character::getAvatar(size_t size) {
+	return avatars_[size];
+}
 
 }
 

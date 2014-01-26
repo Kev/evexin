@@ -25,6 +25,8 @@ namespace EveXin {
 			virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 			void setCharacters(const std::vector<Character::ref>& characters);
 		private:
+			QByteArray getAvatarData(Character::ref character) const;
+		private:
 			std::vector<Character::ref> characters_;
 	};
 }

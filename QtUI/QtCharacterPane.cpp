@@ -47,7 +47,7 @@ QtCharacterPane::QtCharacterPane(QWidget* parent) : QWidget(parent) {
 
 void QtCharacterPane::setCharacter(Character::ref character) {
 	nameLabel_->setText(QString("<b>%1</b>").arg(QtUtilities::htmlEscape(character ? P2QSTRING(character->getName()) : "No Character Selected")));
-	Swift::ByteArray avatarData = character ? character->get256Avatar() : Swift::ByteArray(); //dataController_->get256CharacterAvatar(id);
+	Swift::ByteArray avatarData = character ? character->getAvatar(256) : Swift::ByteArray(); //dataController_->get256CharacterAvatar(id);
 	QImage avatarImage;
 	avatarImage.loadFromData(&avatarData[0], avatarData.size(), "JPG");
 	avatarLabel_->setPixmap(QPixmap::fromImage(avatarImage));

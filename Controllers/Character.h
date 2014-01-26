@@ -32,8 +32,8 @@ namespace EveXin {
 			std::string getExpires() {return expires_;}
 			void setISK(double isk) {isk_ = isk;}
 			double getISK() {return isk_;}
-			Swift::ByteArray get256Avatar() {return avatar256_;}
-			void set256Avatar(const Swift::ByteArray& avatar) {avatar256_ = avatar;}
+			Swift::ByteArray getAvatar(size_t size);
+			void setAvatar(size_t size, const Swift::ByteArray& avatar);
 			void setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {knownSkillRoot_ = skillRoot;}
 			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {skillPlanRoot_ = skillPlanRoot;}
 			boost::shared_ptr<SkillItem> getKnownSkills() {return knownSkillRoot_;}
@@ -51,7 +51,7 @@ namespace EveXin {
 			std::string corpName_;
 			std::string expires_;
 			double isk_;
-			Swift::ByteArray avatar256_;
+			std::map<size_t, Swift::ByteArray> avatars_;
 			boost::shared_ptr<SkillItem> knownSkillRoot_;
 			boost::shared_ptr<SkillPlanList> skillPlanRoot_;
 			std::map<SkillAttribute::Attribute, int> baseAttributes_;

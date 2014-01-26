@@ -40,7 +40,6 @@ namespace EveXin {
 			void addAPIKey(const std::string& keyID, const std::string& vCode, bool isFromCache = false);
 			std::vector<std::string /*id*/> getCharacters();
 			Character::ref getCharacter(const std::string& id);
-			Swift::ByteArray get256CharacterAvatar(const std::string& id);
 			boost::shared_ptr<SkillTree> getSkillTree();
 		public:
 			boost::signal<void(const std::string&)> onCharacterDataChanged;
@@ -56,7 +55,7 @@ namespace EveXin {
 			void handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);
 			void handleSkillResult(boost::shared_ptr<GeneralResult> result);
 			void handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);
-			void handleCharacter256AvatarResult(const std::string& id, const Swift::ByteArray& content);
+			void handleCharacterAvatarResult(const std::string& id, size_t size, const Swift::ByteArray& content);
 			/**
 			 * Check if URL is tracked, and track if not.
 			 */

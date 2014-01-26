@@ -21,6 +21,12 @@ int CharacterListModel::rowCount(const QModelIndex& parent) const {
 	return static_cast<int>(characters_.size());
 }
 
+QByteArray CharacterListModel::getAvatarData(Character::ref character) const {
+	Swift::ByteArray avatarData = character ? character->getAvatar(32) : Swift::ByteArray();
+	//NOTE: reinterpret_cast alert. Don't do this at home.
+	return QByteArray(reinterpret_cast<char *>(&avatarData[0]), avatarData.size());
+}
+
 QVariant CharacterListModel::data(const QModelIndex& index, int role) const {
 	if (!index.isValid()) {
 		return QVariant();
@@ -28,6 +34,7 @@ QVariant CharacterListModel::data(const QModelIndex& index, int role) const {
 	Character::ref character = characters_[index.row()];
 	switch (role) {
 		case Qt::DisplayRole: return QVariant(P2QSTRING(character->getName()));
+		case AvatarRole:return getAvatarData(character);
 		default: return QVariant();
 	}
 }

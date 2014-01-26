@@ -331,8 +331,13 @@ void DataController::loadSkillPlans(Character::ref character) {
 Character::ref DataController::getCharacter(const std::string& id) {
 	std::string accountKey = characterAccounts_[id];
 	std::string vCode = accountKeys_[accountKey];
-	Swift::URL bigAvatarURL("http", "image.eveonline.com", "/Character/" + id + "_256.jpg");
-	getAndCache(bigAvatarURL, boost::bind(&DataController::handleCharacter256AvatarResult, this, id, _1));
+	std::vector<size_t> avatarSizes;
+	avatarSizes.push_back(32);
+	avatarSizes.push_back(256);
+	foreach (size_t avatarSize, avatarSizes) {
+		Swift::URL avatarURL("http", "image.eveonline.com", "/Character/" + id + "_" + boost::lexical_cast<std::string>(avatarSize) + ".jpg");
+		getAndCache(avatarURL, boost::bind(&DataController::handleCharacterAvatarResult, this, id, avatarSize, _1));
+	}
 	Swift::URL characterSheetURL("https", "api.eveonline.com", "/char/CharacterSheet.xml.aspx?keyID=" + accountKey + "&vCode=" + vCode + "&characterID=" + id);
 	getURLandDommify(characterSheetURL, boost::bind(&DataController::handleCharacterSheetResult, this, id, _1));
 	Swift::URL accountBalanceURL("https", "api.eveonline.com", "/char/AccountBalance.xml.aspx?keyID=" + accountKey + "&vCode=" + vCode + "&characterID=" + id);
@@ -340,12 +345,12 @@ Character::ref DataController::getCharacter(const std::string& id) {
 	return characters_[id];
 }
 
-void DataController::handleCharacter256AvatarResult(const std::string& id, const Swift::ByteArray& content) {
+void DataController::handleCharacterAvatarResult(const std::string& id, size_t size, const Swift::ByteArray& content) {
 	Character::ref character = characters_[id];
 	if (!character) {
 		return;
 	}
-	character->set256Avatar(content);
+	character->setAvatar(size, content);
 }
 
 std::vector<std::string> DataController::getCharacters() {
@@ -354,12 +359,6 @@ std::vector<std::string> DataController::getCharacters() {
 		characters.push_back(i.first);
 	}
 	return characters;
-}
-
-Swift::ByteArray DataController::get256CharacterAvatar(const std::string& id) {
-	//http://wiki.eve-id.net/APIv2_Eve_Image_Service
-	Swift::URL bigAvatarURL("https", "image.eveonline.com", "/Character/" + id + "_256.jpg");
-	return getAndCache(bigAvatarURL, NULL);
 }
 
 bool DataController::canRequestURL(const Swift::URL& url) {
