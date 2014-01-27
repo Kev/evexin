@@ -49,17 +49,24 @@ bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	}
 	if (found && found->getLevel() >= level) {
 		// std::cerr << "Already known, skipping" << std::endl;
-		return false;
+		return true;
 	}
 	if (level > 1) {
 		addSkill(skill, level - 1);
+	}
+	foreach (auto blockedItem, blackList_) {
+		if (skill->getID() == blockedItem.first && level >= blockedItem.second) {
+			return false;
+		}
 	}
 	SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(shared_from_this(), skill, level);
 	plannedSkills_[skillLevel->getID()] = skillLevel;
 	std::vector<boost::shared_ptr<SkillLevel> > dependencies = skill->getDependencies();
 	foreach (SkillLevel::ref dependency, dependencies) {
 		// std::cerr << "Found dependency on " << dependency->getSkill()->getName() << ":" << dependency->getLevel() << std::endl;
-		addSkill(dependency->getSkill(), dependency->getLevel());
+		if (!addSkill(dependency->getSkill(), dependency->getLevel())) {
+			return false;
+		}
 	}
 	// std::cerr << "Finished dependencies" << std::endl;
 	
@@ -71,7 +78,7 @@ bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position)
 	SkillLevel::ref known = knownSkills_[skillID];
 	int knownLevel = known ? known->getLevel() : -1;
 	if (level > 0 && knownLevel >= level) {
-		return false;
+		return true;
 	}
 	SkillLevel::ref planned = plannedSkills_[skillID];
 	int plannedLevel = planned ? planned->getLevel() : -1;
@@ -111,6 +118,20 @@ bool SkillPlan::addSkill(const std::string& skillID, int level, size_t position)
 	}
 	addFinished();
 	return true;
+}
+
+void SkillPlan::removeSkill(const std::string& skillID, int level) {
+	aboutToAdd();
+	blackList_.push_back(std::pair<std::string, int>(skillID, level));
+	std::vector<SkillItem::ref> oldPlan = plan_;
+	clear();
+	foreach (SkillItem::ref item, oldPlan) {
+		SkillLevel::ref skillLevel = boost::dynamic_pointer_cast<SkillLevel>(item);
+		if (!skillLevel) continue;
+		addSkill(skillLevel->getSkill(), skillLevel->getLevel());
+	}
+	blackList_.clear();
+	addFinished();
 }
 
 void SkillPlan::clear() {

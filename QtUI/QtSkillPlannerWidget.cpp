@@ -104,6 +104,17 @@ void QtSkillPlannerWidget::handleDeletePlanClicked() {
 				character_->getSkillPlanRoot()->deletePlan(plan);
 			}
 		}
+		else if (level) {
+			QMessageBox messageBox;
+			messageBox.setWindowTitle("Remove skill from plan");
+			messageBox.setText("Are you sure you want to the skill from the plan?");
+			messageBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+			messageBox.setDefaultButton(QMessageBox::Yes);
+			if (messageBox.exec() == QMessageBox::Yes) {
+				SkillPlan::ref parent = boost::dynamic_pointer_cast<SkillPlan>(level->getParent());
+				parent->removeSkill(level->getSkill()->getID(), level->getLevel());
+			}
+		}
 	}
 
 }

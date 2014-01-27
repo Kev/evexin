@@ -6,9 +6,10 @@
 
 #pragma once
 
-#include <string>
-#include <map>
 #include <deque>
+#include <map>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
@@ -52,8 +53,9 @@ namespace EveXin {
 			/**
 			 * Try to add specified level of this skill to the plan.
 			 * Will insert dependencies.
-			 * Safe to call with skills that are already trained, just returns false.
-			 * @return  Skill added.
+			 * Safe to call with skills that are already trained, just returns true.
+			 * Will ignore any skills in the blacklist.
+			 * @return  Skill added or already present.
 			 */
 			bool addSkill(Skill::ref skill, int level);
 
@@ -65,6 +67,11 @@ namespace EveXin {
 			void setKnownSkills(SkillItem::ref knownSkillRoot);
 
 			virtual std::vector<SkillItem::ref> getChildren() const;
+
+			/**
+			 * Remove the skill, and anything that has it as a dependency
+			 */
+			void removeSkill(const std::string& skillID, int level);
 
 			/**
 			 * Clear the plan out.
@@ -95,5 +102,6 @@ namespace EveXin {
 			std::deque<std::vector<SkillItem::ref> > undoStates_;
 			int addDepth_;
 			bool savingDisabled_;
+			std::vector<std::pair<std::string, int> > blackList_;
 	};
 }
