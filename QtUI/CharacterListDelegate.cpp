@@ -44,7 +44,7 @@ void CharacterListDelegate::paint(QPainter* painter, const QStyleOptionViewItem&
 		painter->setPen(option.palette.text().color());
 	}
 
-	QRect avatarRegion(QPoint(farLeftMargin, fullRegion.top()), QSize(avatarSize, avatarSize));
+	QRect avatarRegion(QPoint(farLeftMargin, fullRegion.top() + verticalMargin), QSize(avatarSize, avatarSize));
 
 	//NOTE: This is pretty expensive for a paint(), I may need to change this.
 	QByteArray avatarData = index.data(CharacterListModel::AvatarRole).toByteArray();
