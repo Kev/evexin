@@ -163,15 +163,19 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 		std::string groupID = groupElement->getAttributes().getAttribute("groupID");
 		std::string groupName = groupElement->getAttributes().getAttribute("groupName");
 		SkillItem::ref group = skillTree_->getChild(groupID);
-		if (!group) {
-			group = boost::make_shared<SkillItem>(skillTree_, groupID, groupName);
-			skillTree_->addChild(group);
-		}
+
 		const std::vector<Swift::ParserElement::ref>& skills = groupElement->getChild("rowset", "")->getChildren("row", "");
 		foreach (Swift::ParserElement::ref skillElement, skills) {
 			std::string skillID = skillElement->getAttributes().getAttribute("typeID");
 			std::string skillName = skillElement->getAttributes().getAttribute("typeName");
 			std::string description = skillElement->getChild("description", "")->getText();
+			if (skillElement->getAttributes().getAttribute("published") == "0") {
+				continue;
+			}
+			if (!group) {
+				group = boost::make_shared<SkillItem>(skillTree_, groupID, groupName);
+				skillTree_->addChild(group);
+			}
 			int rank = 0;
 			try {
 				rank = boost::lexical_cast<int>(skillElement->getChild("rank", "")->getText());
