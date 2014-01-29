@@ -34,9 +34,7 @@ int SkillLevel::rawLevelPoints(int level) const {
 
 int SkillLevel::getSkillPointsForLevel() const {
 	int multiplier = getSkill()->getRank();
-	int points = 0;
-	points = rawLevelPoints(level_);
-	points *= multiplier;
+	int points = rawLevelPoints(level_) * multiplier;
 	return points;
 }
 
@@ -48,12 +46,11 @@ int SkillLevel::getRemainingSkillPoints() const {
 	int multiplier = getSkill()->getRank();
 	int points = getSkillPointsForLevel() - getSkillPointsTrained();
 	points *= multiplier;
-	std::cerr << points << " remaining for " << getSkill()->getName() << ", " << getSkillPointsTrained() << " already trained "<< std::endl;
 	return points;
 }
 
 bool SkillLevel::isComplete() const {
-	return getRemainingSkillPoints() == 0;
+	return getRemainingSkillPoints() <= 0;
 }
 
 }

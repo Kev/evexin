@@ -43,12 +43,10 @@ void SkillPlan::addFinished() {
 
 bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	SkillLevel::ref found = plannedSkills_[skill->getID()];
-	// std::cerr << "Adding " << skill->getName() << ":" << level << " to plan" << std::endl;
 	if (!found) {
 		found = knownSkills_[skill->getID()];
 	}
 	if (found && found->getLevel() >= level) {
-		// std::cerr << "Already known, skipping" << std::endl;
 		return true;
 	}
 	if (level > 1) {
@@ -63,12 +61,10 @@ bool SkillPlan::addSkill(Skill::ref skill, int level) {
 	plannedSkills_[skillLevel->getID()] = skillLevel;
 	std::vector<boost::shared_ptr<SkillLevel> > dependencies = skill->getDependencies();
 	foreach (SkillLevel::ref dependency, dependencies) {
-		// std::cerr << "Found dependency on " << dependency->getSkill()->getName() << ":" << dependency->getLevel() << std::endl;
 		if (!addSkill(dependency->getSkill(), dependency->getLevel())) {
 			return false;
 		}
 	}
-	// std::cerr << "Finished dependencies" << std::endl;
 	
 	plan_.push_back(skillLevel);
 	return true;

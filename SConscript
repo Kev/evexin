@@ -99,6 +99,9 @@ if env["SCONS_STAGE"] == "build":
       "QtUI/QtSkillPlannerWidget.cpp",
       "QtUI/QtUtilities.cpp",
     ]
+  env.Append(UNITTEST_SOURCES = [
+#      File("Controllers/UnitTest/SkillPlanTest.cpp"),
+    ])
 
 
   # myenv.Uic4("QtUI/QtMainWindow.ui")

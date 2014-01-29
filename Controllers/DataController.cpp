@@ -93,7 +93,6 @@ void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback call
 	Swift::ByteArray content = store_->getContent(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (!result->isValid() || result->needsRefresh()) {
-		//std::cerr << "Requesting update, isValid(" << result->isValid() << ") needsRefresh(" << result->needsRefresh() << ") cachedUntil(" << (result->isValid() ? Swift::dateTimeToLocalString(result->getCachedUntil()) : std::string("None")) << ")" << std::endl;
 		if (canRequestURL(url)) {
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
 			//request->onError //FIXME: Do something with this
@@ -110,8 +109,6 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 	untrackURL(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (result->isValid() && result->getResult()) {
-		//std::cerr << "Valid result" << std::endl;
-		//std::cerr << "Updating cache" << std::endl;
 		store_->setContent(url, content);
 		if (!callback.empty()) {
 			callback(result);
@@ -123,11 +120,9 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 }
 
 void DataController::handleCharactersResult(const std::string& accountKey, boost::shared_ptr<GeneralResult> result) {
-	//std::cerr << "DataController<<handleCharactersResult:" << std::endl;
 	Swift::ParserElement::ref keyElement = result->getResult()->getChild("key", "");
 	const std::vector<Swift::ParserElement::ref>& characters = keyElement->getChild("rowset", "")->getChildren("row", "");
 	std::string expires = keyElement->getAttributes().getAttribute("expires");
-	// std::cerr << "Account " << accountKey << " with " << characters.size() << " characters expires at " << expires << std::endl;
 	foreach (auto element, characters) {
 		std::string id = element->getAttributes().getAttribute("characterID");
 		std::string name = element->getAttributes().getAttribute("characterName");
@@ -149,7 +144,6 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 void DataController::handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
 	Swift::ParserElement::ref element = result->getResult()->getChild("rowset", "")->getChild("row", "");
 	std::string balance = element->getAttributes().getAttribute("balance");
-	//std::cerr << "Balance for " << characterID << ": " << balance << std::endl;
 	Character::ref character = characters_[characterID];
 	if (!character) {
 		return;
@@ -206,7 +200,6 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 							//Not much to do if they send bad data
 						}
 						SkillLevel::ref dependency = boost::make_shared<SkillLevel>(skillItem, skillTree_->getSkill(dependencyID), dependencyLevel);
-						//std::cerr << "Parsed dependency " << dependency->getSkill()->getID() << " for skill " << skillName << std::endl;
 						skillItem->addChild(dependency);
 						dependencies.push_back(dependency);
 					}
@@ -271,10 +264,8 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 	const std::vector<Swift::ParserElement::ref>& rowsets = result->getResult()->getChildren("rowset", "");
 	foreach (Swift::ParserElement::ref rowset, rowsets) {
 		if (rowset->getAttributes().getAttribute("name") == "skills") {
-			//std::cerr << "Found the known skills element" << std::endl;
 			SkillItem::ref skillRoot = boost::make_shared<SkillItem>(SkillItem::ref(), "char_root", "char_root");
 			const std::vector<Swift::ParserElement::ref>& rows = rowset->getChildren("row", "");
-			//std::cerr << rows.size() << " skills" << std::endl;
 			foreach (Swift::ParserElement::ref row, rows) {
 				if (row->getAttributes().getAttribute("published") == "0") {
 					continue;
@@ -304,7 +295,6 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 				SkillItem::ref group = skillRoot->getGroup(groupID, groupName);
 				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level, points);
 				group->addChild(skillLevel);
-				//std::cerr << "Knows skill " << skillID << " at level " << level << " in " << group->getID() << std::endl;
 			}
 			character->setKnownSkills(skillRoot);
 		}
@@ -322,7 +312,6 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 void DataController::loadSkillPlans(Character::ref character) {
 	SkillPlanList::ref planRoot;
 	Swift::URL url = Swift::URL::fromString("http://characters/" + character->getID());
-	// std::cerr << "Want to load skills for " << url.toString() << std::endl;
 	planRoot = SkillPlanSerialization::parseSkills(store_->getContent(url), skillTree_, character->getKnownSkills());
 
 	planRoot->onWantsToSave.connect(boost::bind(&DataController::handleSkillPlanWantsToSave, this, url, planRoot));
@@ -385,7 +374,6 @@ boost::shared_ptr<SkillTree> DataController::getSkillTree() {
 }
 
 void DataController::handleSkillPlanWantsToSave(const Swift::URL& characterURL, SkillPlanList::ref planList) {
-	// std::cerr << "Want to save " << characterURL.toString() << std::endl;
 	store_->setContent(characterURL, SkillPlanSerialization::serializeSkills(planList));
 }
 
