@@ -15,13 +15,20 @@ namespace EveXin {
 	class SkillLevel : public SkillItem {
 		public:
 			typedef boost::shared_ptr<SkillLevel> ref;
-			SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level);
+			/* -1 means fully trained */
+			SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level, int pointsTrained = -1);
 
 			int getLevel() const;
-			int getSkillPoints() const;
-			int getSkillPointsSinceLastLevel() const;
+			int getSkillPointsForLevel() const;
+			int getSkillPointsTrained() const;
+			int getRemainingSkillPoints() const;
+			bool isComplete() const;
 
 		private:
+			int rawLevelPoints(int level) const;
+		private:
 			int level_;
+			int skillPoints_;
+			int skillPointsNeeded_;
 	};
 }

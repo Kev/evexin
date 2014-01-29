@@ -276,10 +276,20 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 			const std::vector<Swift::ParserElement::ref>& rows = rowset->getChildren("row", "");
 			//std::cerr << rows.size() << " skills" << std::endl;
 			foreach (Swift::ParserElement::ref row, rows) {
+				if (row->getAttributes().getAttribute("published") == "0") {
+					continue;
+				}
 				std::string skillID = row->getAttributes().getAttribute("typeID");
 				int level = 0;
 				try {
 					level = boost::lexical_cast<int>(row->getAttributes().getAttribute("level"));
+				}
+				catch(const boost::bad_lexical_cast &) {
+					//Not much to do if they send bad data
+				}
+				int points = 0;
+				try {
+					points = boost::lexical_cast<int>(row->getAttributes().getAttribute("skillpoints"));
 				}
 				catch(const boost::bad_lexical_cast &) {
 					//Not much to do if they send bad data
@@ -292,7 +302,7 @@ void DataController::handleCharacterSheetResult(const std::string& characterID, 
 				SkillItem::ref parent = skillTree_->getGroup(groupID);
 				std::string groupName = parent ? parent->getName() : "Please refresh";
 				SkillItem::ref group = skillRoot->getGroup(groupID, groupName);
-				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level);
+				SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level, points);
 				group->addChild(skillLevel);
 				//std::cerr << "Knows skill " << skillID << " at level " << level << " in " << group->getID() << std::endl;
 			}

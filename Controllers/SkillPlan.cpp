@@ -147,7 +147,12 @@ void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
 		foreach (SkillItem::ref levelItem, levels) {
 			SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(levelItem);
 			if (level) {
-				knownSkills_[level->getID()] = level;
+				if (!level->isComplete()) {
+					level = boost::make_shared<SkillLevel>(level->getParent(), level->getSkill(), level->getLevel() - 1, -1);
+				}
+				if (level->getLevel() >= 1) {
+					knownSkills_[level->getID()] = level;
+				}
 			}
 		}
 	}

@@ -13,7 +13,7 @@
 
 namespace EveXin {
 
-SkillLevel::SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level) : SkillItem(parent, skill), level_(level) {
+SkillLevel::SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level, int pointsTrained) : SkillItem(parent, skill), level_(level), skillPoints_(pointsTrained) {
 	
 }
 
@@ -21,33 +21,39 @@ int SkillLevel::getLevel() const {
 	return level_;
 }
 
-int SkillLevel::getSkillPoints() const {
+int SkillLevel::rawLevelPoints(int level) const {
+	switch (level) {
+		case 1: return 250;
+		case 2: return 1414;
+		case 3: return 8000;
+		case 4: return 45255;
+		case 5: return 256000;
+		default: return 0;
+	}
+}
+
+int SkillLevel::getSkillPointsForLevel() const {
 	int multiplier = getSkill()->getRank();
 	int points = 0;
-	switch (level_) {
-		case 1: points = 250; break;
-		case 2: points = 1414; break;
-		case 3: points = 8000; break;
-		case 4: points = 45255; break;
-		case 5: points = 256000; break;
-	}
+	points = rawLevelPoints(level_);
 	points *= multiplier;
 	return points;
 }
 
-int SkillLevel::getSkillPointsSinceLastLevel() const {
+int SkillLevel::getSkillPointsTrained() const {
+	return (skillPoints_ >= 0) ? skillPoints_ : rawLevelPoints(level_);
+}
+
+int SkillLevel::getRemainingSkillPoints() const {
 	int multiplier = getSkill()->getRank();
-	int points = 0;
-	switch (level_) {
-		case 1: points = 250; break;
-		case 2: points = 1414 - 250; break;
-		case 3: points = 8000 - 1414; break;
-		case 4: points = 45255 - 8000; break;
-		case 5: points = 256000 - 45255; break;
-	}
+	int points = getSkillPointsForLevel() - getSkillPointsTrained();
 	points *= multiplier;
+	std::cerr << points << " remaining for " << getSkill()->getName() << ", " << getSkillPointsTrained() << " already trained "<< std::endl;
 	return points;
 }
 
+bool SkillLevel::isComplete() const {
+	return getRemainingSkillPoints() == 0;
+}
 
 }

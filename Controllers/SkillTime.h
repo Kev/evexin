@@ -15,7 +15,7 @@ namespace EveXin {
 	class SkillTime {
 		public:
 			static float minutesToTrain(Character::ref character, SkillLevel::ref skillLevel) {
-				int pointsNeeded = skillLevel->getSkillPointsSinceLastLevel();
+				int pointsNeeded = skillLevel->getRemainingSkillPoints();
 				//If already training, instead getSkillPointsNeeded() - those in the character;
 				SkillAttribute::Attribute primaryAttribute = skillLevel->getSkill()->getPrimaryAttribute();
 				int primaryAttributeValue = character->getAttribute(primaryAttribute);

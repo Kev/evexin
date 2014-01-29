@@ -46,7 +46,8 @@ void HTTPRequest::handleConnectFinished(Swift::Connection::ref connection) {
 	}
 	else {
 		cancelConnector();
-		onError();	
+		onError();
+		return;
 	}
 	writeData();
 }
