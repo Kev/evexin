@@ -211,8 +211,7 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 			}
 			
 			
-			skill->populate(groupID, skillName, description, rank, primaryAttribute, secondaryAttribute, dependencies);
-			// skill->setGroupRef(group);
+			skill->populate(groupID, group, skillName, description, rank, primaryAttribute, secondaryAttribute, dependencies);
 		}
 	}
 }

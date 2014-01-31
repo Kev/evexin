@@ -132,7 +132,7 @@ QVariant QtSkillModel::getItemData(SkillItem::ref item, int role) const {
 		//case Qt::TextColorRole: return "not implemented :/";
 		//case Qt::BackgroundColorRole: return "not implemented :/";
 		case Qt::ToolTipRole: {
-			std::string tooltip = skill ? skill->getDescription() /*+ "\n" + skill->getID()*/ : "";
+			std::string tooltip = skill ? skill->getName() + " (" + skill->getGroup()->getName() + ")\n" + skill->getDescription() /*+ "\n" + skill->getID()*/ : "";
 			return QVariant(P2QSTRING(tooltip));
 		}
 		case IsSkillRole: return !!skill;
@@ -275,15 +275,29 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	stream >> level;
 	std::string skillID = Q2PSTRING(id);
 	size_t rowT = row >= 0 ? static_cast<size_t>(row) : plan->getChildren().size();
-	beginRemoveRows(adjustedParent, 0, plan->getChildren().size() - 1);
+	aboutToChangeSkills(plan);
+	plan->addSkill(skillID, level, rowT);
+	finishedChangingSkills(plan);
+	return true;
+}
+
+void QtSkillModel::aboutToChangeSkills(boost::shared_ptr<SkillPlan> plan) {
+	beginRemoveRows(index(plan), 0, plan->getChildren().size() - 1);
 	filtered_ = plan;
 	endRemoveRows();
-	plan->addSkill(skillID, level, rowT);
-	beginInsertRows(adjustedParent, 0, plan->getChildren().size() - 1);
+}
+
+void QtSkillModel::finishedChangingSkills(boost::shared_ptr<SkillPlan> plan) {
+	beginInsertRows(index(plan), 0, plan->getChildren().size() - 1);
 	filtered_.reset();
 	cacheRootChildren();
 	endInsertRows();
-	return true;
+}
+
+void QtSkillModel::removeSkill(SkillPlan::ref plan, const std::string& skillID, int level) {
+	aboutToChangeSkills(plan);
+	plan->removeSkill(skillID, level);
+	finishedChangingSkills(plan);
 }
 
 }

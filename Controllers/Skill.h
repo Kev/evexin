@@ -16,6 +16,7 @@
 
 namespace EveXin {
 	class SkillLevel;
+	class SkillItem;
 	class Skill {
 		public:
 			typedef boost::shared_ptr<Skill> ref;
@@ -25,7 +26,7 @@ namespace EveXin {
 			/**
 			 * Use this rather than a ctor, as it allows keeping smart pointers to not-yet-populated skills in dependencies.
 			 */
-			void populate(const std::string& groupID_, /*boost::weak_ptr<SkillItem> group, */const std::string& name, const std::string& description, int rank, SkillAttribute::Attribute primaryAttribute, SkillAttribute::Attribute secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies);
+			void populate(const std::string& groupID_, boost::weak_ptr<SkillItem> group, const std::string& name, const std::string& description, int rank, SkillAttribute::Attribute primaryAttribute, SkillAttribute::Attribute secondaryAttribute, const std::vector<boost::shared_ptr<SkillLevel> >& dependencies);
 
 			std::string getID() {return id_;}
 			std::string getGroupID() {return groupID_;}
@@ -41,11 +42,11 @@ namespace EveXin {
 			 * Return the 'real' group that this skill belongs to.
 			 * This is the main skill tree, not any skill plans.
 			 */
-			//boost::shared_ptr<SkillItem> getGroup() {return groupRef_.lock();}
+			boost::shared_ptr<SkillItem> getGroup() {return groupRef_.lock();}
 		private:
 			std::string id_;
 			std::string groupID_;
-			//boost::weak_ptr<SkillItem> groupRef_;
+			boost::weak_ptr<SkillItem> groupRef_;
 			std::string name_;
 			std::string description_;
 			int rank_;

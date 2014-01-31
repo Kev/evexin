@@ -19,6 +19,7 @@ namespace EveXin {
 	class SkillItem;
 	class SkillLevel;
 	class Character;
+	class SkillPlan;
 
 	class QtSkillModel : public QAbstractItemModel {
 		Q_OBJECT
@@ -45,6 +46,7 @@ namespace EveXin {
 			QMimeData* mimeData(const QModelIndexList& indexes) const;
 			bool dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent);
 			boost::shared_ptr<SkillItem> getItem(const QModelIndex& index) const;
+			void removeSkill(boost::shared_ptr<SkillPlan> plan, const std::string& skillID, int level);
 		// signals:
 		// 	void itemExpanded(const QModelIndex& item, bool expanded);
 		private:
@@ -52,6 +54,8 @@ namespace EveXin {
 			QVariant getLevelData(boost::shared_ptr<SkillLevel> level, int role) const;
 			void handleAvailablePlansChanged();
 			void cacheRootChildren();
+			void aboutToChangeSkills(boost::shared_ptr<SkillPlan> plan);
+			void finishedChangingSkills(boost::shared_ptr<SkillPlan> plan);
 			// void handleDataChanged(RosterItem* item);
 			// void handleChildrenChanged(GroupRosterItem* item);
 			// QColor intToColor(int color) const;
