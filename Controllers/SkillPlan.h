@@ -26,7 +26,7 @@ namespace EveXin {
 		public:
 			typedef boost::shared_ptr<SkillPlan> ref;
 
-			SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, boost::shared_ptr<SkillTree> allSkills_);
+			SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, boost::shared_ptr<SkillTree> allSkills);
 			SkillPlan(const SkillPlan& other);
 			virtual ~SkillPlan();
 
@@ -86,6 +86,8 @@ namespace EveXin {
 
 			void disableSaving();
 			void enableSaving();
+
+			void setDebug(bool debug) {debug_ = debug;}
 		public:
 			boost::signal<void()> onWantsToSave;
 		private:
@@ -103,5 +105,7 @@ namespace EveXin {
 			int addDepth_;
 			bool savingDisabled_;
 			std::vector<std::pair<std::string, int> > blackList_;
+			bool debug_;
+			int debugDepth_;
 	};
 }

@@ -254,7 +254,7 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 		SkillItem::ref grandParent = parentItem->getParent();
 		plan = boost::dynamic_pointer_cast<SkillPlan>(grandParent);
 		row =  parent.row();
-		qDebug() << "Going up to look for plan";
+		// qDebug() << "Going up to look for plan";
 	}
 	if (!plan) {
 		// If they drop it off the end of the list, use the last plan
@@ -276,7 +276,9 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 	std::string skillID = Q2PSTRING(id);
 	size_t rowT = row >= 0 ? static_cast<size_t>(row) : plan->getChildren().size();
 	aboutToChangeSkills(plan);
+	// plan->setDebug(true);
 	plan->addSkill(skillID, level, rowT);
+	// plan->setDebug(false);
 	finishedChangingSkills(plan);
 	return true;
 }

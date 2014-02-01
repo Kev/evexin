@@ -22,7 +22,7 @@ namespace EveXin {
 				return Unknown;
 			}
 		private:
-			SkillAttribute() {};
-			SkillAttribute(const SkillAttribute&) {};
+			SkillAttribute() {}
+			SkillAttribute(const SkillAttribute&) {}
 	};
 }

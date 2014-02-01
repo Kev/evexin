@@ -10,7 +10,7 @@
 
 namespace EveXin {
 
-	SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, SkillTree::ref allSkills) : SkillItem(parent, id, name), allSkills_(allSkills), addDepth_(0), savingDisabled_(false) {
+SkillPlan::SkillPlan(SkillItem::ref parent, const std::string& id, const std::string& name, SkillTree::ref allSkills) : SkillItem(parent, id, name), allSkills_(allSkills), addDepth_(0), savingDisabled_(false), debug_(false), debugDepth_(0) {
 
 }
 
@@ -42,31 +42,43 @@ void SkillPlan::addFinished() {
 }
 
 bool SkillPlan::addSkill(Skill::ref skill, int level) {
+	++debugDepth_;
+	if (debug_) std::cerr << "D" << debugDepth_ << " Adding Skill " << skill->getName() << ":" << level << std::endl;
 	SkillLevel::ref found = plannedSkills_[skill->getID()];
 	if (!found) {
 		found = knownSkills_[skill->getID()];
 	}
 	if (found && found->getLevel() >= level) {
+		if (debug_) std::cerr << "D" << debugDepth_ << " Present or known" << std::endl;
+		--debugDepth_;
 		return true;
 	}
+
 	if (level > 1) {
 		addSkill(skill, level - 1);
 	}
 	foreach (auto blockedItem, blackList_) {
 		if (skill->getID() == blockedItem.first && level >= blockedItem.second) {
+			if (debug_) std::cerr << "D" << debugDepth_ << " Blocked" << std::endl;
+			--debugDepth_;
 			return false;
 		}
 	}
 	SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(shared_from_this(), skill, level);
-	plannedSkills_[skillLevel->getID()] = skillLevel;
+	SkillLevel::ref oldPlannedLevel = plannedSkills_[skillLevel->getID()];
+	plannedSkills_[skillLevel->getID()] = skillLevel; // Do this to avoid trying to add dependencies multiple times
 	std::vector<boost::shared_ptr<SkillLevel> > dependencies = skill->getDependencies();
 	foreach (SkillLevel::ref dependency, dependencies) {
+		if (debug_) std::cerr << "D" << debugDepth_ << " Dependency " << dependency->getSkill()->getName() << ":" << dependency->getLevel() << std::endl;
 		if (!addSkill(dependency->getSkill(), dependency->getLevel())) {
+			if (debug_) std::cerr << "D" << debugDepth_ << " Dependency Blocked" << std::endl;
+			--debugDepth_;
+			plannedSkills_[skillLevel->getID()] = oldPlannedLevel; // Now remove because we can't train dependencies
 			return false;
 		}
 	}
-	
 	plan_.push_back(skillLevel);
+	--debugDepth_;
 	return true;
 }
 
@@ -131,8 +143,9 @@ void SkillPlan::removeSkill(const std::string& skillID, int level) {
 }
 
 void SkillPlan::clear() {
+	if (debug_) std::cerr << "Clearing plan " << getName() << std::endl;
 	plan_.clear();
-	plannedSkills_.clear();	
+	plannedSkills_.clear();
 }
 	
 void SkillPlan::setKnownSkills(SkillItem::ref knownSkillRoot) {
