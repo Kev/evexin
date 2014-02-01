@@ -97,6 +97,7 @@ void QtMainWindow::handleCharacterListUpdated() {
 	foreach (const std::string id, characterIDs) {
 		characters.push_back(dataController_->getCharacter(id));
 	}
+	std::sort(characters.begin(), characters.end(), [](Character::ref a, Character::ref b){return a->getName() < b->getName();});
 	characterList_->setCharacters(characters);
 }
 

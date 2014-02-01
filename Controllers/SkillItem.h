@@ -41,6 +41,7 @@ namespace EveXin {
 				foreach (auto child, children_) {
 					result.push_back(child.second);
 				}
+				std::sort(result.begin(), result.end(), [](SkillItem::ref a, SkillItem::ref b){return a->getName() < b->getName();});
 				return result;
 			}
 
