@@ -110,27 +110,11 @@ void QtSkillPlannerWidget::handleDeletePlanClicked() {
 		SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(item);
 		SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
 		if (plan) {
-			QMessageBox messageBox;
-			messageBox.setWindowTitle("Delete plan");
-			messageBox.setText("Are you sure you want to delete the skill plan?");
-			messageBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-			messageBox.setDefaultButton(QMessageBox::Yes);
-			if (messageBox.exec() == QMessageBox::Yes) {
-				character_->getSkillPlanRoot()->deletePlan(plan);
-			}
+			character_->getSkillPlanRoot()->deletePlan(plan);
 		}
 		else if (level) {
-			QMessageBox messageBox;
-			messageBox.setWindowTitle("Remove skill from plan");
-			messageBox.setText("Are you sure you want to the skill from the plan?");
-			messageBox.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-			messageBox.setDefaultButton(QMessageBox::Yes);
-			if (messageBox.exec() == QMessageBox::Yes) {
-				SkillPlan::ref parent = boost::dynamic_pointer_cast<SkillPlan>(level->getParent());
-				// parent->setDebug(true);
-				planModel_->removeSkill(parent, level->getSkill()->getID(), level->getLevel());
-				// parent->setDebug(false);
-			}
+			SkillPlan::ref parent = boost::dynamic_pointer_cast<SkillPlan>(level->getParent());
+			planModel_->removeSkill(parent, level->getSkill()->getID(), level->getLevel());
 		}
 	}
 
