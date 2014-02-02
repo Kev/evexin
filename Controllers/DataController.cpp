@@ -123,6 +123,7 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 	Swift::ParserElement::ref keyElement = result->getResult()->getChild("key", "");
 	const std::vector<Swift::ParserElement::ref>& characters = keyElement->getChild("rowset", "")->getChildren("row", "");
 	std::string expires = keyElement->getAttributes().getAttribute("expires");
+	size_t oldSize = characters_.size();
 	foreach (auto element, characters) {
 		std::string id = element->getAttributes().getAttribute("characterID");
 		std::string name = element->getAttributes().getAttribute("characterName");
@@ -137,6 +138,9 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 			//These data won't be changing, so don't issue changes if we already had them
 			onCharacterDataChanged(id);
 		}
+	}
+	if (oldSize != characters_.size()) {
+		onCharacterListChanged();
 	}
 	
 }

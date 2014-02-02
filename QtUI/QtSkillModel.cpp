@@ -35,7 +35,7 @@ void QtSkillModel::setCharacter(boost::shared_ptr<Character> character) {
 }
 
 void QtSkillModel::cacheRootChildren() {
-	childrenCache_ = root_->getChildren();
+	childrenCache_ = root_ ? root_->getChildren() : std::vector<SkillItem::ref>();
 }
 
 void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {

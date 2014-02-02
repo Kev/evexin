@@ -59,7 +59,13 @@ SkillItem::ref SkillTree::mergeWithCharacterSkills(boost::shared_ptr<Character> 
 		std::vector<SkillItem::ref> children = groupPair.second->getChildren();
 		SkillItem::ref groupItem = boost::make_shared<SkillItem>(merged, groupPair.second->getID(), groupPair.second->getName());
 		merged->addChild(groupItem);
-		SkillItem::ref characterGroup = character->getKnownSkills()->getChild(groupItem->getID());
+		SkillItem::ref characterGroup;
+		if (character) {
+			SkillItem::ref known = character->getKnownSkills();
+			if (known) {
+				characterGroup = known->getChild(groupItem->getID());
+			}
+		}
 		foreach (SkillItem::ref skillItem, children) {
 			//std::cerr << "Char:" << character->getID() << ": Source item " << groupItem->getName() << "::" << skillItem->getName() << std::endl;
 			SkillItem::ref newSkill;

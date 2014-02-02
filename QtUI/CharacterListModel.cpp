@@ -40,7 +40,9 @@ QVariant CharacterListModel::data(const QModelIndex& index, int role) const {
 }
 
 void CharacterListModel::setCharacters(const std::vector<Character::ref>& characters) {
+	beginResetModel();
 	characters_ = characters;
+	endResetModel();
 }
 
 }

@@ -83,11 +83,14 @@ void QtSkillPlannerWidget::handleSkillTreeChanged() {
 void QtSkillPlannerWidget::setCharacter(Character::ref character) {
 	character_ = character;
 	allSkillsModel_->setRoot(dataController_->getSkillTree()->mergeWithCharacterSkills(character));
-	planModel_->setRoot(character->getSkillPlanRoot());
+	planModel_->setRoot(character ? character->getSkillPlanRoot() : SkillPlanList::ref());
 	planModel_->setCharacter(character);
 }
 
 void QtSkillPlannerWidget::handleUndoClicked() {
+	if (!character_) {
+		return;
+	}
 	character_->getSkillPlanRoot()->undo();
 	planModel_->setRoot(character_->getSkillPlanRoot()); // Cause it to reset the model. Ugly and needs fixing
 }

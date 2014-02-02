@@ -44,6 +44,7 @@ namespace EveXin {
 			boost::shared_ptr<SkillTree> getSkillTree();
 		public:
 			boost::signal<void(const std::string&)> onCharacterDataChanged;
+			boost::signal<void()> onCharacterListChanged;
 			boost::signal<void()> onSkillTreeChanged;
 		private:
 			typedef boost::function<void (const Swift::ByteArray&)> RawCallback;

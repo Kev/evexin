@@ -71,7 +71,7 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
 	handleCharacterListUpdated();
 	dataController_->onCharacterDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataUpdated, this, _1));
-
+	dataController_->onCharacterListChanged.connect(boost::bind(&QtMainWindow::handleCharacterListUpdated, this));
 	createMenus();
 }
 
