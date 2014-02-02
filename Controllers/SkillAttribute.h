@@ -21,6 +21,25 @@ namespace EveXin {
 				if (string == "willpower") return Willpower;
 				return Unknown;
 			}
+			static std::string toString(Attribute attribute) {
+				switch (attribute) {
+					case Intelligence: return "Intelligence";
+					case Memory: return "Memory";
+					case Charisma: return "Charisma";
+					case Perception: return "Perception";
+					case Willpower: return "Willpower";
+					case Unknown: return "ERROR";
+				}
+			}
+			static std::vector<Attribute> allAttributes() {
+				std::vector<Attribute> result;
+				result.push_back(Charisma);
+				result.push_back(Intelligence);
+				result.push_back(Memory);
+				result.push_back(Perception);
+				result.push_back(Willpower);
+				return result;
+			}
 		private:
 			SkillAttribute() {}
 			SkillAttribute(const SkillAttribute&) {}

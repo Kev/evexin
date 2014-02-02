@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/shared_ptr.hpp>
@@ -14,6 +15,7 @@
 #include <QWidget>
 
 #include <Eve-Xin/Controllers/Character.h>
+#include <Eve-Xin/Controllers/SkillAttribute.h>
 
 class QLabel;
 
@@ -32,6 +34,7 @@ namespace EveXin {
 			QLabel* iskLabel_;
 			QLabel* skillPointsLabel_;
 			QLabel* cloneLabel_;
+			std::map<SkillAttribute::Attribute, QLabel*> attributeLabels_;
 
 	};
 }

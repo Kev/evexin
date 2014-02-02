@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -38,10 +38,21 @@ QtCharacterPane::QtCharacterPane(QWidget* parent) : QWidget(parent) {
 	label = new QLabel("ISK: ", this);
 	infoLayout->addWidget(label, 1, 0);
 	infoLayout->addWidget(iskLabel_, 1, 1);
+	int row = 2;
+	std::vector<SkillAttribute::Attribute> allAttributes = SkillAttribute::allAttributes();
+	foreach (SkillAttribute::Attribute attribute, allAttributes) {
+		label = new QLabel(P2QSTRING(SkillAttribute::toString(attribute)) + ": ", this);
+		infoLayout->addWidget(label, row, 0);
+		QLabel* valueLabel = new QLabel(this);
+		infoLayout->addWidget(valueLabel, row, 1);
+		++row;
+		attributeLabels_[attribute] = valueLabel;
+	}
 	skillPointsLabel_ = new QLabel(this);
 	layout->addWidget(skillPointsLabel_);
 	cloneLabel_ = new QLabel(this);
 	layout->addWidget(cloneLabel_);
+	
 	setCharacter(Character::ref());
 }
 
@@ -55,6 +66,22 @@ void QtCharacterPane::setCharacter(Character::ref character) {
 	//expiresLabel_->setText(P2QSTRING(character->getExpires()));
 	float isk = character ? character->getISK() : 0;
 	iskLabel_->setText(QString("%L1").arg(isk, 0, 'f', 2));
+	std::vector<SkillAttribute::Attribute> allAttributes = SkillAttribute::allAttributes();
+	foreach (SkillAttribute::Attribute attribute, allAttributes) {
+		QLabel* label = attributeLabels_[attribute];
+		QString value;
+		if (character) {
+			int bonus = character->getImplantValue(attribute);
+			value = QString("%1 %2").arg(character->getAttribute(attribute)).arg(bonus ? QString("+%1"/*\n (%2)"*/).arg(bonus)/*.arg(P2QSTRING(character->getImplantName(attribute)))*/ : QString(""));
+		}
+		label->setText(value);
+	}
 }
 
 }
+
+
+
+
+
+
