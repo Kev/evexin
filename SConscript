@@ -43,6 +43,7 @@ if env["SCONS_STAGE"] == "build":
   if env["PLATFORM"] == "win32" :
       myenv.Append(LIBS = ["cryptui"])
   myenv.UseFlags(myenv["PLATFORM_FLAGS"])
+  myenv.UseFlags(myenv["SQLITE_FLAGS"])
 
   myenv.Tool("qt4", toolpath = ["#/BuildTools/SCons/Tools"])
   myenv.Tool("nsis", toolpath = ["#/BuildTools/SCons/Tools"])

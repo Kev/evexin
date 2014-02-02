@@ -25,13 +25,21 @@ Now get the Eve-Xin source into the Eve-Xin folder (yes, it must be in this fold
 ```
 git clone https://github.com/Kev/evexin.git Eve-Xin
 ```
-Now populate `config.py` with the same rules used by Swift, for example:
+Now populate `config.py`. This may take some fiddling - let me know what settings work for you if these don't. On Windows, use (change the path to Qt as appropriate):
+```
+debug = 1
+optimize = 0
+qt5 = 1
+experimental = True
+qt = "c:\\Qt\\5.2.0\\msvc2010"
+```
+On a Mac, you might want:
 ```
 qt = '/opt/Qt/5.2.0/clang_64/'
 debug = 1
 optimize = 0
 qt5 = 1
-linkflags = "-lsqlite3"
+experimental = True
 ```
 Finally, to build just issue
 ```
