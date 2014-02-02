@@ -132,13 +132,15 @@ QVariant QtSkillModel::getItemData(SkillItem::ref item, int role) const {
 		//case Qt::TextColorRole: return "not implemented :/";
 		//case Qt::BackgroundColorRole: return "not implemented :/";
 		case Qt::ToolTipRole: {
-			std::string tooltip = skill ? skill->getName() + " (" + skill->getGroup()->getName() + ")\n" + skill->getDescription() /*+ "\n" + skill->getID()*/ : "";
+			std::string tooltip = skill ? skill->getName() + " (" + skill->getGroup()->getName() + ")\n" + skill->getDescription() /*+ "\n" + skill->getID()*/ + "\n\nPrimary: " + SkillAttribute::toString(skill->getPrimaryAttribute()) + "\nSecondary: " + SkillAttribute::toString(skill->getSecondaryAttribute()) : "";
 			return QVariant(P2QSTRING(tooltip));
 		}
 		case IsSkillRole: return !!skill;
 		case SkillMultiplierRole: return QVariant(skill->getRank());
 		case SkillTrainingTimeRole: return character_ ? QVariant(SkillTime::minutesToTrainAll(character_, item)) : QVariant();
 		case ChildCountRole: return QVariant(static_cast<int>(item->getChildren().size()));
+		case PrimaryAttributeRole: return skill ? P2QSTRING(SkillAttribute::toString(skill->getPrimaryAttribute())) : "";
+		case SecondaryAttributeRole: return skill ? P2QSTRING(SkillAttribute::toString(skill->getSecondaryAttribute())) : "";
 		default: return QVariant();
 	}
 }
