@@ -68,9 +68,10 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPlannerWidget_ = new QtSkillPlannerWidget(dataController, this);
 	tabs->addTab(skillPlannerWidget_, "Skill Plan");
 
+	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
 	handleCharacterListUpdated();
 	dataController_->onCharacterDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataUpdated, this, _1));
-	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
+
 	createMenus();
 }
 

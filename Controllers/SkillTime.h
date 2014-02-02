@@ -23,8 +23,13 @@ namespace EveXin {
 				int secondaryAttributeValue = character->getAttribute(secondaryAttribute);
 				int primaryAttributeImplant = character->getImplantValue(primaryAttribute);
 				int secondaryAttributeImplant = character->getImplantValue(secondaryAttribute);
-				float minutes = pointsNeeded / (primaryAttributeValue + primaryAttributeImplant + (secondaryAttributeValue + secondaryAttributeImplant) / 2);
-				//std::cerr << "Skill time " << minutes << " based on " << primaryAttributeValue << "+" << primaryAttributeImplant << ", " << secondaryAttributeValue << "+" << secondaryAttributeImplant << std::endl;
+				float attributeModifier = (primaryAttributeValue + primaryAttributeImplant + (secondaryAttributeValue + secondaryAttributeImplant) / 2);
+				if (attributeModifier == 0) {
+					// Something has gone badly wrong. Perhaps corrupt character data,
+					// or skills that don't exist any more. Regardless, let's not blow up.
+					attributeModifier = 1;
+				}
+				float minutes = pointsNeeded / attributeModifier;
 				return minutes;
 			}
 

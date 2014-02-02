@@ -8,6 +8,8 @@
 
 #include <limits>
 
+#include <QItemSelectionModel>
+
 #include <Eve-Xin/QtUI/CharacterListModel.h>
 #include <Eve-Xin/QtUI/CharacterListDelegate.h>
 
@@ -34,16 +36,11 @@ Character::ref QtCharacterList::getCurrentCharacter() {
 void QtCharacterList::setCharacters(const std::vector<Character::ref>& characters) {
 	characters_ = characters;
 	model_->setCharacters(characters);
-	// int previous = characterComboBox_->currentIndex();
-	// characterComboBox_->clear();
-	// foreach (Character::ref character, characters) {
-	// 	characterComboBox_->addItem(P2QSTRING(character->getName()), QVariant(P2QSTRING(id)));
-	// }
-	// characterComboBox_->setCurrentIndex(previous);
-	// if ((characterComboBox_->currentIndex() < 0) && !(characterComboBox_->count() == 0)) {
-	// 	characterComboBox_->setCurrentIndex(0);
-	// }
-	// handleCharacterSelected(characterComboBox_->currentIndex());
+	if (selectionModel()->selectedIndexes().empty()) {
+		QModelIndex firstIndex = model_->index(0);
+		selectionModel()->select(firstIndex, QItemSelectionModel::Select);
+		handleItemActivated(firstIndex);
+	}
 }
 
 void QtCharacterList::handleItemActivated(const QModelIndex& index) {

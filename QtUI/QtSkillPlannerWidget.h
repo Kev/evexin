@@ -27,6 +27,7 @@ namespace EveXin {
 		private slots:
 			void handleCreatePlanClicked();
 			void handleDeletePlanClicked();
+			void handleSkillTreeChanged();
 		private:
 			boost::shared_ptr<DataController> dataController_;
 			boost::shared_ptr<Character> character_;

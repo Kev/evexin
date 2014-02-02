@@ -6,6 +6,8 @@
 
 #include <Eve-Xin/QtUI/QtSkillPlannerWidget.h>
 
+#include <boost/bind.hpp>
+
 #include <QBoxLayout>
 #include <QInputDialog>
 #include <QMessageBox>
@@ -63,11 +65,16 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 
 	connect(createPlanButton_, SIGNAL(clicked()), this, SLOT(handleCreatePlanClicked()));
 	connect(deletePlanButton_, SIGNAL(clicked()), this, SLOT(handleDeletePlanClicked()));
+	dataController_->onSkillTreeChanged.connect(boost::bind(&QtSkillPlannerWidget::handleSkillTreeChanged, this));
 }
 
 QtSkillPlannerWidget::~QtSkillPlannerWidget() {
 	delete planModel_;
 	delete allSkillsModel_;
+}
+
+void QtSkillPlannerWidget::handleSkillTreeChanged() {
+	setCharacter(character_);
 }
 
 void QtSkillPlannerWidget::setCharacter(Character::ref character) {

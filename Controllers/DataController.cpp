@@ -38,11 +38,11 @@ Swift::URL SKILL_URL("https","api.eveonline.com","/eve/SkillTree.xml.aspx");
 DataController::DataController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir) : factories_(factories) {
 	store_ = boost::make_shared<SqliteDataStore>(dataDir);
 	skillTree_ = boost::make_shared<SkillTree>();
+	getURLandDommify(SKILL_URL, boost::bind(&DataController::handleSkillResult, this, _1));
 	std::vector<DataStore::APIKey> keys = store_->getAPIKeys();
 	foreach (const DataStore::APIKey& key, keys) {
 		addAPIKey(key.key, key.ver, true);
 	}
-	getURLandDommify(SKILL_URL, boost::bind(&DataController::handleSkillResult, this, _1));
 }
 
 DataController::~DataController() {
@@ -214,6 +214,7 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 			skill->populate(groupID, group, skillName, description, rank, primaryAttribute, secondaryAttribute, dependencies);
 		}
 	}
+	onSkillTreeChanged();
 }
 
 void DataController::handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
