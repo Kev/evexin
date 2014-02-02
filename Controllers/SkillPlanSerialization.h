@@ -85,7 +85,7 @@ namespace EveXin {
 
 				SkillPlanList::ref result = boost::make_shared<SkillPlanList>("planroot", "planroot", skillTree);
 				foreach (auto simplePlan, simpleList.plans_) {
-					SkillPlan::ref plan = result->createPlan(simplePlan->name_);
+					SkillPlan::ref plan = result->createPlan(simplePlan->name_, false);
 					plan->setKnownSkills(knownSkillRoot);
 					foreach (auto simpleSkill, simplePlan->skills_) {
 						plan->addSkill(skillTree->getSkill(simpleSkill->id_), simpleSkill->level_);

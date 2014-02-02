@@ -26,8 +26,10 @@ namespace EveXin {
 			SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills);
 			virtual ~SkillPlanList();
 
-			SkillPlan::ref createPlan(const std::string& name);
-			void deletePlan(SkillPlan::ref plan);
+			SkillPlan::ref createPlan(const std::string& name, bool userAction = true);
+			void deletePlan(SkillPlan::ref plan, bool userAction = true);
+
+			void undo();
 		public:
 			/**
 			 * The plan is null when deleting.
@@ -38,9 +40,13 @@ namespace EveXin {
 			 */
 			boost::signal<void()> onAvailablePlansChanged;
 		private:
+			enum UndoAction {CreatePlan, DeletePlan, ModifyPlan};
 			void handleSkillPlanWantsToSave(SkillPlan::ref plan);
+			void addUndoAction(const std::pair<UndoAction, SkillPlan::ref>&, bool userAction);
 		private:
 			boost::shared_ptr<SkillTree> allSkills_;
 			int nextID_;
+			std::vector<std::pair<UndoAction, SkillPlan::ref > > undoActions_;
+			bool undoing_;
 	};
 }

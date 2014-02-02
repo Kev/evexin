@@ -13,7 +13,7 @@
 
 namespace EveXin {
 	
-SkillPlanList::SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills) : SkillItem(SkillItem::ref(), id, name), allSkills_(allSkills), nextID_(0) {
+SkillPlanList::SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills) : SkillItem(SkillItem::ref(), id, name), allSkills_(allSkills), nextID_(0), undoing_(false) {
 	
 }
 
@@ -28,8 +28,30 @@ SkillPlanList::~SkillPlanList() {
 	}
 }
 
-SkillPlan::ref SkillPlanList::createPlan(const std::string& name) {
+void SkillPlanList::undo() {
+	if (undoActions_.empty()) {
+		return;
+	}
+	undoing_ = true;
+	std::pair<UndoAction, SkillPlan::ref> action = undoActions_.back();
+	undoActions_.pop_back();
+	switch (action.first) {
+		case ModifyPlan: action.second->undo(); break;
+		case CreatePlan: deletePlan(action.second); break;
+		case DeletePlan: addChild(action.second); onWantsToSave(action.second); onAvailablePlansChanged(); break;
+	}
+	undoing_ = false;
+}
+
+void SkillPlanList::addUndoAction(const std::pair<UndoAction, SkillPlan::ref>& action, bool userAction) {
+	if (userAction && !undoing_) {
+		undoActions_.push_back(action);
+	}
+}
+
+SkillPlan::ref SkillPlanList::createPlan(const std::string& name, bool userAction) {
 	SkillPlan::ref plan = boost::make_shared<SkillPlan>(shared_from_this(), getID() + "_plan_" + boost::lexical_cast<std::string>(nextID_++), name, allSkills_);
+	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(CreatePlan, plan), userAction);
 	plan->onWantsToSave.connect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	addChild(plan);
 	onWantsToSave(plan);
@@ -37,7 +59,8 @@ SkillPlan::ref SkillPlanList::createPlan(const std::string& name) {
 	return plan;
 }
 
-void SkillPlanList::deletePlan(SkillPlan::ref plan) {
+void SkillPlanList::deletePlan(SkillPlan::ref plan, bool userAction) {
+	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(DeletePlan, plan), userAction);
 	plan->onWantsToSave.disconnect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	children_.erase(plan->getID());
 	onWantsToSave(SkillPlan::ref());
@@ -46,6 +69,7 @@ void SkillPlanList::deletePlan(SkillPlan::ref plan) {
 
 void SkillPlanList::handleSkillPlanWantsToSave(SkillPlan::ref plan) {
 	onWantsToSave(plan);
+	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(ModifyPlan, plan), true);
 }
 
 }

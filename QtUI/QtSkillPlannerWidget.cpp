@@ -54,9 +54,11 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	
 	createPlanButton_ = new QPushButton("+", this);
 	deletePlanButton_ = new QPushButton("-", this);
+	undoButton_ = new QPushButton("Undo", this);
 	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	buttonLayout->addWidget(createPlanButton_);
 	buttonLayout->addWidget(deletePlanButton_);
+	buttonLayout->addWidget(undoButton_);
 
 	QBoxLayout* planLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	planLayout->addWidget(planWidget_);
@@ -65,6 +67,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 
 	connect(createPlanButton_, SIGNAL(clicked()), this, SLOT(handleCreatePlanClicked()));
 	connect(deletePlanButton_, SIGNAL(clicked()), this, SLOT(handleDeletePlanClicked()));
+	connect(undoButton_, SIGNAL(clicked()), this, SLOT(handleUndoClicked()));
 	dataController_->onSkillTreeChanged.connect(boost::bind(&QtSkillPlannerWidget::handleSkillTreeChanged, this));
 }
 
@@ -82,6 +85,11 @@ void QtSkillPlannerWidget::setCharacter(Character::ref character) {
 	allSkillsModel_->setRoot(dataController_->getSkillTree()->mergeWithCharacterSkills(character));
 	planModel_->setRoot(character->getSkillPlanRoot());
 	planModel_->setCharacter(character);
+}
+
+void QtSkillPlannerWidget::handleUndoClicked() {
+	character_->getSkillPlanRoot()->undo();
+	planModel_->setRoot(character_->getSkillPlanRoot()); // Cause it to reset the model. Ugly and needs fixing
 }
 
 void QtSkillPlannerWidget::handleCreatePlanClicked() {

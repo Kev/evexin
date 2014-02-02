@@ -192,6 +192,7 @@ void SkillPlan::undo() {
 	}
 	plan_ = undoStates_.back();
 	undoStates_.pop_back();
+	save();
 }
 
 void SkillPlan::save() {

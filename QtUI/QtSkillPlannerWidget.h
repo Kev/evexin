@@ -27,6 +27,7 @@ namespace EveXin {
 		private slots:
 			void handleCreatePlanClicked();
 			void handleDeletePlanClicked();
+			void handleUndoClicked();
 			void handleSkillTreeChanged();
 		private:
 			boost::shared_ptr<DataController> dataController_;
@@ -35,6 +36,7 @@ namespace EveXin {
 			QtSkillModel* planModel_;
 			QPushButton* createPlanButton_;
 			QPushButton* deletePlanButton_;
+			QPushButton* undoButton_;
 			QtTreeView* planWidget_;
 	};
 }
