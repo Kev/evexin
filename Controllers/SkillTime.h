@@ -27,6 +27,7 @@ namespace EveXin {
 				if (attributeModifier == 0) {
 					// Something has gone badly wrong. Perhaps corrupt character data,
 					// or skills that don't exist any more. Regardless, let's not blow up.
+					std::cerr << "WARNING: attribute modifier error" << std::endl;
 					attributeModifier = 1;
 				}
 				float minutes = pointsNeeded / attributeModifier;

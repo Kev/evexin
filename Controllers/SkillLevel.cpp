@@ -39,13 +39,11 @@ int SkillLevel::getSkillPointsForLevel() const {
 }
 
 int SkillLevel::getSkillPointsTrained() const {
-	return (skillPoints_ >= 0) ? skillPoints_ : rawLevelPoints(level_);
+	return (skillPoints_ >= 0) ? skillPoints_ : (rawLevelPoints(level_ - 1) * getSkill()->getRank());
 }
 
 int SkillLevel::getRemainingSkillPoints() const {
-	int multiplier = getSkill()->getRank();
 	int points = getSkillPointsForLevel() - getSkillPointsTrained();
-	points *= multiplier;
 	return points;
 }
 
