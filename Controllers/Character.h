@@ -34,8 +34,8 @@ namespace EveXin {
 			double getISK() {return isk_;}
 			Swift::ByteArray getAvatar(size_t size);
 			void setAvatar(size_t size, const Swift::ByteArray& avatar);
-			void setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {knownSkillRoot_ = skillRoot;}
-			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {skillPlanRoot_ = skillPlanRoot;}
+			void setKnownSkills(boost::shared_ptr<SkillItem> skillRoot);
+			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot);
 			boost::shared_ptr<SkillItem> getKnownSkills() {return knownSkillRoot_;}
 			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
 			int getAttribute(SkillAttribute::Attribute attribute) {return baseAttributes_[attribute];}

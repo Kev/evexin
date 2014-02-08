@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
 
 #include <Eve-Xin/Controllers/Character.h>
+
+#include <Eve-Xin/Controllers/SkillPlanList.h>
 
 namespace EveXin {
 
@@ -36,6 +38,20 @@ void Character::setAvatar(size_t size, const Swift::ByteArray& avatar) {
 
 Swift::ByteArray Character::getAvatar(size_t size) {
 	return avatars_[size];
+}
+
+void Character::setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {
+	knownSkillRoot_ = skillRoot;
+	if (skillPlanRoot_) {
+		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+	}
+}
+
+void Character::setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {
+	skillPlanRoot_ = skillPlanRoot;
+	if (knownSkillRoot_) {
+		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+	}
 }
 
 }

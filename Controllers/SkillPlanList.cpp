@@ -11,6 +11,8 @@
 
 #include <Swiften/Base/foreach.h>
 
+#include <Eve-Xin/Controllers/SkillPlan.h>
+
 namespace EveXin {
 	
 SkillPlanList::SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills) : SkillItem(SkillItem::ref(), id, name), allSkills_(allSkills), nextID_(0), undoing_(false) {
@@ -52,6 +54,9 @@ void SkillPlanList::addUndoAction(const std::pair<UndoAction, SkillPlan::ref>& a
 SkillPlan::ref SkillPlanList::createPlan(const std::string& name, bool userAction) {
 	SkillPlan::ref plan = boost::make_shared<SkillPlan>(shared_from_this(), getID() + "_plan_" + boost::lexical_cast<std::string>(nextID_++), name, allSkills_);
 	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(CreatePlan, plan), userAction);
+	if (knownSkills_) {
+		plan->setKnownSkills(knownSkills_);
+	}
 	plan->onWantsToSave.connect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, plan));
 	addChild(plan);
 	onWantsToSave(plan);
@@ -70,6 +75,15 @@ void SkillPlanList::deletePlan(SkillPlan::ref plan, bool userAction) {
 void SkillPlanList::handleSkillPlanWantsToSave(SkillPlan::ref plan) {
 	onWantsToSave(plan);
 	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(ModifyPlan, plan), true);
+}
+
+void SkillPlanList::setKnownSkills(boost::shared_ptr<SkillItem> knownSkills) {
+	knownSkills_ = knownSkills;
+	std::vector<SkillItem::ref> children = getChildren();
+	foreach (auto item, children) {
+		auto plan = boost::dynamic_pointer_cast<SkillPlan>(item);
+		plan->setKnownSkills(knownSkills_);
+	}
 }
 
 }

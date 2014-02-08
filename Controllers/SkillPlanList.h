@@ -29,6 +29,8 @@ namespace EveXin {
 			SkillPlan::ref createPlan(const std::string& name, bool userAction = true);
 			void deletePlan(SkillPlan::ref plan, bool userAction = true);
 
+			void setKnownSkills(boost::shared_ptr<SkillItem> knownSkills);
+
 			void undo();
 		public:
 			/**
@@ -48,5 +50,6 @@ namespace EveXin {
 			int nextID_;
 			std::vector<std::pair<UndoAction, SkillPlan::ref > > undoActions_;
 			bool undoing_;
+			boost::shared_ptr<SkillItem> knownSkills_;
 	};
 }
