@@ -259,13 +259,27 @@ bool QtSkillModel::dropMimeData(const QMimeData* data, Qt::DropAction action, in
 		// qDebug() << "Going up to look for plan";
 	}
 	if (!plan) {
-		// If they drop it off the end of the list, use the last plan
 		if (plans->getChildren().empty()) {
-			//We're empty
+			//We're empty, we need somewhere to go
 			plans->createPlan("Default");
 		}
-		SkillItem::ref lastItem = root_->getChildren().empty() ? SkillItem::ref() : root_->getChildren().back();
-		plan = boost::dynamic_pointer_cast<SkillPlan>(lastItem);
+		size_t rowT = static_cast<size_t>(row);
+		if (row == 0) {
+			// Before first plan, let into first plan.
+		}
+		else if (row < 0) {
+			// Dropping off after the final plan
+			rowT = root_->getChildren().size() - 1;
+		}
+		else {
+			//If we're dropping after a plan, insert into the one before
+			rowT--;
+		}
+		if (rowT >= root_->getChildren().size()) {
+			rowT = root_->getChildren().size() - 1;
+		}
+		SkillItem::ref item = root_->getChildren()[rowT];
+		plan = boost::dynamic_pointer_cast<SkillPlan>(item);
 		row = plan->getChildren().size();
 	}
 	adjustedParent = index(plan);
