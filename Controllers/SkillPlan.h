@@ -83,6 +83,7 @@ namespace EveXin {
 			 */
 			void undo();
 
+			std::map<SkillAttribute::Attribute, int> suggestAttributes() const;
 
 			void disableSaving();
 			void enableSaving();

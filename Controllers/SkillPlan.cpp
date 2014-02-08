@@ -207,4 +207,9 @@ void SkillPlan::enableSaving() {
 	savingDisabled_ = false;
 }
 
+std::map<SkillAttribute::Attribute, int> SkillPlan::suggestAttributes() const {
+	std::map<SkillAttribute::Attribute, int> result;
+	return result;
+}
+
 }

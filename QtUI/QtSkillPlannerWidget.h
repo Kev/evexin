@@ -28,6 +28,7 @@ namespace EveXin {
 			void handleCreatePlanClicked();
 			void handleDeletePlanClicked();
 			void handleUndoClicked();
+			void handleSuggestClicked();
 			void handleSkillTreeChanged();
 		private:
 			boost::shared_ptr<DataController> dataController_;
@@ -37,6 +38,7 @@ namespace EveXin {
 			QPushButton* createPlanButton_;
 			QPushButton* deletePlanButton_;
 			QPushButton* undoButton_;
+			QPushButton* suggestButton_;
 			QtTreeView* planWidget_;
 	};
 }

@@ -55,10 +55,12 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	createPlanButton_ = new QPushButton("+", this);
 	deletePlanButton_ = new QPushButton("-", this);
 	undoButton_ = new QPushButton("Undo", this);
+	suggestButton_ = new QPushButton("Suggest Remap", this);
 	QBoxLayout* buttonLayout = new QBoxLayout(QBoxLayout::LeftToRight);
 	buttonLayout->addWidget(createPlanButton_);
 	buttonLayout->addWidget(deletePlanButton_);
 	buttonLayout->addWidget(undoButton_);
+	buttonLayout->addWidget(suggestButton_);
 
 	QBoxLayout* planLayout = new QBoxLayout(QBoxLayout::TopToBottom);
 	planLayout->addWidget(planWidget_);
@@ -68,6 +70,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	connect(createPlanButton_, SIGNAL(clicked()), this, SLOT(handleCreatePlanClicked()));
 	connect(deletePlanButton_, SIGNAL(clicked()), this, SLOT(handleDeletePlanClicked()));
 	connect(undoButton_, SIGNAL(clicked()), this, SLOT(handleUndoClicked()));
+	connect(suggestButton_, SIGNAL(clicked()), this, SLOT(handleSuggestClicked()));
 	dataController_->onSkillTreeChanged.connect(boost::bind(&QtSkillPlannerWidget::handleSkillTreeChanged, this));
 }
 
@@ -123,5 +126,16 @@ void QtSkillPlannerWidget::handleDeletePlanClicked() {
 
 }
 
+void QtSkillPlannerWidget::handleSuggestClicked() {
+	QModelIndexList indices = planWidget_->selectedIndexes();
+	SkillPlan::ref plan;
+	if (indices.size() > 0) {
+		SkillItem::ref item = planModel_->getItem(indices[0]);
+		plan = boost::dynamic_pointer_cast<SkillPlan>(item);
+	}
+	if (plan) {
+		std::map<SkillAttribute::Attribute, int> suggestions = plan->suggestAttributes();
+	}
+}
 
 }
