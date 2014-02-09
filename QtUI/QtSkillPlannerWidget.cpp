@@ -19,6 +19,7 @@
 #include <Eve-Xin/Controllers/Character.h>
 #include <Eve-Xin/Controllers/DataController.h>
 #include <Eve-Xin/Controllers/SkillPlanList.h>
+#include <Eve-Xin/Controllers/SkillTime.h>
 #include <Eve-Xin/Controllers/SkillTree.h>
 
 #include <Eve-Xin/QtUI/QtSkillModel.h>
@@ -134,8 +135,25 @@ void QtSkillPlannerWidget::handleSuggestClicked() {
 		plan = boost::dynamic_pointer_cast<SkillPlan>(item);
 	}
 	if (plan) {
-		std::map<SkillAttribute::Attribute, int> suggestions = plan->suggestAttributes();
+		std::pair<float, std::map<SkillAttribute::Attribute, int> > suggestions = SkillTime::suggestAttributes(plan);
+		std::vector<SkillAttribute::Attribute> allAttributes = SkillAttribute::allAttributes();
+		QString attributeString;
+		foreach (auto attribute, allAttributes) {
+			if (!attributeString.isEmpty()) {
+				attributeString += ", ";
+			}
+			attributeString += QString("%1 %2").arg(P2QSTRING(SkillAttribute::toString(attribute))).arg(suggestions.second[attribute]);
+		}
+		QString text = QString("The suggested attributes for this plan, giving a time of %1 (excluding implants), is:  %2").arg(QtSkillDelegate::trainingTimeToString(suggestions.first)).arg(attributeString);
+		QMessageBox box;
+		box.setText(text);
+		box.exec();
 	}
 }
 
 }
+
+
+
+
+

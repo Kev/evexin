@@ -23,7 +23,7 @@ namespace EveXin {
 				int secondaryAttributeValue = character->getAttribute(secondaryAttribute);
 				int primaryAttributeImplant = character->getImplantValue(primaryAttribute);
 				int secondaryAttributeImplant = character->getImplantValue(secondaryAttribute);
-				float attributeModifier = (primaryAttributeValue + primaryAttributeImplant + (secondaryAttributeValue + secondaryAttributeImplant) / 2);
+				float attributeModifier = (primaryAttributeValue + primaryAttributeImplant + (secondaryAttributeValue + secondaryAttributeImplant) / 2.0);
 				if (attributeModifier == 0) {
 					// Something has gone badly wrong. Perhaps corrupt character data,
 					// or skills that don't exist any more. Regardless, let's not blow up.
@@ -50,6 +50,40 @@ namespace EveXin {
 					total += minutesToTrainAll(character, child);
 				}
 				return total;
+			}
+
+			static std::pair<float, std::map<SkillAttribute::Attribute, int> > suggestAttributes(SkillPlan::ref plan) {
+				std::map<SkillAttribute::Attribute, int> attributes;
+				std::vector<SkillAttribute::Attribute> allAttributes = SkillAttribute::allAttributes();
+				foreach (auto attribute, allAttributes) {
+					attributes[attribute] = 17;
+				}
+				int remaining = 20 * 4 + 19 - 5 * 17;
+				float bestMinutes = FLT_MAX;
+				while (remaining > 0) {
+					SkillAttribute::Attribute bestAttribute = SkillAttribute::Unknown;
+					bestMinutes = FLT_MAX;
+					foreach (auto attribute, allAttributes) {
+						if (attributes[attribute] < 27) {
+							Character::ref fakeCharacter = boost::make_shared<Character>("", "", "", "", "", "");
+							foreach (auto charAttribute, allAttributes) {
+								int value = attributes[charAttribute];
+								if (charAttribute == attribute) {
+									value++;
+								}
+								fakeCharacter->setAttribute(charAttribute, value);
+							}
+							float minutes = minutesToTrainAll(fakeCharacter, plan);
+							if (minutes < bestMinutes) {
+								bestAttribute = attribute;
+								bestMinutes = minutes;
+							}
+						}
+					}
+					remaining--;
+					attributes[bestAttribute] = attributes[bestAttribute] + 1;
+				}
+				return std::pair<float, std::map<SkillAttribute::Attribute, int> >(bestMinutes, attributes);
 			}
 	};
 };

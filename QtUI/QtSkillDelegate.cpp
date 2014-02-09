@@ -63,20 +63,7 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	QVariant minutesVariant = index.data(QtSkillModel::SkillTrainingTimeRole);
 	if (minutesVariant.isValid()) {
 		float minutes = minutesVariant.toFloat();
-		QString time = "";
-		int days = minutes / 1440;
-		int remainingMinutes = minutes - (days * 1440);
-		int hours = remainingMinutes / 60;
-		remainingMinutes = remainingMinutes - (hours * 60);
-		if (days) {
-			time = QString("%1D ").arg(days);
-		}
-		if (hours) {
-			time += QString("%1H ").arg(hours);
-		}
-		if (remainingMinutes) {
-			time += QString("%1M ").arg(remainingMinutes);
-		}
+		QString time = trainingTimeToString(minutes);
 		if (minutes) {
 			infoText = QString("%1 (%2)").arg(infoText).arg(time.remove(time.size() - 1, 1));
 		}
@@ -96,6 +83,24 @@ void QtSkillDelegate::paint(QPainter* painter, const QStyleOptionViewItem& optio
 	ElidedPainter::drawElidedText(painter, infoTextRegion, infoText);
 
 	painter->restore();
+}
+
+QString QtSkillDelegate::trainingTimeToString(float minutes) {
+	QString time = "";
+	int days = minutes / 1440;
+	int remainingMinutes = minutes - (days * 1440);
+	int hours = remainingMinutes / 60;
+	remainingMinutes = remainingMinutes - (hours * 60);
+	if (days) {
+		time = QString("%1D ").arg(days);
+	}
+	if (hours) {
+		time += QString("%1H ").arg(hours);
+	}
+	if (remainingMinutes) {
+		time += QString("%1M ").arg(remainingMinutes);
+	}
+	return time;
 }
 
 }
