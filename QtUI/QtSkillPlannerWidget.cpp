@@ -138,13 +138,17 @@ void QtSkillPlannerWidget::handleSuggestClicked() {
 		std::pair<float, std::map<SkillAttribute::Attribute, int> > suggestions = SkillTime::suggestAttributes(plan);
 		std::vector<SkillAttribute::Attribute> allAttributes = SkillAttribute::allAttributes();
 		QString attributeString;
+		Character::ref fakeCharacter = boost::make_shared<Character>("", "", "", "", "", "");
 		foreach (auto attribute, allAttributes) {
 			if (!attributeString.isEmpty()) {
 				attributeString += ", ";
 			}
 			attributeString += QString("%1 %2").arg(P2QSTRING(SkillAttribute::toString(attribute))).arg(suggestions.second[attribute]);
+			fakeCharacter->setAttribute(attribute, suggestions.second[attribute] + character_->getImplantValue(attribute));
 		}
-		QString text = QString("The suggested attributes for this plan, giving a time of %1 (excluding implants), is:  %2").arg(QtSkillDelegate::trainingTimeToString(suggestions.first)).arg(attributeString);
+
+		
+		QString text = QString("The suggested attributes for this plan, giving a time of %1 (excluding implants) or %2 (current implants), is:  %3").arg(QtSkillDelegate::trainingTimeToString(suggestions.first)).arg(QtSkillDelegate::trainingTimeToString(SkillTime::minutesToTrainAll(fakeCharacter, plan))).arg(attributeString);
 		QMessageBox box;
 		box.setText(text);
 		box.exec();
@@ -152,6 +156,9 @@ void QtSkillPlannerWidget::handleSuggestClicked() {
 }
 
 }
+
+
+
 
 
 
