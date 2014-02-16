@@ -8,3 +8,5 @@ ui_*.h
 moc_*.cc
 COPYING
 tmp
+go-*.sh
+gh-pages/
