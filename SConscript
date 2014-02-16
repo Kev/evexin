@@ -9,7 +9,7 @@ if env["SCONS_STAGE"] == "build":
 
 
   #FIXME: work out dynamics later
-  myenv["EVEXIN_VERSION"] = "0.0"
+  myenv["EVEXIN_VERSION"] = "0.0.1"
 
 
   # Disable warnings that affect Qt
@@ -197,9 +197,9 @@ if env["SCONS_STAGE"] == "build":
     commonResources[""] = commonResources.get("", [])# + ["#/Swift/resources/MacOSX/Swift.icns"]
     app = myenv.AppBundle("Eve-Xin", version = myenv["EVEXIN_VERSION"], resources = commonResources, frameworks = frameworks, handlesXMPPURIs = True)
     if env["DIST"] :
-      myenv.Command(["#/Packages/Eve-Xin/EveXin-${EVEXIN_VERSION}.dmg"], [app], ["Swift/Packaging/MacOSX/package.sh " + app.path + " Swift/Packaging/MacOSX/Swift.dmg.gz $TARGET $QTDIR"])
-      dsym = myenv.Command(["Swift-${SWIFT_VERSION}.dSYM"], ["Swift"], ["dsymutil -o ${TARGET} ${SOURCE}"])
-      myenv.Command(["#/Packages/Swift/Swift-${SWIFT_VERSION}.dSYM.zip"], dsym, ["cd ${SOURCE.dir} && zip -r ${TARGET.abspath} ${SOURCE.name}"])
+      myenv.Command(["#/Packages/Eve-Xin/Eve-Xin-${EVEXIN_VERSION}.dmg"], [app], ["Swift/Packaging/MacOSX/package.sh " + app.path + " Swift/Packaging/MacOSX/Swift.dmg.gz $TARGET $QTDIR"])
+      dsym = myenv.Command(["Eve-Xin-${EVEXIN_VERSION}.dSYM"], ["Eve-Xin"], ["dsymutil -o ${TARGET} ${SOURCE}"])
+      myenv.Command(["#/Packages/Eve-Xin/Eve-Xin-${EVEXIN_VERSION}.dSYM.zip"], dsym, ["cd ${SOURCE.dir} && zip -r ${TARGET.abspath} ${SOURCE.name}"])
     
   if env["PLATFORM"] == "win32" :
     if env["DIST"] or ARGUMENTS.get("dump_trace") :
