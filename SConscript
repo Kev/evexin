@@ -8,10 +8,6 @@ if env["SCONS_STAGE"] == "build":
   myenv = env.Clone()
 
 
-  #FIXME: work out dynamics later
-  myenv["EVEXIN_VERSION"] = "0.0.1"
-
-
   # Disable warnings that affect Qt
   myenv["CXXFLAGS"] = filter(lambda x : x != "-Wfloat-equal", myenv["CXXFLAGS"])
   if "clang" in env["CC"] :
@@ -107,13 +103,14 @@ if env["SCONS_STAGE"] == "build":
 
   # myenv.Uic4("QtUI/QtMainWindow.ui")
 
-  # # Determine the version
-  # myenv["SWIFT_VERSION"] = Version.getBuildVersion(env.Dir("#").abspath, "swift")
-  # if env["PLATFORM"] == "win32" :
-  #     swift_windows_version = Version.convertToWindowsVersion(myenv["SWIFT_VERSION"])
-  #     myenv["SWIFT_VERSION_MAJOR"] = swift_windows_version[0]
-  #     myenv["SWIFT_VERSION_MINOR"] = swift_windows_version[1]
-  #     myenv["SWIFT_VERSION_PATCH"] = swift_windows_version[2]
+  # Determine the version
+  evexindir = env.Dir("#/..").abspath
+  myenv["EVEXIN_VERSION"] = Version.getBuildVersion(evexindir, "evexin")
+  if env["PLATFORM"] == "win32" :
+      evexin_windows_version = Version.convertToWindowsVersion(myenv["EVEXIN_VERSION"])
+      myenv["EVEXIN_VERSION_MAJOR"] = evexin_windows_version[0]
+      myenv["EVEXIN_VERSION_MINOR"] = evexin_windows_version[1]
+      myenv["EVEXIN_VERSION_PATCH"] = evexin_windows_version[2]
 
 
   # if env["PLATFORM"] == "win32" :
@@ -215,7 +212,7 @@ if env["SCONS_STAGE"] == "build":
         qtlibs.append("phonon")
         qtlibs = [lib + '4' for lib in qtlibs]
       else :
-        qtlibs += ['QtQuick', 'QtQml', 'QtV8', 'QtMultimedia', 'QtSql', 'QtSensors', 'QtWidgets', 'QtWebKitWidgets', 'QtMultimediaWidgets', 'QtOpenGL', 'QtPrintSupport']
+        qtlibs += ['QtQuick', 'QtQml', 'QtPositioning', 'QtMultimedia', 'QtSql', 'QtSensors', 'QtWidgets', 'QtWebKitWidgets', 'QtMultimediaWidgets', 'QtOpenGL', 'QtPrintSupport']
         qtlibs = [lib.replace('Qt', 'Qt5') for lib in qtlibs]
         qtlibs += ['icuin51', 'icuuc51', 'icudt51', 'libGLESv2', 'libEGL']
         qtplugins["platforms"] = ['windows']
@@ -225,7 +222,44 @@ if env["SCONS_STAGE"] == "build":
         qtplugins = qtplugins,
         qtlibs = qtlibs,
               qtversion = qt_version)
+    if env["DIST"] :
+      if env["SCONS_STAGE"] == "build" and env.get("wix_bindir", None):
+        def convertToRTF(env, target, source) :
+          infile = open(source[0].abspath, 'r')
+          outfile = open(target[0].abspath, 'w')
+          outfile.write('{\\rtf1\\ansi{\\fonttbl\\f0\\fswiss Helvetica;}\\fs16\\f0\\pard\n')
+          for line in infile:
+            for char in line.decode("utf-8") :
+              if ord(char) > 127 :
+                # FIXME: This is incorrect, because it only works for latin1.
+                # The correct way is \u<decimal utf16 point>? , but this is more
+                # work
+                outfile.write("\\'%X" % ord(char)) 
+              else :
+                outfile.write(char)
+            outfile.write('\\par ')
+          outfile.write('}')
+          outfile.close()
+          infile.close()
+        copying = env.Command(["Eve-Xin/COPYING.rtf"], ["COPYING"], convertToRTF)
 
+        wixvariables = {
+          'VCCRTFile': env["vcredist"],
+          'Version': str(myenv["EVEXIN_VERSION_MAJOR"]) + "." + str(myenv["EVEXIN_VERSION_MINOR"]) + "." + str(myenv["EVEXIN_VERSION_PATCH"])  
+        }
+        wixincludecontent = "<Include>"
+        for key in wixvariables:
+          wixincludecontent += "<?define %s = \"%s\" ?>" % (key, wixvariables[key])
+        wixincludecontent += "</Include>"
+        myenv["WIX_SOURCE_OBJECT_DIR"] = "..\\Eve-Xin"
+        myenv.WriteVal("..\\Eve-Xin\\Packaging\\Wix\\variables.wxs", env.Value(wixincludecontent))
+        myenv.WiX_Heat('..\\Eve-Xin\\Packaging\\WiX\\gen_files.wxs', windowsBundleFiles + copying)
+        myenv.WiX_Candle('..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wixobj', '..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wxs')
+        myenv.WiX_Candle('..\\Eve-Xin\\Packaging\\WiX\\gen_files.wixobj', '..\\Eve-Xin\\Packaging\\WiX\\gen_files.wxs')
+        myenv.WiX_Light('#/Packages/Eve-Xin/Eve-Xin-' + myenv["EVEXIN_VERSION"] + '.msi', ['..\\Eve-Xin\\Packaging\\WiX\\gen_files.wixobj','..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wixobj'])
+          
+        if myenv["debug"] :
+              myenv.InstallAs('#/Packages/Eve-Xin/Eve-Xin-' + myenv["EVEXIN_VERSION"] + '.pdb', "Eve-Xin.pdb")
 
 
 

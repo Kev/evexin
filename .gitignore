@@ -4,6 +4,7 @@ Eve-Xin
 Eve-Xin.app
 .sconsign.dblite
 *.o
+*.obj
 ui_*.h
 moc_*.cc
 COPYING

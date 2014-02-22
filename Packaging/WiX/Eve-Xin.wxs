@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!-- For a sensible tutorial on WiX, see http://wix.tramontana.co.hu/tutorial -->
+
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+
+	<?include variables.wxs ?>
+
+	<Product Name='Eve-Xin' Id='*' UpgradeCode='eee2df75-17d7-4a4c-866f-f58f91644d7b' Language='1033' Codepage='1252' Version='$(var.Version)' Manufacturer='Swift.im'>
+		<Package Id='*' Keywords='Installer' Description="Eve-Xin Installer" Comments="Eve-Xin is available under the GPL version 3" Manufacturer="Swift.im" InstallerVersion='300' Languages='1033' Compressed='yes' SummaryCodepage='1252' InstallScope="perMachine"/>
+		<Media Id='1' Cabinet='EveXin.cab' EmbedCab='yes'/>
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version is already installed. Remove this version if you wish to downgrade." />
+
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+			<!-- Disabling CRT merge module, because it's not working
+				<Merge Id="CRT" DiskId="1" Language="0" SourceFile="$(var.VCCRTFile)"/>
+			-->
+
+			<Directory Id='ProgramFilesFolder' Name='PFiles'>
+					<Directory Id='INSTALLDIR' Name='Eve-Xin'>
+					</Directory>
+			</Directory>
+
+			<Directory Id="ProgramMenuFolder" Name="Programs">
+				<Directory Id="ProgramMenuDir" Name="Eve-Xin">
+					<Component Id="Shortcuts" Guid="258ce377-84a8-4ca5-89a7-a5bb5f3871cf">
+						<RemoveFolder Id='ProgramMenuDir' On='uninstall' />
+						<RegistryValue Root='HKCU' Key='Software\Eve-Xin\Eve-Xin' Type='string' Value='' KeyPath='yes' />
+						<Shortcut Id='EveXinShortcut' Directory='ProgramMenuDir' Name='Eve-Xin' Target="[INSTALLDIR]\Eve-Xin.exe" Icon='EveXin.exe'/>
+					</Component>
+				</Directory>
+			</Directory>
+
+			<Directory Id="DesktopFolder" Name="Desktop" />
+		</Directory>
+
+		<Feature Id='Core' Level='1' Title='Eve-Xin' Description='All necessary Eve-Xin files' Display='expand' ConfigurableDirectory='INSTALLDIR' AllowAdvertise='no' Absent='disallow'>
+			<ComponentGroupRef Id='Files' />
+			<!--<ComponentRef Id='Manual' />-->
+		</Feature>
+
+		<Feature Id='Shortcut' Level='1' Title='Shortcut' Description='Start Menu Shortcut' Display='expand' ConfigurableDirectory='INSTALLDIR' AllowAdvertise='no'>
+			<ComponentRef Id='Shortcuts' />
+		</Feature>
+
+		<!--<UIRef Id='WixUI_Advanced'/>-->
+		<!--<UIRef Id="WixUI_Minimal"/>-->
+		<UIRef Id="WixUI_Mondo"/>
+		<WixVariable Id='WixUILicenseRtf' Value='COPYING.rtf'/>
+
+		<Icon Id="EveXin.exe" SourceFile="Eve-Xin.exe" />
+		<Property Id="ARPPRODUCTICON" Value="Eve-Xin.exe"/> <!-- The icon in the "Programs" dialog -->
+
+		<!-- 
+				 VC Redistributable 
+		-->
+		<!-- Disabling CRT merge module, because it's not working
+			<Feature Id='CRT' Title='Visual C++ Runtime' AllowAdvertise='no' Display='hidden' Level='1'>
+				<MergeRef Id="CRT"/>
+			</Feature>
+		-->
+		<Binary Id="CRT.exe" SourceFile="$(var.VCCRTFile)"/>
+		<CustomAction Id="InstallCRT" Impersonate="yes" Return="ignore" Execute="immediate" BinaryKey="CRT.exe" ExeCommand="/qb"/>
+		<Property Id="CRT_INSTALLED" Secure="yes"> 
+			<RegistrySearch Id="VC2008SP1REDIST_X86Value" Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{9A25302D-30C0-39D9-BD6F-21E6EC160475}" Name="Publisher" Type="raw" Win64="no" /> 
+		</Property> 
+		<!-- The following snippet should work for VC 2010
+			<Upgrade Id='{1F4F1D2A-D9DA-32CF-9909-48485DA06DD5}'> 
+				<UpgradeVersion OnlyDetect='yes' Property='CRT_INSTALLED' Minimum='10.0.40219' IncludeMinimum='yes'/> 
+			</Upgrade> 
+		-->
+		<InstallUISequence>
+			<Custom Action="InstallCRT" After="ProgressDlg">Not Installed And Not CRT_INSTALLED</Custom>
+		</InstallUISequence>
+
+	</Product>
+</Wix>
