@@ -40,6 +40,14 @@ optimize = 0
 qt5 = 1
 experimental = True
 ```
+On Ubuntu 13.10 with Qt4 installed I use:
+```
+debug = 1
+optimize = 1
+experimental = True
+qt = '/usr/share/qt4'
+cxxflags='-std=c++11'
+```
 Finally, to build just issue
 ```
 make
