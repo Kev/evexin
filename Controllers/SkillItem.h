@@ -15,7 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
-#include <Swiften/base/foreach.h>
+#include <Swiften/Base/foreach.h>
 
 #include <Eve-Xin/Controllers/Skill.h>
 
