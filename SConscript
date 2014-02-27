@@ -5,6 +5,11 @@ Import("env")
 
 if env["SCONS_STAGE"] == "build":
 
+  if not GetOption("help") and not env.get("HAVE_OPENSSL", 0) and not env.get("HAVE_SCHANNEL", 0) :
+    print "Error: Eve-Xin requires TLS support (OpenSSL/SChannel), and none was found."
+    if "Eve-Xin" in env["PROJECTS"] :
+      env["PROJECTS"].remove("Eve-Xin")
+
   myenv = env.Clone()
 
 
@@ -45,10 +50,10 @@ if env["SCONS_STAGE"] == "build":
   myenv.Tool("nsis", toolpath = ["#/BuildTools/SCons/Tools"])
   myenv.Tool("wix", toolpath = ["#/BuildTools/SCons/Tools"])
   myenv.Tool("textfile", toolpath = ["#/BuildTools/SCons/Tools"])
-  qt4modules = ['QtCore', 'QtWebKit', 'QtGui']
+  qt4modules = ['QtCore', 'QtGui']
   if myenv["qt5"] :
     qt_version = '5'
-    qt4modules += ['QtWidgets', 'QtWebKitWidgets', 'QtMultimedia']
+    qt4modules += ['QtWidgets', 'QtMultimedia']
   else :
     qt_version = '4'
   if env["PLATFORM"] == "posix" :
@@ -207,12 +212,12 @@ if env["SCONS_STAGE"] == "build":
         commonResources[""] = commonResources.get("", []) + ["#/Swiften/${SWIFTEN_LIBRARY_FILE}"]
       qtplugins = {}
       qtplugins["imageformats"] = ["gif", "ico", "jpeg", "mng", "svg", "tiff"]
-      qtlibs = ["QtCore", "QtGui", "QtNetwork", "QtWebKit", "QtXMLPatterns"]
+      qtlibs = ["QtCore", "QtGui", "QtNetwork", "QtXMLPatterns"]
       if qt_version == '4' :
         qtlibs.append("phonon")
         qtlibs = [lib + '4' for lib in qtlibs]
       else :
-        qtlibs += ['QtQuick', 'QtQml', 'QtPositioning', 'QtMultimedia', 'QtSql', 'QtSensors', 'QtWidgets', 'QtWebKitWidgets', 'QtMultimediaWidgets', 'QtOpenGL', 'QtPrintSupport']
+        qtlibs += ['QtQuick', 'QtQml', 'QtPositioning', 'QtMultimedia', 'QtSql', 'QtSensors', 'QtWidgets', 'QtMultimediaWidgets', 'QtOpenGL', 'QtPrintSupport']
         qtlibs = [lib.replace('Qt', 'Qt5') for lib in qtlibs]
         qtlibs += ['icuin51', 'icuuc51', 'icudt51', 'libGLESv2', 'libEGL']
         qtplugins["platforms"] = ['windows']
