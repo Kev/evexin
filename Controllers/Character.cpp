@@ -47,6 +47,11 @@ void Character::setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {
 	}
 }
 
+void Character::setTrainingQueue(boost::shared_ptr<SkillItem> trainingQueue) {
+	trainingQueueRoot_ = trainingQueue;
+}
+
+
 void Character::setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {
 	skillPlanRoot_ = skillPlanRoot;
 	if (knownSkillRoot_) {

@@ -221,6 +221,61 @@ void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) 
 	onSkillTreeChanged();
 }
 
+void DataController::handleSkillQueueResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
+	Character::ref character = characters_[characterID];
+	if (!character) {
+		std::cerr << "Receiving skill queue for unexpected ID" << characterID << std::endl;
+		return;
+	}
+	const std::vector<Swift::ParserElement::ref>& rows = result->getResult()->getChild("rowset", "")->getChildren("row", "");
+	std::vector<Swift::ParserElement::ref> orderedRows;
+	foreach (Swift::ParserElement::ref row, rows) {
+		// https://wiki.eveonline.com/en/wiki/EVE_API_Character_Skill_Queue
+		// doesn't say these are in order, so I guess I'd better re-order to be on the safe side
+		try {
+			size_t i = boost::lexical_cast<size_t>(row->getAttributes().getAttribute("queuePosition"));
+			while (orderedRows.size() < i + 1) {
+				orderedRows.push_back(Swift::ParserElement::ref());
+			}
+			orderedRows[i] = row;
+		} catch (const boost::bad_lexical_cast&) {
+			std::cerr << "skill queue position cast failed of " << row->getAttributes().getAttribute("queuePosition") << std::endl;
+		}
+	}
+	SkillItem::ref root = boost::make_shared<SkillItem>(SkillItem::ref(), "queueid", "Queue Root");
+	SkillItem::ref group = root->getGroup("queuegroupid", "Skill Training Queue");
+
+	foreach (Swift::ParserElement::ref row, orderedRows) {
+		std::string skillID = row->getAttributes().getAttribute("typeID");
+		int level = 0;
+		try {
+			level = boost::lexical_cast<int>(row->getAttributes().getAttribute("level"));
+		}
+		catch(const boost::bad_lexical_cast &) {
+			std::cerr << "skill queue level cast failed" << std::endl;
+		}
+		int startPoints = 0;
+		try {
+			startPoints = boost::lexical_cast<int>(row->getAttributes().getAttribute("startSP"));
+		}
+		catch(const boost::bad_lexical_cast &) {
+			std::cerr << "skill queue start points cast failed" << std::endl;
+		}
+		int endPoints = 0;
+		try {
+			endPoints = boost::lexical_cast<int>(row->getAttributes().getAttribute("endSP"));
+		}
+		catch(const boost::bad_lexical_cast &) {
+			std::cerr << "skill queue start points cast failed" << std::endl;
+		}
+
+		Skill::ref skill = skillTree_->getSkill(skillID);
+		SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level, startPoints);
+		group->addChild(skillLevel);
+	}
+	character->setTrainingQueue(root);
+}
+
 void DataController::handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
 	Character::ref character = characters_[characterID];
 	if (!character) {
@@ -346,6 +401,9 @@ Character::ref DataController::getCharacter(const std::string& id) {
 	getURLandDommify(characterSheetURL, boost::bind(&DataController::handleCharacterSheetResult, this, id, _1));
 	Swift::URL accountBalanceURL("https", "api.eveonline.com", "/char/AccountBalance.xml.aspx?keyID=" + accountKey + "&vCode=" + vCode + "&characterID=" + id);
 	getURLandDommify(accountBalanceURL, boost::bind(&DataController::handleAccountBalanceResult, this, id, _1));
+	Swift::URL skillQueueURL("https", "api.eveonline.com", "/char/SkillQueue.xml.aspx?keyID=" + accountKey + "&vCode=" + vCode + "&characterID=" + id);
+	getURLandDommify(skillQueueURL, boost::bind(&DataController::handleSkillQueueResult, this, id, _1));
+
 	return characters_[id];
 }
 

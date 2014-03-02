@@ -56,14 +56,26 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	characterPane_ = new QtCharacterPane(this);
 	characterLayout->addWidget(characterPane_);
 
+	QBoxLayout* skillsLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+	characterLayout->addLayout(skillsLayout);
+
+	trainingPane_ = new QTreeView(this);
+	trainingModel_ = boost::make_shared<QtSkillModel>();
+	trainingPane_->setModel(trainingModel_.get());
+	trainingPane_->setUniformRowHeights(false);
+	trainingPane_->setHeaderHidden(true);
+	QtSkillDelegate* delegate = new QtSkillDelegate(this);
+	trainingPane_->setItemDelegate(delegate);
+	skillsLayout->addWidget(trainingPane_);
+
 	skillPane_ = new QTreeView(this);
 	skillModel_ = boost::make_shared<QtSkillModel>();
 	skillPane_->setModel(skillModel_.get());
 	skillPane_->setUniformRowHeights(false);
 	skillPane_->setHeaderHidden(true);
-	QtSkillDelegate* delegate = new QtSkillDelegate(this);
+	delegate = new QtSkillDelegate(this);
 	skillPane_->setItemDelegate(delegate);
-	characterLayout->addWidget(skillPane_);
+	skillsLayout->addWidget(skillPane_);
 
 	skillPlannerWidget_ = new QtSkillPlannerWidget(dataController, this);
 	tabs->addTab(skillPlannerWidget_, "Skill Plan");
@@ -108,6 +120,7 @@ void QtMainWindow::handleCharacterDataUpdated(const std::string& /*id*/) {
 		return;
 	}
 	characterPane_->setCharacter(character);
+	trainingModel_->setRoot(character->getTrainingQueue());
 	skillModel_->setRoot(character->getKnownSkills());
 }
 

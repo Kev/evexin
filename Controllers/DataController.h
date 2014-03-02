@@ -58,6 +58,7 @@ namespace EveXin {
 			void handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);
 			void handleSkillResult(boost::shared_ptr<GeneralResult> result);
 			void handleCharacterSheetResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);
+			void handleSkillQueueResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);
 			void handleCharacterAvatarResult(const std::string& id, size_t size, const Swift::ByteArray& content);
 			/**
 			 * Check if URL is tracked, and track if not.

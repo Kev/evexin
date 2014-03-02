@@ -35,8 +35,10 @@ namespace EveXin {
 			Swift::ByteArray getAvatar(size_t size);
 			void setAvatar(size_t size, const Swift::ByteArray& avatar);
 			void setKnownSkills(boost::shared_ptr<SkillItem> skillRoot);
+			void setTrainingQueue(boost::shared_ptr<SkillItem> trainingQueue);
 			void setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot);
 			boost::shared_ptr<SkillItem> getKnownSkills() {return knownSkillRoot_;}
+			boost::shared_ptr<SkillItem> getTrainingQueue() {return trainingQueueRoot_;}
 			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
 			int getAttribute(SkillAttribute::Attribute attribute) {return baseAttributes_[attribute];}
 			void setAttribute(SkillAttribute::Attribute attribute, int value) {baseAttributes_[attribute] = value;}
@@ -53,6 +55,7 @@ namespace EveXin {
 			double isk_;
 			std::map<size_t, Swift::ByteArray> avatars_;
 			boost::shared_ptr<SkillItem> knownSkillRoot_;
+			boost::shared_ptr<SkillItem> trainingQueueRoot_;
 			boost::shared_ptr<SkillPlanList> skillPlanRoot_;
 			std::map<SkillAttribute::Attribute, int> baseAttributes_;
 			std::map<SkillAttribute::Attribute, int> enhancerValues_;

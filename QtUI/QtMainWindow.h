@@ -41,7 +41,9 @@ namespace EveXin {
 			QtCharacterPane* characterPane_;
 			boost::shared_ptr<DataController> dataController_;
 			QWidget* apiWindow_;
+			QTreeView* trainingPane_;
 			QTreeView* skillPane_;
+			boost::shared_ptr<QtSkillModel> trainingModel_;
 			boost::shared_ptr<QtSkillModel> skillModel_;
 			QtSkillPlannerWidget* skillPlannerWidget_;
 	};
