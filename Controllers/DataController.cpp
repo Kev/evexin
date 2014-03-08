@@ -268,9 +268,12 @@ void DataController::handleSkillQueueResult(const std::string& characterID, boos
 		catch(const boost::bad_lexical_cast &) {
 			std::cerr << "skill queue start points cast failed" << std::endl;
 		}
-
+		std::string startTimeString = row->getAttributes().getAttribute("startTime");
+		std::string endTimeString = row->getAttributes().getAttribute("endTime");
+		boost::posix_time::ptime startTime = Swift::stringToDateTime(startTimeString);
+		boost::posix_time::ptime endTime = Swift::stringToDateTime(endTimeString);
 		Skill::ref skill = skillTree_->getSkill(skillID);
-		SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level, startPoints);
+		SkillLevel::ref skillLevel = boost::make_shared<SkillLevel>(group, skill, level, startPoints, startTime, endTime);
 		group->addChild(skillLevel);
 	}
 	character->setTrainingQueue(root);

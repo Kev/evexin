@@ -131,6 +131,7 @@ void QtMainWindow::handleCharacterSelected(Character::ref character) {
 	}
 	handleCharacterDataUpdated(character->getID());
 	skillPlannerWidget_->setCharacter(character);
+	trainingModel_->setCharacter(character);
 }
 
 }

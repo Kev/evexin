@@ -15,8 +15,19 @@ namespace EveXin {
 	class SkillTime {
 		public:
 			static float minutesToTrain(Character::ref character, SkillLevel::ref skillLevel) {
+				boost::posix_time::ptime startTime = skillLevel->getStartTime();
+				boost::posix_time::ptime endTime = skillLevel->getEndTime();
+				if (startTime != boost::posix_time::not_a_date_time) {
+					// For skills in training, we have the datetimes we can use
+					boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+					if (now >= startTime) {
+						boost::posix_time::time_duration remaining = endTime - now;
+						return remaining.total_seconds() / 60.0;
+					}
+				}
+
+				// If not already training, we'll have to calculate by hand
 				int pointsNeeded = skillLevel->getRemainingSkillPoints();
-				//If already training, instead getSkillPointsNeeded() - those in the character;
 				SkillAttribute::Attribute primaryAttribute = skillLevel->getSkill()->getPrimaryAttribute();
 				int primaryAttributeValue = character->getAttribute(primaryAttribute);
 				SkillAttribute::Attribute secondaryAttribute = skillLevel->getSkill()->getSecondaryAttribute();

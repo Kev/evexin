@@ -13,7 +13,7 @@
 
 namespace EveXin {
 
-SkillLevel::SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level, int pointsTrained) : SkillItem(parent, skill), level_(level), skillPoints_(pointsTrained) {
+SkillLevel::SkillLevel(boost::shared_ptr<SkillItem> parent, boost::shared_ptr<Skill> skill, int level, int pointsTrained, const boost::posix_time::ptime& startTime, const boost::posix_time::ptime& endTime) : SkillItem(parent, skill), level_(level), skillPoints_(pointsTrained), startTime_(startTime), endTime_(endTime) {
 	
 }
 
@@ -49,6 +49,14 @@ int SkillLevel::getRemainingSkillPoints() const {
 
 bool SkillLevel::isComplete() const {
 	return getRemainingSkillPoints() <= 0;
+}
+
+boost::posix_time::ptime SkillLevel::getStartTime() const {
+	return startTime_;
+}
+
+boost::posix_time::ptime SkillLevel::getEndTime() const {
+	return endTime_;
 }
 
 }
