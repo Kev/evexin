@@ -99,6 +99,7 @@ if env["SCONS_STAGE"] == "build":
       "QtUI/QtSkillDelegate.cpp",
       "QtUI/QtSkillModel.cpp",
       "QtUI/QtSkillPlannerWidget.cpp",
+      "QtUI/QtSortFilterProxyModel.cpp",
       "QtUI/QtUtilities.cpp",
     ]
   env.Append(UNITTEST_SOURCES = [

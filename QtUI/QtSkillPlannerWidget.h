@@ -8,8 +8,10 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <QString>
 #include <QWidget>
 
+class QLineEdit;
 class QTreeView;
 class QPushButton;
 
@@ -17,6 +19,7 @@ namespace EveXin {
 	class DataController;
 	class Character;
 	class QtSkillModel;
+	class QtSortFilterProxyModel;
 	class QtTreeView;
 	class QtSkillPlannerWidget : public QWidget {
 		Q_OBJECT
@@ -27,9 +30,10 @@ namespace EveXin {
 		private slots:
 			void handleCreatePlanClicked();
 			void handleDeletePlanClicked();
-			void handleUndoClicked();
-			void handleSuggestClicked();
+			void handleSearchTextChanged(const QString&);
 			void handleSkillTreeChanged();
+			void handleSuggestClicked();
+			void handleUndoClicked();
 		private:
 			boost::shared_ptr<DataController> dataController_;
 			boost::shared_ptr<Character> character_;
@@ -40,5 +44,8 @@ namespace EveXin {
 			QPushButton* undoButton_;
 			QPushButton* suggestButton_;
 			QtTreeView* planWidget_;
+			QtSortFilterProxyModel* skillsProxy_;
+			QLineEdit* searchEdit_;
+			QTreeView* allSkillsWidget_;
 	};
 }

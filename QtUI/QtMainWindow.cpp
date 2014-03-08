@@ -122,6 +122,7 @@ void QtMainWindow::handleCharacterDataUpdated(const std::string& /*id*/) {
 	characterPane_->setCharacter(character);
 	trainingModel_->setRoot(character->getTrainingQueue());
 	skillModel_->setRoot(character->getKnownSkills());
+	trainingPane_->expandAll();
 }
 
 void QtMainWindow::handleCharacterSelected(Character::ref character) {

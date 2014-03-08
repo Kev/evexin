@@ -10,6 +10,8 @@
 
 #include <QBoxLayout>
 #include <QInputDialog>
+#include <QLabel>
+#include <QLineEdit>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTreeView>
@@ -24,21 +26,33 @@
 
 #include <Eve-Xin/QtUI/QtSkillModel.h>
 #include <Eve-Xin/QtUI/QtSkillDelegate.h>
+#include <Eve-Xin/QtUI/QtSortFilterProxyModel.h>
 #include <Eve-Xin/QtUI/QtTreeView.h>
 
 namespace EveXin {
 
 QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dataController, QWidget* parent) : QWidget(parent), dataController_(dataController) {
 	QBoxLayout* mainLayout = new QBoxLayout(QBoxLayout::LeftToRight, this);
-	QTreeView* allSkillsWidget = new QTreeView(this);
-	mainLayout->addWidget(allSkillsWidget);
+	QBoxLayout* allSkillsLayout = new QBoxLayout(QBoxLayout::TopToBottom);
+	mainLayout->addLayout(allSkillsLayout);
+	
+	QBoxLayout* searchLayout = new QBoxLayout(QBoxLayout::LeftToRight);
+	searchEdit_ = new QLineEdit(this);
+	searchLayout->addWidget(new QLabel("Search:", this));
+	searchLayout->addWidget(searchEdit_);
+	allSkillsLayout->addLayout(searchLayout);
+	allSkillsWidget_ = new QTreeView(this);
+	allSkillsLayout->addWidget(allSkillsWidget_);
 	allSkillsModel_ = new QtSkillModel();
 	QtSkillDelegate* allSkillsDelegate = new QtSkillDelegate(this);
-	allSkillsWidget->setItemDelegate(allSkillsDelegate);
-	allSkillsWidget->setModel(allSkillsModel_);
-	allSkillsWidget->setUniformRowHeights(false);
-	allSkillsWidget->setHeaderHidden(true);
-	allSkillsWidget->setDragEnabled(true);
+	allSkillsWidget_->setItemDelegate(allSkillsDelegate);
+	skillsProxy_ = new QtSortFilterProxyModel(this);
+	skillsProxy_->setSourceModel(allSkillsModel_);
+	skillsProxy_->setFilterCaseSensitivity(Qt::CaseInsensitive);
+	allSkillsWidget_->setModel(skillsProxy_);
+	allSkillsWidget_->setUniformRowHeights(false);
+	allSkillsWidget_->setHeaderHidden(true);
+	allSkillsWidget_->setDragEnabled(true);
 
 	planWidget_ = new QtTreeView(this);
 	planModel_ = new QtSkillModel();
@@ -49,7 +63,7 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	planWidget_->setHeaderHidden(true);
 	planWidget_->setDragEnabled(true);
 	planWidget_->setAcceptDrops(true);
-	allSkillsWidget->setDragEnabled(true);
+	allSkillsWidget_->setDragEnabled(true);
 	planWidget_->setAcceptDrops(true);
 	planWidget_->setDropIndicatorShown(true);
 	
@@ -72,12 +86,18 @@ QtSkillPlannerWidget::QtSkillPlannerWidget(boost::shared_ptr<DataController> dat
 	connect(deletePlanButton_, SIGNAL(clicked()), this, SLOT(handleDeletePlanClicked()));
 	connect(undoButton_, SIGNAL(clicked()), this, SLOT(handleUndoClicked()));
 	connect(suggestButton_, SIGNAL(clicked()), this, SLOT(handleSuggestClicked()));
+	connect(searchEdit_, SIGNAL(textChanged(const QString&)), this, SLOT(handleSearchTextChanged(const QString&)));
 	dataController_->onSkillTreeChanged.connect(boost::bind(&QtSkillPlannerWidget::handleSkillTreeChanged, this));
 }
 
 QtSkillPlannerWidget::~QtSkillPlannerWidget() {
 	delete planModel_;
 	delete allSkillsModel_;
+}
+
+void QtSkillPlannerWidget::handleSearchTextChanged(const QString& text) {
+	skillsProxy_->setFilterFixedString(text);
+	allSkillsWidget_->expandAll();
 }
 
 void QtSkillPlannerWidget::handleSkillTreeChanged() {
