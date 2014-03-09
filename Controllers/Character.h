@@ -46,6 +46,8 @@ namespace EveXin {
 			int getImplantValue(SkillAttribute::Attribute attribute);
 			std::string getImplantName(SkillAttribute::Attribute attribute);
 		private:
+			void injectTrainingIntoPlan();
+		private:
 			std::string id_;
 			std::string name_;
 			std::string accountKey_;

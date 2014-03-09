@@ -83,6 +83,13 @@ namespace EveXin {
 			 */
 			void undo();
 
+			/**
+			 * Updates an existing level with new data, if it exists in the plan.
+			 * Does nothing if the newLevel isn't already present.
+			 * Used for injecting data for skills in training.
+			 */
+			void updateLevel(SkillLevel::ref newLevel);
+
 			void disableSaving();
 			void enableSaving();
 

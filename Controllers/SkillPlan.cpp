@@ -207,4 +207,18 @@ void SkillPlan::enableSaving() {
 	savingDisabled_ = false;
 }
 
+void SkillPlan::updateLevel(SkillLevel::ref newLevel) {
+	for (size_t i = 0; i < plan_.size(); i++) {
+		SkillLevel::ref current = boost::dynamic_pointer_cast<SkillLevel>(plan_[i]);
+		if (current->getSkill() == newLevel->getSkill() && current->getLevel() == newLevel->getLevel()) {
+			plan_[i] = boost::make_shared<SkillLevel>(current->getParent(), current->getSkill(), current->getLevel(), newLevel->getSkillPointsTrained(), newLevel->getStartTime(), newLevel->getEndTime());
+			break;
+		}
+	}
 }
+
+}
+
+
+
+

@@ -40,7 +40,13 @@ void SkillPlanList::undo() {
 	switch (action.first) {
 		case ModifyPlan: action.second->undo(); break;
 		case CreatePlan: deletePlan(action.second); break;
-		case DeletePlan: addChild(action.second); onWantsToSave(action.second); onAvailablePlansChanged(); break;
+		case DeletePlan: {
+			addChild(action.second);
+			onWantsToSave(action.second);
+			action.second->onWantsToSave.connect(boost::bind(&SkillPlanList::handleSkillPlanWantsToSave, this, action.second));
+			onAvailablePlansChanged();
+			break;
+		}
 	}
 	undoing_ = false;
 }

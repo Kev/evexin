@@ -6,6 +6,8 @@
 
 #include <Eve-Xin/Controllers/Character.h>
 
+#include <boost/bind.hpp>
+
 #include <Eve-Xin/Controllers/SkillPlanList.h>
 
 namespace EveXin {
@@ -15,7 +17,9 @@ Character::Character(const std::string& id, const std::string& name, const std::
 }
 
 Character::~Character() {
-
+	if (skillPlanRoot_) {
+		skillPlanRoot_->onWantsToSave.disconnect(boost::bind(&Character::injectTrainingIntoPlan, this));
+	}
 }
 
 void Character::setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues) {
@@ -49,13 +53,33 @@ void Character::setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {
 
 void Character::setTrainingQueue(boost::shared_ptr<SkillItem> trainingQueue) {
 	trainingQueueRoot_ = trainingQueue;
+	injectTrainingIntoPlan();
 }
 
 
 void Character::setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {
+	if (skillPlanRoot_) {
+		skillPlanRoot_->onWantsToSave.disconnect(boost::bind(&Character::injectTrainingIntoPlan, this));
+	}
 	skillPlanRoot_ = skillPlanRoot;
+	skillPlanRoot_->onWantsToSave.connect(boost::bind(&Character::injectTrainingIntoPlan, this));
 	if (knownSkillRoot_) {
 		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+	}
+	injectTrainingIntoPlan();
+}
+
+void Character::injectTrainingIntoPlan() {
+	if (trainingQueueRoot_ && skillPlanRoot_) {
+		std::vector<SkillItem::ref> trainingQueue = trainingQueueRoot_->getChildren()[0]->getChildren();
+		if (trainingQueue.size() > 0) {
+			SkillLevel::ref trainingSkill = boost::dynamic_pointer_cast<SkillLevel>(trainingQueue[0]);
+			std::vector<SkillItem::ref> plans = skillPlanRoot_->getChildren();
+			foreach(SkillItem::ref planItem, plans) {
+				SkillPlan::ref plan = boost::dynamic_pointer_cast<SkillPlan>(planItem);
+				plan->updateLevel(trainingSkill);
+			}
+		}
 	}
 }
 
