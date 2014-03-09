@@ -18,12 +18,15 @@ namespace EveXin {
 		public:
 			enum CharacterRoles {
 				AvatarRole = Qt::UserRole,
-				DetailTextRole = Qt::UserRole + 1,
+				SkillTimeRole = Qt::UserRole + 1,
+				SkillTimeHighlightRole = Qt::UserRole + 2
 			};
 			CharacterListModel(QObject* parent);
 			virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
 			virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 			void setCharacters(const std::vector<Character::ref>& characters);
+		private slots:
+			void handleTick();
 		private:
 			QByteArray getAvatarData(Character::ref character) const;
 		private:

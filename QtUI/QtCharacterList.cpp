@@ -25,7 +25,7 @@ QtCharacterList::QtCharacterList(QWidget* parent) : QListView(parent), selectedR
 }
 
 QtCharacterList::~QtCharacterList() {
-	
+
 }
 
 Character::ref QtCharacterList::getCurrentCharacter() {

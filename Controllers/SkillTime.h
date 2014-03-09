@@ -10,6 +10,7 @@
 
 #include <Eve-Xin/Controllers/Character.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
+#include <Eve-Xin/Controllers/SkillPlan.h>
 
 namespace EveXin {
 	class SkillTime {

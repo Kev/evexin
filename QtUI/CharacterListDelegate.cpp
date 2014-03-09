@@ -12,6 +12,7 @@
 
 #include <Eve-Xin/QtUI/CharacterListModel.h>
 #include <Eve-Xin/QtUI/ElidedPainter.h>
+#include <Eve-Xin/QtUI/QtSkillDelegate.h>
 
 namespace EveXin {
 
@@ -68,7 +69,12 @@ void CharacterListDelegate::paint(QPainter* painter, const QStyleOptionViewItem&
 	painter->setFont(detailFont_);
 	painter->setPen(QPen(QColor(160,160,160)));
 
-	QString detailText = index.data(CharacterListModel::DetailTextRole).toString();
+	if (index.data(CharacterListModel::SkillTimeHighlightRole).toBool()) {
+		painter->setPen(QPen(QColor(255,40,40)));
+	}
+
+	float trainingTime = index.data(CharacterListModel::SkillTimeRole).toFloat();
+	QString detailText = QtSkillDelegate::trainingTimeToString(trainingTime);
 	QRect detailTextRegion(textRegion.adjusted(0, nameHeight, 0, 0));
 	ElidedPainter::drawElidedText(painter, detailTextRegion, detailText);
 
