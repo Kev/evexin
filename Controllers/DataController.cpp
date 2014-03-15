@@ -26,6 +26,7 @@
 #include <Eve-Xin/Controllers/SkillAttribute.h>
 #include <Eve-Xin/Controllers/SkillItem.h>
 #include <Eve-Xin/Controllers/SkillLevel.h>
+#include <Eve-Xin/Controllers/SkillOrderedList.h>
 #include <Eve-Xin/Controllers/SkillPlan.h>
 #include <Eve-Xin/Controllers/SkillPlanList.h>
 #include <Eve-Xin/Controllers/SkillPlanSerialization.h>
@@ -243,7 +244,8 @@ void DataController::handleSkillQueueResult(const std::string& characterID, boos
 		}
 	}
 	SkillItem::ref root = boost::make_shared<SkillItem>(SkillItem::ref(), "queueid", "Queue Root");
-	SkillItem::ref group = root->getGroup("queuegroupid", "Skill Training Queue");
+	SkillItem::ref group = boost::make_shared<SkillOrderedList>(root, "queuegroupid", "Skill Training Queue");
+	root->addChild(group);
 
 	foreach (Swift::ParserElement::ref row, orderedRows) {
 		std::string skillID = row->getAttributes().getAttribute("typeID");

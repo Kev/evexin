@@ -85,6 +85,7 @@ if env["SCONS_STAGE"] == "build":
       "Controllers/MainController.cpp",
       "Controllers/Skill.cpp",
       "Controllers/SkillLevel.cpp",
+	  "Controllers/SkillOrderedList.cpp",
       "Controllers/SkillPlan.cpp",
       "Controllers/SkillPlanList.cpp",
       "Controllers/SkillTree.cpp",

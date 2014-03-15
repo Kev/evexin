@@ -59,7 +59,10 @@ namespace EveXin {
 				float total = 0;
 				std::vector<SkillItem::ref> children = item->getChildren();
 				foreach (SkillItem::ref child, children) {
-					total += minutesToTrainAll(character, child);
+					float childTime = minutesToTrainAll(character, child);
+					if (childTime > 0) {
+						total += childTime;
+					}
 				}
 				return total;
 			}
