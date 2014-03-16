@@ -162,10 +162,6 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 		characters_[id] = character;
 		characterAccounts_[id] = accountKey;
 		getCharacter(id);
-		if (!oldCharacter) {
-			//These data won't be changing, so don't issue changes if we already had them
-			onCharacterDataChanged(id);
-		}
 	}
 	if (oldSize != characters_.size()) {
 		onCharacterListChanged();
@@ -180,11 +176,7 @@ void DataController::handleAccountBalanceResult(const std::string& characterID, 
 	if (!character) {
 		return;
 	}
-	double oldISK = character->getISK();
 	character->setISK(boost::lexical_cast<double>(balance));
-	if (oldISK != character->getISK()) {
-		onCharacterDataChanged(characterID);
-	}
 }
 
 void DataController::handleSkillResult(boost::shared_ptr<GeneralResult> result) {

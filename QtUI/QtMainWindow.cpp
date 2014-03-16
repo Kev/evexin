@@ -82,7 +82,6 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 
 	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
 	handleCharacterListUpdated();
-	dataController_->onCharacterDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataUpdated, this, _1));
 	dataController_->onCharacterListChanged.connect(boost::bind(&QtMainWindow::handleCharacterListUpdated, this));
 	createMenus();
 }
@@ -114,24 +113,17 @@ void QtMainWindow::handleCharacterListUpdated() {
 	characterList_->setCharacters(characters);
 }
 
-void QtMainWindow::handleCharacterDataUpdated(const std::string& /*id*/) {
-	Character::ref character = characterList_->getCurrentCharacter();
+void QtMainWindow::handleCharacterSelected(Character::ref character) {
 	if (!character) {
 		return;
 	}
 	characterPane_->setCharacter(character);
 	trainingModel_->setRoot(character->getTrainingQueue());
 	skillModel_->setRoot(character->getKnownSkills());
-	trainingPane_->expandAll();
-}
 
-void QtMainWindow::handleCharacterSelected(Character::ref character) {
-	if (!character) {
-		return;
-	}
-	handleCharacterDataUpdated(character->getID());
 	skillPlannerWidget_->setCharacter(character);
 	trainingModel_->setCharacter(character);
+	trainingPane_->expandAll();
 }
 
 }

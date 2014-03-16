@@ -93,6 +93,10 @@ void Character::setAttribute(SkillAttribute::Attribute attribute, int value) {
 	onDataChanged();
 }
 
+void Character::setISK(double isk) {
+	isk_ = isk;
+}
+
 }
 
 

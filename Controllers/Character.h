@@ -31,7 +31,7 @@ namespace EveXin {
 			std::string getCorpName() {return corpName_;}
 			std::string getAccountKey() {return accountKey_;}
 			std::string getExpires() {return expires_;}
-			void setISK(double isk) {isk_ = isk;}
+			void setISK(double isk);
 			double getISK() {return isk_;}
 			Swift::ByteArray getAvatar(size_t size);
 			void setAvatar(size_t size, const Swift::ByteArray& avatar);

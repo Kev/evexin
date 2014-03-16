@@ -32,7 +32,6 @@ namespace EveXin {
 			void handleCharacterSelected(Character::ref);
 		private:
 			void handleCharacterListUpdated();
-			void handleCharacterDataUpdated(const std::string& id);
 			Character::ref selectedCharacter();
 		private:
 			void createMenus();
