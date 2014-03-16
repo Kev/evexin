@@ -25,6 +25,7 @@ namespace EveXin {
 		Q_OBJECT
 		public:
 			QtCharacterPane(QWidget* parent = NULL);
+			~QtCharacterPane();
     		void setCharacter(Character::ref character);
 		private:
 			QLabel* avatarLabel_;
@@ -35,6 +36,7 @@ namespace EveXin {
 			QLabel* skillPointsLabel_;
 			QLabel* cloneLabel_;
 			std::map<SkillAttribute::Attribute, QLabel*> attributeLabels_;
+			Character::ref character_;
 
 	};
 }

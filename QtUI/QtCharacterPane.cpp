@@ -6,6 +6,7 @@
 
 #include <Eve-Xin/QtUI/QtCharacterPane.h>
 
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
 
 #include <QBoxLayout>
@@ -56,7 +57,27 @@ QtCharacterPane::QtCharacterPane(QWidget* parent) : QWidget(parent) {
 	setCharacter(Character::ref());
 }
 
+QtCharacterPane::~QtCharacterPane() {
+	setCharacter(Character::ref());
+}
+
 void QtCharacterPane::setCharacter(Character::ref character) {
+	bool needsBind = false;
+	if (character_) {
+		if (character_ != character) {
+			character_->onDataChanged.disconnect(boost::bind(&QtCharacterPane::setCharacter, this, character_));
+			needsBind = true;
+		}
+	}
+	else {
+		needsBind = true;
+	}
+
+	if (needsBind && character) {
+		character->onDataChanged.connect(boost::bind(&QtCharacterPane::setCharacter, this, character));
+	}
+	character_ = character;
+
 	nameLabel_->setText(QString("<b>%1</b>").arg(QtUtilities::htmlEscape(character ? P2QSTRING(character->getName()) : "No Character Selected")));
 	Swift::ByteArray avatarData = character ? character->getAvatar(256) : Swift::ByteArray(); //dataController_->get256CharacterAvatar(id);
 	QImage avatarImage;
