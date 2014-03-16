@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -11,6 +11,7 @@
 #include <QWidget>
 
 class QLineEdit;
+class QListWidget;
 class QPushButton;
 
 namespace EveXin {
@@ -22,11 +23,16 @@ namespace EveXin {
 			QtAPIKeyWindow(boost::shared_ptr<DataController> dataController);
 		private slots:
 			void handleAddKey();
+			void handleDeleteKey();
+			void populateKeys();
+			void handleSelectionChanged();
 		private:
 			boost::shared_ptr<DataController> dataController_;
 			QLineEdit* keyEdit_;
 			QLineEdit* verEdit_;
 			QPushButton* addButton_;
+			QPushButton* deleteButton_;
+			QListWidget* keysList_;
 	};
 
 }

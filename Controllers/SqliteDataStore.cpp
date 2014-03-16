@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -111,6 +111,19 @@ void SqliteDataStore::addAPIKey(const std::string& key, const std::string& ver) 
 	sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
 	sqlite3_bind_text(preparedStatement, 1, key.c_str(), -1, NULL);
 	sqlite3_bind_text(preparedStatement, 2, ver.c_str(), -1, NULL);
+	sqlite3_step(preparedStatement);
+	sqlite3_finalize(preparedStatement);
+	if (sqlite3_changes(db_) == 0) {
+		std::cerr << "Error, error, nothing changed: " << sqlite3_errmsg(db_) << std::endl;
+	}
+}
+
+void SqliteDataStore::deleteAPIKey(const std::string& key) {
+	sqlite3_stmt* preparedStatement = NULL;
+	std::string command = "DELETE FROM apiKeys WHERE key=?";
+	//std::cerr << "Trying: " << command << std::endl;
+	sqlite3_prepare_v2(db_, command.c_str(), -1, &preparedStatement, NULL);
+	sqlite3_bind_text(preparedStatement, 1, key.c_str(), -1, NULL);
 	sqlite3_step(preparedStatement);
 	sqlite3_finalize(preparedStatement);
 	if (sqlite3_changes(db_) == 0) {

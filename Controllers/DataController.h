@@ -39,6 +39,12 @@ namespace EveXin {
 			~DataController();
 
 			void addAPIKey(const std::string& keyID, const std::string& vCode, bool isFromCache = false);
+			void deleteAPIKey(const std::string& keyID);
+			std::vector<std::string /*keyID*/> getAPIKeys();
+			/** Gets characters from this account, including ignored ones */
+			std::vector<Character::ref> getCharactersForAPIKey(const std::string& apiKey);
+			void setCharacterIgnored(const std::string& characterID, bool ignored);
+			/** Return non-ignored characters */
 			std::vector<std::string /*id*/> getCharacters();
 			Character::ref getCharacter(const std::string& id);
 			boost::shared_ptr<SkillTree> getSkillTree();
@@ -75,6 +81,7 @@ namespace EveXin {
 			std::map<std::string, std::string> characterAccounts_;
 			std::map<std::string /*key*/, Character::ref> characters_;
 			std::set<std::string> requestsInFlight_;
+			std::map<std::string /*characterID*/, bool> ignoredCharacters_;
 			boost::shared_ptr<SkillTree> skillTree_;
 	};
 

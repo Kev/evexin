@@ -60,6 +60,33 @@ void DataController::addAPIKey(const std::string& keyID, const std::string& vCod
 	getURLandDommify(url, callback);
 }
 
+void DataController::deleteAPIKey(const std::string& keyID) {
+	accountKeys_.erase(keyID);
+	store_->deleteAPIKey(keyID);
+}
+
+std::vector<std::string> DataController::getAPIKeys() {
+	std::vector<std::string> keys;
+	foreach (auto keyPair, accountKeys_) {
+		keys.push_back(keyPair.first);
+	}
+	return keys;
+}
+
+std::vector<Character::ref> DataController::getCharactersForAPIKey(const std::string& apiKey) {
+	std::vector<Character::ref> characters;
+	foreach (auto pair, characterAccounts_) {
+		if (pair.second == apiKey) {
+			characters.push_back(characters_[pair.first]);
+		}
+	}
+	return characters;
+}
+
+void DataController::setCharacterIgnored(const std::string& characterID, bool ignored) {
+	ignoredCharacters_[characterID] = ignored;
+}
+
 Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback callback) {
 	Swift::ByteArray content = store_->getContent(url);
 	// We're expecting a file here, not a normal HTTP response. So if it's not a file, assume it's wrong
@@ -423,7 +450,9 @@ void DataController::handleCharacterAvatarResult(const std::string& id, size_t s
 std::vector<std::string> DataController::getCharacters() {
 	std::vector<std::string> characters;
 	foreach (auto i, characters_) {
-		characters.push_back(i.first);
+		if (!ignoredCharacters_[i.first]) {
+			characters.push_back(i.first);
+		}
 	}
 	return characters;
 }

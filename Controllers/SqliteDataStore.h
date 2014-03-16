@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -29,6 +29,7 @@ namespace EveXin {
 			virtual void setContent(const Swift::URL& url, const Swift::ByteArray& content);
 
 			virtual void addAPIKey(const std::string& key, const std::string& ver);
+			virtual void deleteAPIKey(const std::string& key);
 			virtual std::vector<APIKey> getAPIKeys();
 		private:
 			std::string urlToKey(const Swift::URL& url);
