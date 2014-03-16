@@ -29,6 +29,7 @@ namespace EveXin {
 			void handleTick();
 		private:
 			QByteArray getAvatarData(Character::ref character) const;
+			void handleCharacterDataChanged(Character::ref character);
 		private:
 			std::vector<Character::ref> characters_;
 	};

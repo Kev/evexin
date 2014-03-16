@@ -11,6 +11,7 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <Swiften/Base/boost_bsignals.h>
 #include <Swiften/Base/ByteArray.h>
 
 #include <Eve-Xin/Controllers/SkillAttribute.h>
@@ -41,10 +42,12 @@ namespace EveXin {
 			boost::shared_ptr<SkillItem> getTrainingQueue() {return trainingQueueRoot_;}
 			boost::shared_ptr<SkillPlanList> getSkillPlanRoot() {return skillPlanRoot_;}
 			int getAttribute(SkillAttribute::Attribute attribute) {return baseAttributes_[attribute];}
-			void setAttribute(SkillAttribute::Attribute attribute, int value) {baseAttributes_[attribute] = value;}
+			void setAttribute(SkillAttribute::Attribute attribute, int value);
 			void setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues);
 			int getImplantValue(SkillAttribute::Attribute attribute);
 			std::string getImplantName(SkillAttribute::Attribute attribute);
+		public:
+			boost::signal<void()> onDataChanged;
 		private:
 			void injectTrainingIntoPlan();
 		private:

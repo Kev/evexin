@@ -6,6 +6,8 @@
 
 #include <Eve-Xin/QtUI/CharacterListModel.h>
 
+#include <boost/bind.hpp>
+
 #include <QTimer>
 
 #include <Swift/QtUI/QtSwiftUtil.h>
@@ -59,8 +61,27 @@ QVariant CharacterListModel::data(const QModelIndex& index, int role) const {
 
 void CharacterListModel::setCharacters(const std::vector<Character::ref>& characters) {
 	beginResetModel();
+	foreach (Character::ref character, characters_) {
+		character->onDataChanged.disconnect(boost::bind(&CharacterListModel::handleCharacterDataChanged, this, character));
+	}
 	characters_ = characters;
+	foreach (Character::ref character, characters_) {
+		character->onDataChanged.connect(boost::bind(&CharacterListModel::handleCharacterDataChanged, this, character));
+	}
 	endResetModel();
+}
+
+void CharacterListModel::handleCharacterDataChanged(Character::ref character) {
+	QModelIndex characterIndex;
+	for (size_t i = 0; i < characters_.size(); i++) {
+		if (character == characters_[i]) {
+			characterIndex = index(static_cast<int>(i));
+		}
+	}
+	if (!characterIndex.isValid()) {
+		return;
+	}
+	dataChanged(characterIndex, characterIndex);
 }
 
 }

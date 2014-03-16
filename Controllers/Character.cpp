@@ -25,6 +25,7 @@ Character::~Character() {
 void Character::setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues) {
 	enhancerNames_ = enhancerNames;
 	enhancerValues_ = enhancerValues;
+	onDataChanged();
 }
 
 std::string Character::getImplantName(SkillAttribute::Attribute attribute) {
@@ -38,6 +39,7 @@ int Character::getImplantValue(SkillAttribute::Attribute attribute) {
 
 void Character::setAvatar(size_t size, const Swift::ByteArray& avatar) {
 	avatars_[size] = avatar;
+	onDataChanged();
 }
 
 Swift::ByteArray Character::getAvatar(size_t size) {
@@ -49,11 +51,13 @@ void Character::setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {
 	if (skillPlanRoot_) {
 		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
 	}
+	onDataChanged();
 }
 
 void Character::setTrainingQueue(boost::shared_ptr<SkillItem> trainingQueue) {
 	trainingQueueRoot_ = trainingQueue;
 	injectTrainingIntoPlan();
+	onDataChanged();
 }
 
 
@@ -67,6 +71,7 @@ void Character::setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot)
 		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
 	}
 	injectTrainingIntoPlan();
+	onDataChanged();
 }
 
 void Character::injectTrainingIntoPlan() {
@@ -81,6 +86,11 @@ void Character::injectTrainingIntoPlan() {
 			}
 		}
 	}
+}
+
+void Character::setAttribute(SkillAttribute::Attribute attribute, int value) {
+	baseAttributes_[attribute] = value;
+	onDataChanged();
 }
 
 }
