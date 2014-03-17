@@ -15,7 +15,7 @@
 
 namespace EveXin {
 	
-SkillPlanList::SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills) : SkillItem(SkillItem::ref(), id, name), allSkills_(allSkills), nextID_(0), undoing_(false) {
+SkillPlanList::SkillPlanList(const std::string id, const std::string& name, boost::shared_ptr<SkillTree> allSkills) : SkillItem(SkillItem::ref(), id, name), allSkills_(allSkills), nextID_(0), undoing_(false), renaming_(false) {
 	
 }
 
@@ -34,6 +34,7 @@ void SkillPlanList::undo() {
 	if (undoActions_.empty()) {
 		return;
 	}
+	bool originalState = undoing_;
 	undoing_ = true;
 	std::pair<UndoAction, SkillPlan::ref> action = undoActions_.back();
 	undoActions_.pop_back();
@@ -47,8 +48,13 @@ void SkillPlanList::undo() {
 			onAvailablePlansChanged();
 			break;
 		}
+		case RenamePlan: {
+			/* Edit plan itself is empty, and is then a delete and add */
+			undo();
+			undo();
+		}
 	}
-	undoing_ = false;
+	undoing_ = originalState;
 }
 
 void SkillPlanList::addUndoAction(const std::pair<UndoAction, SkillPlan::ref>& action, bool userAction) {
@@ -79,6 +85,9 @@ void SkillPlanList::deletePlan(SkillPlan::ref plan, bool userAction) {
 }
 
 void SkillPlanList::handleSkillPlanWantsToSave(SkillPlan::ref plan) {
+	if (renaming_) {
+		return;
+	}
 	onWantsToSave(plan);
 	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(ModifyPlan, plan), true);
 }
@@ -90,6 +99,22 @@ void SkillPlanList::setKnownSkills(boost::shared_ptr<SkillItem> knownSkills) {
 		auto plan = boost::dynamic_pointer_cast<SkillPlan>(item);
 		plan->setKnownSkills(knownSkills_);
 	}
+}
+
+bool SkillPlanList::renamePlan(SkillPlan::ref plan, const std::string& name) {
+	SkillPlan::ref newPlan = createPlan(name, true);
+	renaming_ = true;
+	auto oldChildren = plan->getChildren();
+	foreach (SkillItem::ref item, oldChildren) {
+		SkillLevel::ref level = boost::dynamic_pointer_cast<SkillLevel>(item);
+		newPlan->addSkill(level->getSkill(), level->getLevel());
+	}
+	renaming_ = false;
+	deletePlan(plan, true);
+	addUndoAction(std::pair<UndoAction, SkillPlan::ref>(RenamePlan, SkillPlan::ref()), true);
+	onWantsToSave(plan);
+	onWantsToSave(newPlan);
+	return true; // FIXME start to check if the rename is legal first.
 }
 
 }

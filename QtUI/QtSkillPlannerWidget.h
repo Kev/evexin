@@ -34,6 +34,10 @@ namespace EveXin {
 			void handleSkillTreeChanged();
 			void handleSuggestClicked();
 			void handleUndoClicked();
+			void handleAllSkillsContextMenuRequested(const QPoint&);
+			void handlePlanContextMenuRequested(const QPoint&);
+		private:
+			void removePlanIndex(const QModelIndex& index);
 		private:
 			boost::shared_ptr<DataController> dataController_;
 			boost::shared_ptr<Character> character_;

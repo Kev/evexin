@@ -31,6 +31,8 @@ namespace EveXin {
 
 			void setKnownSkills(boost::shared_ptr<SkillItem> knownSkills);
 
+			bool renamePlan(SkillPlan::ref plan, const std::string& name);
+
 			void undo();
 		public:
 			/**
@@ -42,7 +44,7 @@ namespace EveXin {
 			 */
 			boost::signal<void()> onAvailablePlansChanged;
 		private:
-			enum UndoAction {CreatePlan, DeletePlan, ModifyPlan};
+			enum UndoAction {CreatePlan, DeletePlan, ModifyPlan, RenamePlan};
 			void handleSkillPlanWantsToSave(SkillPlan::ref plan);
 			void addUndoAction(const std::pair<UndoAction, SkillPlan::ref>&, bool userAction);
 		private:
@@ -51,5 +53,6 @@ namespace EveXin {
 			std::vector<std::pair<UndoAction, SkillPlan::ref > > undoActions_;
 			bool undoing_;
 			boost::shared_ptr<SkillItem> knownSkills_;
+			bool renaming_;
 	};
 }

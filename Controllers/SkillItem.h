@@ -15,6 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 
+#include <Swiften/Base/boost_bsignals.h>
 #include <Swiften/Base/foreach.h>
 
 #include <Eve-Xin/Controllers/Skill.h>
@@ -110,6 +111,10 @@ namespace EveXin {
 			boost::shared_ptr<SkillItem> getParent() const {
 				return parent_.lock();
 			}
+
+		public:
+			boost::signal<void()> onChildrenAboutToChange;
+			boost::signal<void()> onChildrenChanged;
 
 		protected:
 			std::map<std::string/*id*/, ref> children_;			

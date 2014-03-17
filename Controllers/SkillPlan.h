@@ -94,6 +94,7 @@ namespace EveXin {
 			void enableSaving();
 
 			void setDebug(bool debug) {debug_ = debug;}
+
 		public:
 			boost::signal<void()> onWantsToSave;
 		private:
