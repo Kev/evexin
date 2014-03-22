@@ -52,9 +52,9 @@ QVariant CharacterListModel::data(const QModelIndex& index, int role) const {
 	Character::ref character = characters_[index.row()];
 	switch (role) {
 		case Qt::DisplayRole: return QVariant(P2QSTRING(character->getName()));
-		case AvatarRole:return getAvatarData(character);
-		case SkillTimeRole:return SkillTime::minutesToTrainAll(character, character->getTrainingQueue());
-		case SkillTimeHighlightRole: return QVariant(SkillTime::minutesToTrainAll(character, character->getTrainingQueue()) < 24 * 60);
+		case AvatarRole: return getAvatarData(character);
+		case SkillTimeRole: return !!character->getTrainingQueue() ? SkillTime::minutesToTrainAll(character, character->getTrainingQueue()) : QVariant();
+		case SkillTimeHighlightRole: return !!character->getTrainingQueue() ? QVariant(SkillTime::minutesToTrainAll(character, character->getTrainingQueue()) < 24 * 60) : QVariant();
 		default: return QVariant();
 	}
 }

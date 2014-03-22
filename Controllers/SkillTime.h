@@ -52,6 +52,7 @@ namespace EveXin {
 			}
 
 			static float minutesToTrainAll(Character::ref character, SkillItem::ref item) {
+				assert(!!item);
 				SkillLevel::ref level;
 				if ((level = boost::dynamic_pointer_cast<SkillLevel>(item))) {
 					return minutesToTrain(character, level);
