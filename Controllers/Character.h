@@ -46,8 +46,11 @@ namespace EveXin {
 			void setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues);
 			int getImplantValue(SkillAttribute::Attribute attribute);
 			std::string getImplantName(SkillAttribute::Attribute attribute);
+			/** Just emits a signal requesting that it be updated */
+			void update() {onWantsUpdate();}
 		public:
 			boost::signal<void()> onDataChanged;
+			boost::signal<void()> onWantsUpdate;
 		private:
 			void injectTrainingIntoPlan();
 		private:

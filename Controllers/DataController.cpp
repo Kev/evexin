@@ -47,7 +47,9 @@ DataController::DataController(Swift::NetworkFactories* factories, const boost::
 }
 
 DataController::~DataController() {
-
+	foreach (auto pair, characters_) {
+		pair.second->onWantsUpdate.disconnect(boost::bind(&DataController::handleCharacterWantsUpdate, this, pair.second));
+	}
 }
 
 void DataController::addAPIKey(const std::string& keyID, const std::string& vCode, bool isFromCache) {
@@ -152,6 +154,10 @@ void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArr
 	}
 }
 
+void DataController::handleCharacterWantsUpdate(Character::ref character) {
+	getCharacter(character->getID());
+}
+
 void DataController::handleCharactersResult(const std::string& accountKey, boost::shared_ptr<GeneralResult> result) {
 	Swift::ParserElement::ref keyElement = result->getResult()->getChild("key", "");
 	const std::vector<Swift::ParserElement::ref>& characters = keyElement->getChild("rowset", "")->getChildren("row", "");
@@ -163,7 +169,11 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 		std::string corpKey = element->getAttributes().getAttribute("corporationID");
 		std::string corpName = element->getAttributes().getAttribute("corporationName");
 		Character::ref oldCharacter = characters_[id];
+		if (oldCharacter) {
+			oldCharacter->onWantsUpdate.disconnect(boost::bind(&DataController::handleCharacterWantsUpdate, this, oldCharacter));
+		}
 		Character::ref character = boost::make_shared<Character>(id, name, accountKey, corpKey, corpName, expires);
+		character->onWantsUpdate.connect(boost::bind(&DataController::handleCharacterWantsUpdate, this, character));
 		characters_[id] = character;
 		characterAccounts_[id] = accountKey;
 		getCharacter(id);

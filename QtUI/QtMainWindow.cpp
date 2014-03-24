@@ -117,6 +117,7 @@ void QtMainWindow::handleCharacterSelected(Character::ref character) {
 	if (!character) {
 		return;
 	}
+	character->update();
 	characterPane_->setCharacter(character);
 	trainingModel_->setRoot(character->getTrainingQueue());
 	skillModel_->setRoot(character->getKnownSkills());
