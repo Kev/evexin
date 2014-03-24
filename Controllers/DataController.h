@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Kevin Smith
+ * Copyright (c) 2013-2014 Kevin Smith
  * Licensed under the GNU General Public License v3.
  * See Documentation/Licenses/GPLv3.txt for more information.
  */
@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/function.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 
 #include <Swiften/Base/boost_bsignals.h>
 #include <Swiften/Base/ByteArray.h>
@@ -58,6 +59,7 @@ namespace EveXin {
 			Swift::ByteArray getAndCache(const Swift::URL& url, RawCallback callback);
 			void handleRawResult(const Swift::URL& url, const Swift::ByteArray& content, RawCallback callback);
 			void getURLandDommify(const Swift::URL& url, ParsedCallback callback);
+			void getURLandDommifySince(const Swift::URL& url, boost::posix_time::ptime since, ParsedCallback callback);
 			void handleDOMResult(const Swift::URL& url, const Swift::ByteArray& content, ParsedCallback callback);
 			void handleCharactersResult(const std::string& keyID, boost::shared_ptr<GeneralResult> result);
 			void handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result);

@@ -39,7 +39,7 @@ Swift::URL SKILL_URL("https","api.eveonline.com","/eve/SkillTree.xml.aspx");
 DataController::DataController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir) : factories_(factories) {
 	store_ = boost::make_shared<SqliteDataStore>(dataDir);
 	skillTree_ = boost::make_shared<SkillTree>();
-	getURLandDommify(SKILL_URL, boost::bind(&DataController::handleSkillResult, this, _1));
+	getURLandDommifySince(SKILL_URL, Swift::stringToDateTime("2014-03-23T11:00:00Z"), boost::bind(&DataController::handleSkillResult, this, _1));
 	std::vector<DataStore::APIKey> keys = store_->getAPIKeys();
 	foreach (const DataStore::APIKey& key, keys) {
 		addAPIKey(key.key, key.ver, true);
@@ -117,10 +117,10 @@ void DataController::handleRawResult(const Swift::URL& url, const Swift::ByteArr
 	}
 }
 
-void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback callback) {
+void DataController::getURLandDommifySince(const Swift::URL& url, boost::posix_time::ptime since, ParsedCallback callback) {
 	Swift::ByteArray content = store_->getContent(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
-	if (!result->isValid() || result->needsRefresh()) {
+	if (!result->isValid() || result->needsRefresh() || since > result->getDate()) {
 		if (canRequestURL(url)) {
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
 			//request->onError //FIXME: Do something with this
@@ -131,6 +131,11 @@ void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback call
 	if (result->isValid() && !callback.empty()) {
 		callback(result);
 	}
+
+}
+
+void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback callback) {
+	getURLandDommifySince(url, Swift::stringToDateTime("1984-01-01T00:00:00Z"), callback);
 }
 
 void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArray& content, ParsedCallback callback) {
