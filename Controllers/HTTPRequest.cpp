@@ -69,6 +69,7 @@ void HTTPRequest::writeData() {
 			header << ":" << *(url_.getPort());
 	}
 	header	<< "\r\n"
+		    << "User-Agent: " << "Eve-Xin(" << ")\r\n"
 			// << "Accept-Encoding: deflate\r\n"
 			// << "Content-Type: text/xml; charset=utf-8\r\n"
 			// << "Content-Length: " << size << "\r\n"
