@@ -22,6 +22,16 @@ Character::~Character() {
 	}
 }
 
+void Character::repopulateFrom(ref other) {
+	id_ = other->getID();
+	name_ = other->getName();
+	accountKey_ = other->getAccountKey();
+	corpKey_ = other->getCorpKey();
+	corpName_ = other->getCorpName();
+	expires_ = other->getExpires();
+	onDataChanged();
+}
+
 void Character::setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues) {
 	enhancerNames_ = enhancerNames;
 	enhancerValues_ = enhancerValues;

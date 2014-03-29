@@ -48,6 +48,8 @@ namespace EveXin {
 			std::string getImplantName(SkillAttribute::Attribute attribute);
 			/** Just emits a signal requesting that it be updated */
 			void update() {onWantsUpdate();}
+			/** Repopulate those parameters set in the ctor */
+			void repopulateFrom(ref other);
 		public:
 			boost::signal<void()> onDataChanged;
 			boost::signal<void()> onWantsUpdate;

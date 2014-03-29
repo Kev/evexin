@@ -174,13 +174,15 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 		std::string corpKey = element->getAttributes().getAttribute("corporationID");
 		std::string corpName = element->getAttributes().getAttribute("corporationName");
 		Character::ref oldCharacter = characters_[id];
-		if (oldCharacter) {
-			oldCharacter->onWantsUpdate.disconnect(boost::bind(&DataController::handleCharacterWantsUpdate, this, oldCharacter));
-		}
 		Character::ref character = boost::make_shared<Character>(id, name, accountKey, corpKey, corpName, expires);
-		character->onWantsUpdate.connect(boost::bind(&DataController::handleCharacterWantsUpdate, this, character));
-		characters_[id] = character;
-		characterAccounts_[id] = accountKey;
+		if (oldCharacter) {
+			oldCharacter->repopulateFrom(character);
+		}
+		else {
+			character->onWantsUpdate.connect(boost::bind(&DataController::handleCharacterWantsUpdate, this, character));
+			characters_[id] = character;
+			characterAccounts_[id] = accountKey;
+		}
 		getCharacter(id);
 	}
 	if (oldSize != characters_.size()) {
