@@ -87,6 +87,9 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 }
 
 QtMainWindow::~QtMainWindow() {
+	if (currentCharacter_) {
+		currentCharacter_->onDataChanged.disconnect(boost::bind(&QtMainWindow::handleCharacterDataChanged, this));
+	}
 	delete apiWindow_;
 }
 
@@ -114,17 +117,27 @@ void QtMainWindow::handleCharacterListUpdated() {
 }
 
 void QtMainWindow::handleCharacterSelected(Character::ref character) {
+	if (currentCharacter_) {
+		currentCharacter_->onDataChanged.disconnect(boost::bind(&QtMainWindow::handleCharacterDataChanged, this));
+	}
 	if (!character) {
 		return;
 	}
 	character->update();
 	characterPane_->setCharacter(character);
-	trainingModel_->setRoot(character->getTrainingQueue());
-	skillModel_->setRoot(character->getKnownSkills());
+	currentCharacter_ = character;
+	handleCharacterDataChanged();
+	currentCharacter_->onDataChanged.connect(boost::bind(&QtMainWindow::handleCharacterDataChanged, this));
+}
 
-	skillPlannerWidget_->setCharacter(character);
-	trainingModel_->setCharacter(character);
+void QtMainWindow::handleCharacterDataChanged() {
+	trainingModel_->setRoot(currentCharacter_->getTrainingQueue());
+	skillModel_->setRoot(currentCharacter_->getKnownSkills());
+
+	skillPlannerWidget_->setCharacter(currentCharacter_);
+	trainingModel_->setCharacter(currentCharacter_);
 	trainingPane_->expandAll();
+
 }
 
 }

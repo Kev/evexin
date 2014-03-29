@@ -17,6 +17,7 @@
 #include <Swiften/Base/foreach.h>
 #include <Swiften/Base/URL.h>
 #include <Swiften/Network/NetworkFactories.h>
+#include <Swiften/Network/TimerFactory.h>
 
 #include <Eve-Xin/Controllers/DataStore.h>
 #include <Eve-Xin/Controllers/GeneralResult.h>
@@ -44,9 +45,13 @@ DataController::DataController(Swift::NetworkFactories* factories, const boost::
 	foreach (const DataStore::APIKey& key, keys) {
 		addAPIKey(key.key, key.ver, true);
 	}
+	timer_ = factories->getTimerFactory()->createTimer(1000 * 60);
+	timer_->onTick.connect(boost::bind(&DataController::refreshAllCharacters, this));
+	timer_->start();
 }
 
 DataController::~DataController() {
+	timer_->stop();
 	foreach (auto pair, characters_) {
 		pair.second->onWantsUpdate.disconnect(boost::bind(&DataController::handleCharacterWantsUpdate, this, pair.second));
 	}
@@ -182,6 +187,12 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 		onCharacterListChanged();
 	}
 	
+}
+
+void DataController::refreshAllCharacters() {
+	foreach (auto pair, characters_) {
+		handleCharacterWantsUpdate(pair.second);
+	}
 }
 
 void DataController::handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {

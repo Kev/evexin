@@ -32,6 +32,7 @@ namespace EveXin {
 			void handleCharacterSelected(Character::ref);
 		private:
 			void handleCharacterListUpdated();
+			void handleCharacterDataChanged();
 			Character::ref selectedCharacter();
 		private:
 			void createMenus();
@@ -45,6 +46,7 @@ namespace EveXin {
 			boost::shared_ptr<QtSkillModel> trainingModel_;
 			boost::shared_ptr<QtSkillModel> skillModel_;
 			QtSkillPlannerWidget* skillPlannerWidget_;
+			Character::ref currentCharacter_;
 	};
 
 }

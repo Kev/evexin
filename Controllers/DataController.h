@@ -23,6 +23,7 @@
 
 namespace Swift {
 	class NetworkFactories;
+	class Timer;
 }
 
 namespace EveXin {
@@ -76,6 +77,7 @@ namespace EveXin {
 			void loadSkillPlans(Character::ref character);
 			void handleSkillPlanWantsToSave(const Swift::URL& characterURL, boost::shared_ptr<SkillPlanList> plans);
 			void handleCharacterWantsUpdate(Character::ref character);
+			void refreshAllCharacters();
 		private:
 			Swift::NetworkFactories* factories_;
 			boost::shared_ptr<DataStore> store_;
@@ -85,6 +87,7 @@ namespace EveXin {
 			std::set<std::string> requestsInFlight_;
 			std::map<std::string /*characterID*/, bool> ignoredCharacters_;
 			boost::shared_ptr<SkillTree> skillTree_;
+			boost::shared_ptr<Swift::Timer> timer_;
 	};
 
 }
