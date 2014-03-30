@@ -46,7 +46,7 @@ DataController::DataController(Swift::NetworkFactories* factories, const boost::
 		addAPIKey(key.key, key.ver, true);
 	}
 	timer_ = factories->getTimerFactory()->createTimer(1000 * 60);
-	timer_->onTick.connect(boost::bind(&DataController::refreshAllCharacters, this));
+	timer_->onTick.connect(boost::bind(&DataController::handleTimerTick, this));
 	timer_->start();
 }
 
@@ -104,7 +104,7 @@ Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback 
 		if (canRequestURL(url)) {
 			onDebugMessage("--> (raw) " + url.toString());
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
-			//request->onError //FIXME: Do something with this
+			request->onError.connect(boost::bind(&DataController::handleRawError, this, url));
 			request->onComplete.connect(boost::bind(&DataController::handleRawResult, this, url, _1, callback));
 			request->send();
 		}
@@ -118,11 +118,20 @@ Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback 
 	return content;
 }
 
+void DataController::handleRawError(const Swift::URL& url) {
+	onDebugMessage("ERROR (raw) " + url.toString());
+	untrackURL(url);
+	ignoredRequests_.insert(url.toString());
+}
+
 void DataController::handleRawResult(const Swift::URL& url, const Swift::ByteArray& content, RawCallback callback) {
 	onDebugMessage("<-- (raw) " + url.toString());
 	untrackURL(url);
 	store_->setContent(url, content);
-	if (!callback.empty()) {
+	if (callback.empty()) {
+		ignoredRequests_.insert(url.toString());
+	}
+	else {
 		callback(content);
 	}
 }
@@ -140,7 +149,7 @@ void DataController::getURLandDommifySince(const Swift::URL& url, boost::posix_t
 		}
 	}
 	else {
-		onDebugMessage("*** Not refreshing XML cache for " + url.toString());
+		onDebugMessage("*** Not refreshing XML cache for " + url.toString() + " (expires " + Swift::dateTimeToString(result->getCachedUntil()) + ")");
 	}
 	if (result->isValid() && !callback.empty()) {
 		callback(result);
@@ -153,9 +162,7 @@ void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback call
 }
 
 void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArray& content, ParsedCallback callback) {
-	onDebugMessage("<-- (xml) " + url.toString());
-	onDebugMessage(Swift::byteArrayToString(content));
-	onDebugMessage("^^^^^^");
+	onDebugMessage("<-- (xml) " + url.toString() + "\n" + Swift::byteArrayToString(content) + "\n^^^^^^");
 	untrackURL(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (result->isValid() && result->getResult()) {
@@ -201,10 +208,11 @@ void DataController::handleCharactersResult(const std::string& accountKey, boost
 	
 }
 
-void DataController::refreshAllCharacters() {
+void DataController::handleTimerTick() {
 	foreach (auto pair, characters_) {
 		handleCharacterWantsUpdate(pair.second);
 	}
+	timer_->start();
 }
 
 void DataController::handleAccountBalanceResult(const std::string& characterID, boost::shared_ptr<GeneralResult> result) {
@@ -488,7 +496,7 @@ std::vector<std::string> DataController::getCharacters() {
 }
 
 bool DataController::canRequestURL(const Swift::URL& url) {
-	if (requestsInFlight_.count(url.toString()) > 0) {
+	if (requestsInFlight_.count(url.toString()) + ignoredRequests_.count(url.toString())> 0) {
 		return false;
 	}
 	requestsInFlight_.insert(url.toString());

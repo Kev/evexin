@@ -11,6 +11,7 @@
 
 #include <QAction>
 #include <QBoxLayout>
+#include <QDateTime>
 #include <QImage>
 #include <QMenu>
 #include <QMenuBar>
@@ -150,7 +151,8 @@ void QtMainWindow::handleCharacterDataChanged() {
 
 void QtMainWindow::handleDebugData(const std::string& data) {
 	if (debugConsole_) {
-		debugConsole_->appendPlainText("\n");
+		debugConsole_->appendPlainText("");
+		debugConsole_->appendPlainText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
 		debugConsole_->appendPlainText(P2QSTRING(data));
 	}
 }
