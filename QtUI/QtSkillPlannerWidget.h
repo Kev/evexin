@@ -10,6 +10,7 @@
 
 #include <QString>
 #include <QWidget>
+#include <QModelIndex>
 
 class QLineEdit;
 class QTreeView;
