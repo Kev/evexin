@@ -25,7 +25,7 @@ QtEveXin::QtEveXin(Swift::NetworkFactories* factories, const boost::program_opti
 		dataPath = Swift::stringToPath(options["override-path"].as<std::string>());
 	}
 	mainController_ = boost::make_shared<MainController>(factories, dataPath);
-	mainWindow_ = new QtMainWindow(mainController_->getDataController());
+	mainWindow_ = new QtMainWindow(mainController_->getDataController(), options.count("debug") > 0);
 	mainWindow_->show();
 }
 

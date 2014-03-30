@@ -15,6 +15,7 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QPixmap>
+#include <QPlainTextEdit>
 #include <QPushButton>
 #include <QTabWidget>
 #include <QTreeView>
@@ -35,7 +36,7 @@
 
 namespace EveXin {
 
-QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
+QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController, bool debug) {
 	dataController_ = dataController;
 	apiWindow_ = NULL;
 	QWidget* mainWidget = new QWidget();
@@ -80,9 +81,16 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController) {
 	skillPlannerWidget_ = new QtSkillPlannerWidget(dataController, this);
 	tabs->addTab(skillPlannerWidget_, "Skill Plan");
 
+	if (debug) {
+		debugConsole_ = new QPlainTextEdit(this);
+		debugConsole_->setReadOnly(true);
+		tabs->addTab(debugConsole_, "Debug");
+	}
+
 	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
 	handleCharacterListUpdated();
 	dataController_->onCharacterListChanged.connect(boost::bind(&QtMainWindow::handleCharacterListUpdated, this));
+	dataController_->onDebugMessage.connect(boost::bind(&QtMainWindow::handleDebugData, this, _1));
 	createMenus();
 }
 
@@ -138,6 +146,13 @@ void QtMainWindow::handleCharacterDataChanged() {
 	trainingModel_->setCharacter(currentCharacter_);
 	trainingPane_->expandAll();
 
+}
+
+void QtMainWindow::handleDebugData(const std::string& data) {
+	if (debugConsole_) {
+		debugConsole_->appendPlainText("\n");
+		debugConsole_->appendPlainText(P2QSTRING(data));
+	}
 }
 
 }

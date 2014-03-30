@@ -14,6 +14,7 @@
 
 class QComboBox;
 class QTreeView;
+class QPlainTextEdit;
 
 namespace EveXin {
 	class DataController;
@@ -24,7 +25,7 @@ namespace EveXin {
 	class QtMainWindow : public QMainWindow {
 		Q_OBJECT
 		public:
-			QtMainWindow(boost::shared_ptr<DataController>);
+			QtMainWindow(boost::shared_ptr<DataController>, bool debug);
 			~QtMainWindow();
 
 		private slots:
@@ -34,6 +35,7 @@ namespace EveXin {
 			void handleCharacterListUpdated();
 			void handleCharacterDataChanged();
 			Character::ref selectedCharacter();
+			void handleDebugData(const std::string& data);
 		private:
 			void createMenus();
 		private:
@@ -46,6 +48,7 @@ namespace EveXin {
 			boost::shared_ptr<QtSkillModel> trainingModel_;
 			boost::shared_ptr<QtSkillModel> skillModel_;
 			QtSkillPlannerWidget* skillPlannerWidget_;
+			QPlainTextEdit* debugConsole_;
 			Character::ref currentCharacter_;
 	};
 

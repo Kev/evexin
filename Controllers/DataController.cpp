@@ -102,6 +102,7 @@ Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback 
 	}
 	if (content.empty()) {
 		if (canRequestURL(url)) {
+			onDebugMessage("--> (raw) " + url.toString());
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
 			//request->onError //FIXME: Do something with this
 			request->onComplete.connect(boost::bind(&DataController::handleRawResult, this, url, _1, callback));
@@ -109,6 +110,7 @@ Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback 
 		}
 	}
 	else {
+		onDebugMessage("*** Not refreshing raw cache for " + url.toString());
 		if (!callback.empty()) {
 			callback(content);
 		}
@@ -117,6 +119,7 @@ Swift::ByteArray DataController::getAndCache(const Swift::URL& url, RawCallback 
 }
 
 void DataController::handleRawResult(const Swift::URL& url, const Swift::ByteArray& content, RawCallback callback) {
+	onDebugMessage("<-- (raw) " + url.toString());
 	untrackURL(url);
 	store_->setContent(url, content);
 	if (!callback.empty()) {
@@ -129,11 +132,15 @@ void DataController::getURLandDommifySince(const Swift::URL& url, boost::posix_t
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (!result->isValid() || result->needsRefresh() || since > result->getDate()) {
 		if (canRequestURL(url)) {
+			onDebugMessage("--> (xml) " + url.toString());
 			HTTPRequest::ref request = boost::make_shared<HTTPRequest>(url, factories_);
 			//request->onError //FIXME: Do something with this
 			request->onComplete.connect(boost::bind(&DataController::handleDOMResult, this, url, _1, callback));
 			request->send();
 		}
+	}
+	else {
+		onDebugMessage("*** Not refreshing XML cache for " + url.toString());
 	}
 	if (result->isValid() && !callback.empty()) {
 		callback(result);
@@ -146,6 +153,9 @@ void DataController::getURLandDommify(const Swift::URL& url, ParsedCallback call
 }
 
 void DataController::handleDOMResult(const Swift::URL& url, const Swift::ByteArray& content, ParsedCallback callback) {
+	onDebugMessage("<-- (xml) " + url.toString());
+	onDebugMessage(Swift::byteArrayToString(content));
+	onDebugMessage("^^^^^^");
 	untrackURL(url);
 	boost::shared_ptr<GeneralResult> result = boost::make_shared<GeneralResult>(content, factories_->getXMLParserFactory());
 	if (result->isValid() && result->getResult()) {

@@ -53,6 +53,7 @@ namespace EveXin {
 		public:
 			boost::signal<void()> onCharacterListChanged;
 			boost::signal<void()> onSkillTreeChanged;
+			boost::signal<void(const std::string&)> onDebugMessage;
 		private:
 			typedef boost::function<void (const Swift::ByteArray&)> RawCallback;
 			typedef boost::function<void (boost::shared_ptr<GeneralResult>)> ParsedCallback;

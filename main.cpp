@@ -26,6 +26,7 @@ int main(int argc, char* argv[]) {
 	boost::program_options::options_description desc("Options");
 	desc.add_options()
 		("help", "Show this help message")
+		("debug", "Run in debug mode")
 		("override-path", boost::program_options::value<std::string>(), "Override the default storage path with this one");
 	boost::program_options::variables_map options;
 	try {
