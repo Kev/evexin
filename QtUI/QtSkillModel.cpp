@@ -39,6 +39,9 @@ void QtSkillModel::cacheRootChildren() {
 }
 
 void QtSkillModel::setRoot(boost::shared_ptr<SkillItem> root) {
+	if (root == root_) {
+		return;
+	}
 	SkillPlanList::ref list = boost::dynamic_pointer_cast<SkillPlanList>(root_);
 	if (list) {
 		list->onAvailablePlansChanged.disconnect(boost::bind(&QtSkillModel::handleAvailablePlansChanged, this));
