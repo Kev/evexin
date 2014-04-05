@@ -23,19 +23,26 @@ Character::~Character() {
 }
 
 void Character::repopulateFrom(ref other) {
-	id_ = other->getID();
-	name_ = other->getName();
-	accountKey_ = other->getAccountKey();
-	corpKey_ = other->getCorpKey();
-	corpName_ = other->getCorpName();
-	expires_ = other->getExpires();
-	onDataChanged();
+	bool same = id_ == other->getID() && name_ == other->getName() && accountKey_ == other->getAccountKey() && corpKey_ == other->getCorpKey() && corpName_ == other->getCorpName() && expires_ == other->getExpires();
+
+	if (!same) {
+		id_ = other->getID();
+		name_ = other->getName();
+		accountKey_ = other->getAccountKey();
+		corpKey_ = other->getCorpKey();
+		corpName_ = other->getCorpName();
+		expires_ = other->getExpires();
+
+		onDataChanged();
+	}
 }
 
 void Character::setImplants(const std::map<SkillAttribute::Attribute, std::string>& enhancerNames, const std::map<SkillAttribute::Attribute, int>& enhancerValues) {
-	enhancerNames_ = enhancerNames;
-	enhancerValues_ = enhancerValues;
-	onDataChanged();
+	if (enhancerNames_ != enhancerNames || enhancerValues != enhancerValues_) {
+		enhancerNames_ = enhancerNames;
+		enhancerValues_ = enhancerValues;
+		onDataChanged();
+	}
 }
 
 std::string Character::getImplantName(SkillAttribute::Attribute attribute) {
@@ -48,8 +55,10 @@ int Character::getImplantValue(SkillAttribute::Attribute attribute) {
 }
 
 void Character::setAvatar(size_t size, const Swift::ByteArray& avatar) {
-	avatars_[size] = avatar;
-	onDataChanged();
+	if (avatar != avatars_[size]) {
+		avatars_[size] = avatar;
+		onDataChanged();
+	}
 }
 
 Swift::ByteArray Character::getAvatar(size_t size) {
@@ -57,31 +66,37 @@ Swift::ByteArray Character::getAvatar(size_t size) {
 }
 
 void Character::setKnownSkills(boost::shared_ptr<SkillItem> skillRoot) {
-	knownSkillRoot_ = skillRoot;
-	if (skillPlanRoot_) {
-		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+	if (!knownSkillRoot_ || *knownSkillRoot_ != *skillRoot) {
+		knownSkillRoot_ = skillRoot;
+		if (skillPlanRoot_) {
+			skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+		}
+		onDataChanged();
 	}
-	onDataChanged();
 }
 
 void Character::setTrainingQueue(boost::shared_ptr<SkillItem> trainingQueue) {
-	trainingQueueRoot_ = trainingQueue;
-	injectTrainingIntoPlan();
-	onDataChanged();
+	if (!trainingQueueRoot_ || *trainingQueue != *trainingQueueRoot_) {
+		trainingQueueRoot_ = trainingQueue;
+		injectTrainingIntoPlan();
+		onDataChanged();
+	}
 }
 
 
 void Character::setSkillPlanRoot(boost::shared_ptr<SkillPlanList> skillPlanRoot) {
-	if (skillPlanRoot_) {
-		skillPlanRoot_->onWantsToSave.disconnect(boost::bind(&Character::injectTrainingIntoPlan, this));
+	if (!skillPlanRoot_ || *skillPlanRoot != *skillPlanRoot_) {
+		if (skillPlanRoot_) {
+			skillPlanRoot_->onWantsToSave.disconnect(boost::bind(&Character::injectTrainingIntoPlan, this));
+		}
+		skillPlanRoot_ = skillPlanRoot;
+		skillPlanRoot_->onWantsToSave.connect(boost::bind(&Character::injectTrainingIntoPlan, this));
+		if (knownSkillRoot_) {
+			skillPlanRoot_->setKnownSkills(knownSkillRoot_);
+		}
+		injectTrainingIntoPlan();
+		onDataChanged();
 	}
-	skillPlanRoot_ = skillPlanRoot;
-	skillPlanRoot_->onWantsToSave.connect(boost::bind(&Character::injectTrainingIntoPlan, this));
-	if (knownSkillRoot_) {
-		skillPlanRoot_->setKnownSkills(knownSkillRoot_);
-	}
-	injectTrainingIntoPlan();
-	onDataChanged();
 }
 
 void Character::injectTrainingIntoPlan() {
@@ -99,13 +114,17 @@ void Character::injectTrainingIntoPlan() {
 }
 
 void Character::setAttribute(SkillAttribute::Attribute attribute, int value) {
-	baseAttributes_[attribute] = value;
-	onDataChanged();
+	if (baseAttributes_[attribute] != value) {
+		baseAttributes_[attribute] = value;
+		onDataChanged();
+	}
 }
 
 void Character::setISK(double isk) {
-	isk_ = isk;
-	onDataChanged();
+	if (isk_ != isk) {
+		isk_ = isk;
+		onDataChanged();
+	}
 }
 
 }

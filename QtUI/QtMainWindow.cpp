@@ -87,6 +87,9 @@ QtMainWindow::QtMainWindow(boost::shared_ptr<DataController> dataController, boo
 		debugConsole_->setReadOnly(true);
 		tabs->addTab(debugConsole_, "Debug");
 	}
+	else {
+		debugConsole_ = NULL;
+	}
 
 	characterList_->onCharacterSelected.connect(boost::bind(&QtMainWindow::handleCharacterSelected, this, _1));
 	handleCharacterListUpdated();

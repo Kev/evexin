@@ -34,6 +34,17 @@ namespace EveXin {
 			bool renamePlan(SkillPlan::ref plan, const std::string& name);
 
 			void undo();
+
+			bool operator==(const SkillPlanList& other) {
+				SkillItem& thisItem = *static_cast<SkillItem*>(this);
+				const SkillItem& otherItem = *static_cast<const SkillItem*>(&other);
+				return thisItem == otherItem;
+			}
+
+			bool operator!=(const SkillPlanList& other) {
+				return !(*this == other);
+			}
+
 		public:
 			/**
 			 * The plan is null when deleting.

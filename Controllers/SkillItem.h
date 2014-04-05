@@ -112,6 +112,23 @@ namespace EveXin {
 				return parent_.lock();
 			}
 
+			bool operator==(const SkillItem& other) {
+				bool equal = true;//parent_ ? parent_.lock().get() == other.parent_.lock().get() : !other.parent_;
+				auto myChildren = getChildren();
+				auto otherChildren = other.getChildren();
+				equal &= myChildren.size() == otherChildren.size();
+				for (size_t i = 0; equal && i < myChildren.size(); i++) {
+					equal &= *myChildren[i] == *otherChildren[i];
+				}
+				equal &= id_ == other.id_ && name_ == other.name_;
+				//std::cerr << "Skill equality " << equal << std::endl;
+				return equal;
+			}
+
+			bool operator!=(const SkillItem& other) {
+				return !(*this == other);
+			}
+
 		public:
 			boost::signal<void()> onChildrenAboutToChange;
 			boost::signal<void()> onChildrenChanged;
