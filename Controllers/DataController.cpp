@@ -40,7 +40,7 @@ Swift::URL SKILL_URL("https","api.eveonline.com","/eve/SkillTree.xml.aspx");
 DataController::DataController(Swift::NetworkFactories* factories, const boost::filesystem::path& dataDir) : factories_(factories) {
 	store_ = boost::make_shared<SqliteDataStore>(dataDir);
 	skillTree_ = boost::make_shared<SkillTree>();
-	getURLandDommifySince(SKILL_URL, Swift::stringToDateTime("2014-03-23T11:00:00Z"), boost::bind(&DataController::handleSkillResult, this, _1));
+	getURLandDommifySince(SKILL_URL, Swift::stringToDateTime("2014-08-01T11:00:00Z"), boost::bind(&DataController::handleSkillResult, this, _1));
 	std::vector<DataStore::APIKey> keys = store_->getAPIKeys();
 	foreach (const DataStore::APIKey& key, keys) {
 		addAPIKey(key.key, key.ver, true);
