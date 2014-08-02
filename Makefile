@@ -15,3 +15,6 @@ swift/Eve-Xin:
 
 dist: all
 	cd swift; ./scons dist=1 Eve-Xin Packages/Eve-Xin
+
+test: all
+	cd swift; ./scons Eve-Xin QA check=1
