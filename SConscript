@@ -104,9 +104,8 @@ if env["SCONS_STAGE"] == "build":
       "QtUI/QtUtilities.cpp",
     ]
   env.Append(UNITTEST_SOURCES = [
-#      File("Controllers/UnitTest/SkillPlanTest.cpp"),
-    ])
-
+    File("Controllers/UnitTest/SkillPlanTest.cpp"),
+  ])
 
   # myenv.Uic4("QtUI/QtMainWindow.ui")
 
@@ -139,7 +138,7 @@ if env["SCONS_STAGE"] == "build":
   #             "#/Swift/resources/Windows/Swift.res"
   #         ]
 
-  
+
 
   if env["PLATFORM"] == "darwin" or env["PLATFORM"] == "win32" :
     swiftProgram = myenv.Program("Eve-Xin", sources)
@@ -148,7 +147,7 @@ if env["SCONS_STAGE"] == "build":
     # myenv.Uic4("QtCertificateViewerDialog.ui");
     swiftProgram = myenv.Program("eve-xin", sources)
 
-  
+
 
   # Resources
   commonResources = {
@@ -188,7 +187,7 @@ if env["SCONS_STAGE"] == "build":
   #     for translation_source in filter(lambda x: not x.endswith("_en.ts"), translation_sources) :
   #         t = myenv.Command([translation_source], [], [myenv.Action("$QT4_LUPDATE -I " + env.Dir("#").abspath + remove_obsolete_option + " -silent -codecfortr utf-8 -recursive Swift -ts " + translation_source, cmdstr = "$QT4_LUPDATECOMSTR")])
   #         myenv.AlwaysBuild(t)
-    
+
 
   ################################################################################
 
@@ -204,11 +203,11 @@ if env["SCONS_STAGE"] == "build":
       myenv.Command(["#/Packages/Eve-Xin/Eve-Xin-${EVEXIN_VERSION}.dmg"], [app], ["Swift/Packaging/MacOSX/package.sh " + app.path + " Eve-Xin/Packaging/MacOSX/Eve-Xin.dmg.gz $TARGET $QTDIR"])
       dsym = myenv.Command(["Eve-Xin-${EVEXIN_VERSION}.dSYM"], ["Eve-Xin"], ["dsymutil -o ${TARGET} ${SOURCE}"])
       myenv.Command(["#/Packages/Eve-Xin/Eve-Xin-${EVEXIN_VERSION}.dSYM.zip"], dsym, ["cd ${SOURCE.dir} && zip -r ${TARGET.abspath} ${SOURCE.name}"])
-    
+
   if env["PLATFORM"] == "win32" :
     if env["DIST"] or ARGUMENTS.get("dump_trace") :
       commonResources[""] = commonResources.get("", []) + [
-          #"#/Swift/resources/images",  
+          #"#/Swift/resources/images",
         ]
       if env["SWIFTEN_DLL"] :
         commonResources[""] = commonResources.get("", []) + ["#/Swiften/${SWIFTEN_LIBRARY_FILE}"]
@@ -224,7 +223,7 @@ if env["SCONS_STAGE"] == "build":
         qtlibs += ['icuin51', 'icuuc51', 'icudt51', 'libGLESv2', 'libEGL']
         qtplugins["platforms"] = ['windows']
         qtplugins["accessible"] = ["taccessiblewidgets"]
-      windowsBundleFiles = myenv.WindowsBundle("Eve-Xin", 
+      windowsBundleFiles = myenv.WindowsBundle("Eve-Xin",
         resources = commonResources,
         qtplugins = qtplugins,
         qtlibs = qtlibs,
@@ -241,7 +240,7 @@ if env["SCONS_STAGE"] == "build":
                 # FIXME: This is incorrect, because it only works for latin1.
                 # The correct way is \u<decimal utf16 point>? , but this is more
                 # work
-                outfile.write("\\'%X" % ord(char)) 
+                outfile.write("\\'%X" % ord(char))
               else :
                 outfile.write(char)
             outfile.write('\\par ')
@@ -252,7 +251,7 @@ if env["SCONS_STAGE"] == "build":
 
         wixvariables = {
           'VCCRTFile': env["vcredist"],
-          'Version': str(myenv["EVEXIN_VERSION_MAJOR"]) + "." + str(myenv["EVEXIN_VERSION_MINOR"]) + "." + str(myenv["EVEXIN_VERSION_PATCH"])  
+          'Version': str(myenv["EVEXIN_VERSION_MAJOR"]) + "." + str(myenv["EVEXIN_VERSION_MINOR"]) + "." + str(myenv["EVEXIN_VERSION_PATCH"])
         }
         wixincludecontent = "<Include>"
         for key in wixvariables:
@@ -264,10 +263,6 @@ if env["SCONS_STAGE"] == "build":
         myenv.WiX_Candle('..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wixobj', '..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wxs')
         myenv.WiX_Candle('..\\Eve-Xin\\Packaging\\WiX\\gen_files.wixobj', '..\\Eve-Xin\\Packaging\\WiX\\gen_files.wxs')
         myenv.WiX_Light('#/Packages/Eve-Xin/Eve-Xin-' + myenv["EVEXIN_VERSION"] + '.msi', ['..\\Eve-Xin\\Packaging\\WiX\\gen_files.wixobj','..\\Eve-Xin\\Packaging\\WiX\\Eve-Xin.wixobj'])
-          
+
         if myenv["debug"] :
               myenv.InstallAs('#/Packages/Eve-Xin/Eve-Xin-' + myenv["EVEXIN_VERSION"] + '.pdb', "Eve-Xin.pdb")
-
-
-
-
