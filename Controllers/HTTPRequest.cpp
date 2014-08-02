@@ -32,7 +32,7 @@ HTTPRequest::~HTTPRequest() {
 }
 
 void HTTPRequest::send() {
-	connector_ = Swift::Connector::create(url_.getHost(), Swift::URL::getPortOrDefaultPort(url_), false, factories_->getDomainNameResolver(), tlsFactory_ ? tlsFactory_ : factories_->getConnectionFactory(), factories_->getTimerFactory());
+	connector_ = Swift::Connector::create(url_.getHost(), Swift::URL::getPortOrDefaultPort(url_), boost::optional<std::string>(), factories_->getDomainNameResolver(), tlsFactory_ ? tlsFactory_ : factories_->getConnectionFactory(), factories_->getTimerFactory());
 	connector_->onConnectFinished.connect(boost::bind(&HTTPRequest::handleConnectFinished, shared_from_this(), _1));
 	connector_->start();
 }
@@ -98,7 +98,7 @@ void HTTPRequest::handleDataRead(boost::shared_ptr<Swift::SafeByteArray> data) {
 	}
 	//Now see if we've had the headers (now, or previously)
 	if (receivedHeaders_) {
-	
+
 	}
 }
 
@@ -115,5 +115,3 @@ void HTTPRequest::handleDisconnected(const boost::optional<Swift::Connection::Er
 }
 
 }
-
-
