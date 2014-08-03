@@ -11,6 +11,8 @@ if env["SCONS_STAGE"] == "flags" :
 			"LIBS": ["EveXinControllers"]
 		}
 
+	env["INJECTED_UNITTEST_FLAGS"] = env["EVEXIN_CONTROLLERS_FLAGS"]
+
 
 ################################################################################
 # Build
