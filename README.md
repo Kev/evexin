@@ -7,7 +7,7 @@ Status
 ======
 This is very much in the early stages. It is possible to create skill plans, but they're not terribly useful. Still, give it a go if you want.
 
-Getting the source
+Compiling From Source
 ==================
 
 Eve-Xin is built using the Qt toolkit and on top of several convenience classes provided by the Swift XMPP projects, and it also hijacks the build system from Swift (which uses scons, so you'll need to have python2). These instructions assume you're using Qt 5, installed in `/opt/Qt/5.2.0/clang_64/`. If you need to adjust the path, please do. If you're using Qt4, remove the `qt5 = 1` line from config.py.
@@ -53,5 +53,22 @@ Finally, to build just issue
 make
 ```
 and out will pop a binary for you called Eve-Xin.app (Mac) or eve-xin
-on Linux. Windows currently takes a little more fiddling - speak to me
+on Linux in QtUI. Windows currently takes a little more fiddling - speak to me
 if you want to do this.
+
+Fedora 20
+---------
+This is how I got a clean Fedora 20 VM to build Eve-Xin:
+```
+sudo yum install gcc git qt-devel gcc-c++ openssl-devel sqlite-devel
+git clone https://github.com/Kev/evexin.git
+cd evexin
+git submodule init
+git submodule update
+echo "debug = 1" > swift/config.py
+echo "optimize = 1" >> swift/config.py
+echo "experimental = True" >> swift/config.py
+echo "qt = '/usr/share/qt4'" >> swift/config.py
+echo "cxxflags='-std=c++11'" >> swift/config.py
+make
+```
